@@ -4,9 +4,14 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.json.JSONArray;
 
 
 public class ThroughputMeasure
@@ -59,6 +64,7 @@ public class ThroughputMeasure
 			taskES = Executors.newFixedThreadPool(100);
 			
 			dsInst = new DataSource();
+			testTableSize();
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
@@ -70,7 +76,49 @@ public class ThroughputMeasure
 			e.printStackTrace();
 		}
 	}
-			
+	
+	public static void testTableSize()
+	{
+		System.out.println("testTableSize called");
+		Connection myConn = null;
+		Statement stmt 	  = null;
+		
+		String selectTestQuery = "select count(*) as size from subspaceId0DataStorage";
+		try
+		{
+			myConn = ThroughputMeasure.dsInst.getConnection();
+			stmt = myConn.createStatement();
+				
+			ResultSet rs = stmt.executeQuery(selectTestQuery);
+				
+			while( rs.next() )
+			{
+				String tableSize = rs.getString("size");
+				System.out.println("tableSize "+tableSize);
+				//resultSize++;
+				//jsoArray.put(nodeGUID);
+			}
+			rs.close();
+		} catch(SQLException sqlex)
+		{
+			sqlex.printStackTrace();
+		}
+		finally
+		{
+			 try 
+			{
+				if(stmt != null)
+					stmt.close();
+					
+				if(myConn != null)
+					myConn.close();
+			} catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+		
 	public static String getSHA1(String stringToHash)
 	{
 	   MessageDigest md=null;
