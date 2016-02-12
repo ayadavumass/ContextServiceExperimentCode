@@ -530,19 +530,13 @@ public class WeatherCaseStudyClient
 			
 		private void sendQueryToContextService(String query, long userReqNum) throws IOException, JSONException
 		{
-//			QueryMsgFromUser<NodeIDType> qmesgU 
-//				= new QueryMsgFromUser<NodeIDType>(myID, query, sourceIP, sourcePort, userReqNum);
-//			//ContextServiceLogger.getLogger().fine("QueryMsgFromUser "+qmesgU);
-//			InetSocketAddress sockAddr = getRandomNodeSock();
-//			//ContextServiceLogger.getLogger().fine("Sending query to "+sockAddr);
-//			niot.sendToAddress(sockAddr, qmesgU.toJSONObject());
-			ConcurrentHashMap<String, Boolean> resultGUIDMap = new ConcurrentHashMap<String, Boolean>();
+			JSONArray resultArray = new JSONArray();
 			long expiryTime = 300000;
 			
-			csClient.sendSearchQuery(query, resultGUIDMap, expiryTime);
+			csClient.sendSearchQuery(query, resultArray, expiryTime);
 			
 			System.out.println( "Query completion requestID "+userReqNum+" time "+System.currentTimeMillis()+
-					" replySize "+resultGUIDMap.size() );
+					" replySize "+resultArray.length() );
 			
 			synchronized(replyWaitMonitor)
 			{

@@ -17,7 +17,7 @@ public class UserRecordInfo
 	private double currLatitude;
 	private double currLongitude;
 	
-	private String userActivity;
+	private int userActivity;
 	
 	private double angleOfMovement;
 	
@@ -50,12 +50,12 @@ public class UserRecordInfo
 		return this.currLongitude;
 	}
 	
-	public void setUserActivity(String userActivity)
+	public void setUserActivity(int userActivity)
 	{
 		this.userActivity = userActivity;
 	}
 	
-	public String getUserActivity()
+	public int getUserActivity()
 	{
 		return this.userActivity;
 	}

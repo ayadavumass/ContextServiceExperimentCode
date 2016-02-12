@@ -174,14 +174,14 @@ public class WeatherAlertClient
 					{
 						String contextQuery = GnsDatabase.buildContextServiceQuery(GEO_LOCATION_CURRENT_LAT, GEO_LOCATION_CURRENT_LONG, 
 								polygonCoordList);
-						ConcurrentHashMap<String, Boolean> resultGUIDMap = new ConcurrentHashMap<String, Boolean>();
+						JSONArray resultArray = new JSONArray();
 						long expiryTime = 300000;
 						
 						long start = System.currentTimeMillis();
-						csClient.sendSearchQuery(contextQuery, resultGUIDMap, expiryTime);
+						csClient.sendSearchQuery(contextQuery, resultArray, expiryTime);
 						long end = System.currentTimeMillis();
 						System.out.println("Filename "+ sCurrentLine +" time taken by CS "+(end-start) +" result size "
-								+resultGUIDMap.size());
+								+resultArray.length());
 					}
 					else
 					{
@@ -219,20 +219,20 @@ public class WeatherAlertClient
 				String contextQuery = GnsDatabase.buildContextServiceQuery(GEO_LOCATION_CURRENT_LAT, GEO_LOCATION_CURRENT_LONG, 
 						AREA_EXTENT);
 				
-				ConcurrentHashMap<String, Boolean> resultGUIDMap = new ConcurrentHashMap<String, Boolean>();
+				//ConcurrentHashMap<String, Boolean> resultGUIDMap = new ConcurrentHashMap<String, Boolean>();
+				JSONArray resultArray = new JSONArray();
 				long expiryTime = 300000;
 				
 				long start = System.currentTimeMillis();
-				csClient.sendSearchQuery(contextQuery, resultGUIDMap, 
+				csClient.sendSearchQuery(contextQuery, resultArray, 
 						expiryTime);
 				long end = System.currentTimeMillis();
 				System.out.println("AREA_EXTENT "+" time taken by CS "+(end-start) +" result size "
-						+resultGUIDMap.size());
-				assert(totalNumGUIDsExpected <= resultGUIDMap.size());
+						+resultArray.length());
+				assert(totalNumGUIDsExpected <= resultArray.length());
 			}
 			else
 			{
-				
 				String gnsSelectQuery = GnsDatabase.buildLocationsQuery(AREA_EXTENT);
 				long start = System.currentTimeMillis();
 				System.out.println("Select started");

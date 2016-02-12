@@ -31,7 +31,9 @@ public class ProcessWeatherFiles
 	 * "validAt": "2015-12-26T22:57:39-06"
     }
 	 */
-	public static final String weatherDirName = "/home/adipc/Documents/MobilityFirstGitHub/Alert-Control-System/data/ALL-12-26";
+	public static final String weatherDirName 
+	= "/home/adipc/Documents/MobilityFirstGitHub/Alert-Control-System/data/ALL-12-26";
+	
 	
 	public static void main(String[] args)
 	{
@@ -139,18 +141,16 @@ public class ProcessWeatherFiles
 //						dateStorage.getDate().equals(traceBeginDate)) && 
 //						( dateStorage.getDate().before(traceEndDate) || 
 //								dateStorage.getDate().equals(traceEndDate) ) )
-				{
-					
+				{			
 					bw.write("Duration "+dateArray[i].getUnixTimeDiff()
 							+" filename "+dateArray[i].getFileName()+"\n");
 					
 					System.out.println("Duration "+dateArray[i].getUnixTimeDiff()
-							+" filename "+dateArray[i].getFileName());
-					
+							+" filename "+dateArray[i].getFileName());	
 				}
 			}
 			bw.close();
-		} catch (IOException e) 
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}

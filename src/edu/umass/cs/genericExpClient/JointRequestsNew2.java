@@ -284,8 +284,6 @@ public class JointRequestsNew2<NodeIDType> implements PacketDemultiplexer<JSONOb
 		
 		//eservice = Executors.newFixedThreadPool(1000);
 		eservice = Executors.newCachedThreadPool();
-		
-		//new Thread(new GoodPutThread()).start();
 	}
 	
 	/**
