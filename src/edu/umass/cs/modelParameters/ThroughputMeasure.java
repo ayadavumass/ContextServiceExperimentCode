@@ -11,8 +11,6 @@ import java.sql.Statement;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.json.JSONArray;
-
 
 public class ThroughputMeasure
 {
@@ -35,10 +33,17 @@ public class ThroughputMeasure
 	
 	public static final String tableName 						= "subspaceId0DataStorage";
 	
-	public static final double LONGITUDE_MIN 					= -98.08;
-	public static final double LONGITUDE_MAX 					= -96.01;
+//	public static final double LONGITUDE_MIN 					= -98.08;
+//	public static final double LONGITUDE_MAX 					= -96.01;
+//	
+//	public static final double LATITUDE_MAX 					= 33.635;
+//	public static final double LATITUDE_MIN 					= 31.854;
 	
-	public static final double LATITUDE_MAX 					= 33.635;
+
+	public static final double LONGITUDE_MIN 					= -98.08;
+	public static final double LONGITUDE_MAX 					= -97.39;
+	
+	public static final double LATITUDE_MAX 					= 32.44766666666666;
 	public static final double LATITUDE_MIN 					= 31.854;
 	
 	
