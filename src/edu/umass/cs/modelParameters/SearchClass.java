@@ -110,6 +110,13 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 			longitudeMax = ThroughputMeasure.LONGITUDE_MIN + diff;
 		}
     	
+		latitudeMin = ThroughputMeasure.LATITUDE_MIN;
+		latitudeMax = ThroughputMeasure.LATITUDE_MAX;
+		
+		longitudeMin = ThroughputMeasure.LONGITUDE_MIN;
+		longitudeMax = ThroughputMeasure.LONGITUDE_MAX;
+		
+		
     	String mysqlQuery = "SELECT nodeGUID from "+tableName+" WHERE ( ";
     	
     	String latName = ThroughputMeasure.latitudeAttrName;
@@ -179,7 +186,6 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
-		
 	}
 	
 	@Override
