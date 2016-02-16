@@ -63,14 +63,15 @@ public class ThroughputMeasure
 	public static final String longitudeAttrName				= "geoLocationCurrentLong";
 	
 	public ThroughputMeasure()
-	{	
+	{
 		try
 		{
-			taskES = Executors.newFixedThreadPool(100);
+			//taskES = Executors.newFixedThreadPool(100);
+			taskES = Executors.newCachedThreadPool();
 			
 			dsInst = new DataSource();
 			testTableSize();
-		} catch (IOException e) 
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		} catch (SQLException e)
@@ -181,11 +182,11 @@ public class ThroughputMeasure
 		if(runSearch)
 			searchObj = new SearchClass();
 		
-
 		if(runUpdate)
 			new Thread(updateObj).start();
 		if(runSearch)
 			new Thread(searchObj).start();
+		
 		
 		if(runSearch)
 			searchObj.waitForThreadFinish();
@@ -193,6 +194,5 @@ public class ThroughputMeasure
 			updateObj.waitForThreadFinish();
 		
 		System.exit(0);
-		//stateChange.waitForThreadFinish();
 	}
 }
