@@ -45,8 +45,9 @@ public class UpdateTask implements Runnable
 	{
 		Connection myConn = ThroughputMeasure.dsInst.getConnection();
 		Statement statement = null;
+		String tableName = "";
 
-		String updateTableSQL = "UPDATE "+ ThroughputMeasure.tableName+
+		String updateTableSQL = "UPDATE "+
 				" SET value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
 
 		try 

@@ -25,13 +25,13 @@ public class ThroughputMeasure
 				
 	// 1% loss tolerance
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
-			
+	
 	// 1% loss tolerance
 	public static final double SEARCH_LOSS_TOLERANCE			= 0.5;
 	
 	public static String guidPrefix								= "guidPrefix";
 	
-	public static final String tableName 						= "subspaceId0DataStorage";
+	//public static final String tableName 						= "subspaceId0DataStorage";
 	
 //	public static final double LONGITUDE_MIN 					= -98.08;
 //	public static final double LONGITUDE_MAX 					= -96.01;
@@ -55,7 +55,7 @@ public class ThroughputMeasure
 	
 	public static boolean runUpdate ;
 	public static boolean runSearch ;
-	
+	public static String searchQueryFileName;
 	
 	public static ExecutorService	 taskES						= null;
 	
@@ -155,6 +155,7 @@ public class ThroughputMeasure
 		updateRequestsps = Double.parseDouble(args[1]);
 		runUpdate = Boolean.parseBoolean(args[2]);
 		runSearch = Boolean.parseBoolean(args[3]);
+		searchQueryFileName = args[4];
 		ThroughputMeasure throughputBech = new ThroughputMeasure();
 		
 //		long start = System.currentTimeMillis();
