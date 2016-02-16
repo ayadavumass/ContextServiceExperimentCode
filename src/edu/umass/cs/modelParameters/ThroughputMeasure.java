@@ -40,11 +40,11 @@ public class ThroughputMeasure
 //	public static final double LATITUDE_MIN 					= 31.854;
 	
 
-	public static final double LONGITUDE_MIN 					= -98.08;
-	public static final double LONGITUDE_MAX 					= -97.39;
+	public static final double LONGITUDE_MIN_NODE0 				= -98.08;
+	public static final double LONGITUDE_MAX_NODE0 				= -97.39;
 	
-	public static final double LATITUDE_MAX 					= 32.44766666666666;
-	public static final double LATITUDE_MIN 					= 31.854;
+	public static final double LATITUDE_MAX_NODE0 				= 32.44766666666666;
+	public static final double LATITUDE_MIN_NODE0 				= 31.854;
 	
 	
 	public static DataSource dsInst;

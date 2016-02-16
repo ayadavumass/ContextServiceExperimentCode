@@ -1,21 +1,28 @@
 package edu.umass.cs.modelParameters;
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
+import java.util.Vector;
 
 /**
- * Updates locations of all users after every 
- * granularityOfGeolocationUpdate
+ * Updates locations of all users after every
+ * granularityOfGeolocationUpdate.
  * @author adipc
  */
 public class SearchClass extends AbstractRequestSendingClass implements Runnable
-{		
+{
 	private final Random queryRand;
+	private final Vector<String> subspaceQueries;
 	
 	public SearchClass()
 	{
 		super(ThroughputMeasure.SEARCH_LOSS_TOLERANCE);
 		queryRand = new Random();
+		subspaceQueries = new Vector<String>();
+		readQueriesFile();
 	}
 	
 	@Override
@@ -46,7 +53,10 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
-				String mysqlQuery = generateMySQLQuery(ThroughputMeasure.tableName);
+				//String mysqlQuery = generateMySQLQuery(ThroughputMeasure.tableName);
+				int index = queryRand.nextInt( subspaceQueries.size() );
+				String mysqlQuery = subspaceQueries.get(index);
+				
 				sendQueryMessage(mysqlQuery);
 				numSent++;
 			}
@@ -62,7 +72,10 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
-				String mysqlQuery = generateMySQLQuery(ThroughputMeasure.tableName);
+				//String mysqlQuery = generateMySQLQuery(ThroughputMeasure.tableName);
+				int index = queryRand.nextInt( subspaceQueries.size() );
+				String mysqlQuery = subspaceQueries.get(index);
+				
 				sendQueryMessage(mysqlQuery);
 				numSent++;
 			}
@@ -81,13 +94,78 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		System.out.println("Search result:Goodput "+sysThrput);
 	}
 	
-	private String generateMySQLQuery(String tableName)
+	private void sendQueryMessage(String mysqlQuery)
+	{
+		SearchTask searchTask = new SearchTask( mysqlQuery, this );
+		ThroughputMeasure.taskES.execute(searchTask);
+	}
+
+	@Override
+	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+	{
+	}
+	
+	@Override
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	{
+		synchronized(waitLock)
+		{
+			numRecvd++;
+			System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
+					" numSent "+numSent+" numRecvd "+numRecvd);
+			//if(currNumReplyRecvd == currNumReqSent)
+			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
+			{
+				waitLock.notify();
+			}
+		}
+	}
+	
+	private void readQueriesFile()
+	{
+		BufferedReader br = null;
+		
+		try
+		{
+			String sCurrentLine;
+			br = new BufferedReader
+					(new FileReader("serv0SubspaceQueries.txt"));
+			
+			while( (sCurrentLine = br.readLine()) != null )
+			{
+				String[] parsed = sCurrentLine.split(" ");
+				String mysqlQuery = "";
+				
+				for(int i=2; i<parsed.length; i++)
+				{
+					mysqlQuery = mysqlQuery + parsed[i]+" ";
+				}
+				
+				subspaceQueries.add(mysqlQuery);
+			}
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			try
+			{
+				if ( br != null )
+					br.close();
+			} catch (IOException ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+	}
+	
+	/*private String generateMySQLQuery(String tableName)
 	{
 		double latitudeMin = ThroughputMeasure.LATITUDE_MIN 
 				+queryRand.nextDouble()*(ThroughputMeasure.LATITUDE_MAX - ThroughputMeasure.LATITUDE_MIN);
 		
 		double predLength 
-		= (queryRand.nextDouble()*(ThroughputMeasure.LATITUDE_MAX - ThroughputMeasure.LATITUDE_MIN));
+			= (queryRand.nextDouble()*(ThroughputMeasure.LATITUDE_MAX - ThroughputMeasure.LATITUDE_MIN));
 		
 		double latitudeMax = latitudeMin + predLength;
 		
@@ -97,7 +175,10 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 			double diff = latitudeMax - ThroughputMeasure.LATITUDE_MAX;
 			latitudeMax = ThroughputMeasure.LATITUDE_MIN + diff;
 		}
-		
+		else
+		{
+			
+		}
 		double longitudeMin = ThroughputMeasure.LONGITUDE_MIN 
 				+queryRand.nextDouble()*(ThroughputMeasure.LONGITUDE_MAX - ThroughputMeasure.LONGITUDE_MIN);
 		
@@ -109,13 +190,14 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 			double diff = longitudeMax - ThroughputMeasure.LONGITUDE_MAX;
 			longitudeMax = ThroughputMeasure.LONGITUDE_MIN + diff;
 		}
-    	
-		latitudeMin = ThroughputMeasure.LATITUDE_MIN;
-		latitudeMax = ThroughputMeasure.LATITUDE_MAX;
-		
-		longitudeMin = ThroughputMeasure.LONGITUDE_MIN;
-		longitudeMax = ThroughputMeasure.LONGITUDE_MAX;
-		
+		else
+		{
+			
+		}
+//		latitudeMin = ThroughputMeasure.LATITUDE_MIN;
+//		latitudeMax = ThroughputMeasure.LATITUDE_MAX;
+//		longitudeMin = ThroughputMeasure.LONGITUDE_MIN;
+//		longitudeMax = ThroughputMeasure.LONGITUDE_MAX;
 		
     	String mysqlQuery = "SELECT nodeGUID from "+tableName+" WHERE ( ";
     	
@@ -128,7 +210,6 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 			
 			mysqlQuery = mysqlQuery + " ( "+latName +" >= "+queryMin +" AND " 
 						+latName +" <= "+queryMax+" ) AND ";
-			
 		}
 		else
 		{
@@ -138,14 +219,13 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 			mysqlQuery = mysqlQuery + " ( "
 					+" ( "+latName +" >= "+queryMin +" AND " 
 					+latName +" <= "+queryMax+" ) OR ";
-					
+			
 			queryMin  = latitudeMin+"";
 			queryMax  = ThroughputMeasure.LATITUDE_MAX+"";
 			
 			mysqlQuery = mysqlQuery +" ( "+latName +" >= "+queryMin +" AND " 
 					+latName +" <= "+queryMax+" ) ) AND ";	
 		}
-		
 		
 		
 		String longName = ThroughputMeasure.longitudeAttrName;
@@ -177,30 +257,31 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		return mysqlQuery;
 	}
 	
-	private void sendQueryMessage(String mysqlQuery)
-	{
-		SearchTask searchTask = new SearchTask( mysqlQuery, this );
-		ThroughputMeasure.taskES.execute(searchTask);
-	}
-
-	@Override
-	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
-	{
+	private boolean findOverlapLatitude(double latitudeMin, double latitudeMax)
+	{	
+		if( (latitudeMin >= ThroughputMeasure.LATITUDE_MIN_NODE0 && 
+				latitudeMin <= ThroughputMeasure.LATITUDE_MAX_NODE0) ||
+				(latitudeMax >= ThroughputMeasure.LATITUDE_MIN_NODE0 && 
+				latitudeMax <= ThroughputMeasure.LATITUDE_MAX_NODE0) ||
+				(ThroughputMeasure.LATITUDE_MIN_NODE0 >= latitudeMin && 
+				ThroughputMeasure.LATITUDE_MAX_NODE0 <= latitudeMax) )
+		{
+			return true;
+		}
+		return false;
 	}
 	
-	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	private boolean findOverlapLongitude(double longitudeMin, double longitudeMax)
 	{
-		synchronized(waitLock)
+		if( (longitudeMin >= ThroughputMeasure.LONGITUDE_MIN_NODE0 && 
+				longitudeMin <= ThroughputMeasure.LONGITUDE_MAX_NODE0) ||
+				(longitudeMax >= ThroughputMeasure.LONGITUDE_MIN_NODE0 && 
+				longitudeMax <= ThroughputMeasure.LONGITUDE_MAX_NODE0) ||
+				(ThroughputMeasure.LONGITUDE_MIN_NODE0 >= longitudeMin && 
+				ThroughputMeasure.LONGITUDE_MAX_NODE0 <= longitudeMax) )
 		{
-			numRecvd++;
-			System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
-			//if(currNumReplyRecvd == currNumReqSent)
-			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
-			{
-				waitLock.notify();
-			}
+			return true;
 		}
-	}
+		return false;
+	}*/
 }
