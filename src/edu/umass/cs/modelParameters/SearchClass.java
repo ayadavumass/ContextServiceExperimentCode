@@ -127,9 +127,10 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		
 		try
 		{
+			String searchQueryFileName = "serv"+ThroughputMeasure.nodeId+"SubspaceQueries.txt";
 			String sCurrentLine;
 			br = new BufferedReader
-					(new FileReader(ThroughputMeasure.searchQueryFileName));
+					(new FileReader(searchQueryFileName));
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{

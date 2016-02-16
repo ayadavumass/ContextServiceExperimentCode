@@ -55,7 +55,7 @@ public class ThroughputMeasure
 	
 	public static boolean runUpdate ;
 	public static boolean runSearch ;
-	public static String searchQueryFileName;
+	public static int nodeId;
 	
 	public static ExecutorService	 taskES						= null;
 	
@@ -88,7 +88,8 @@ public class ThroughputMeasure
 		Connection myConn = null;
 		Statement stmt 	  = null;
 		
-		String selectTestQuery = "select count(*) as size from subspaceId0DataStorage";
+		String selectTestQuery = "select count(*) as size from subspaceId"+ThroughputMeasure.nodeId
+				+"DataStorage";
 		try
 		{
 			myConn = ThroughputMeasure.dsInst.getConnection();
@@ -155,7 +156,7 @@ public class ThroughputMeasure
 		updateRequestsps = Double.parseDouble(args[1]);
 		runUpdate = Boolean.parseBoolean(args[2]);
 		runSearch = Boolean.parseBoolean(args[3]);
-		searchQueryFileName = args[4];
+		nodeId = Integer.parseInt(args[4]);
 		ThroughputMeasure throughputBech = new ThroughputMeasure();
 		
 //		long start = System.currentTimeMillis();
