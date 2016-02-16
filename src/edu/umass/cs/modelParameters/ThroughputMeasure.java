@@ -14,6 +14,9 @@ import java.util.concurrent.Executors;
 
 public class ThroughputMeasure
 {
+	
+	// d710 machines on emulab have 8 processsors, each with 4 cores.
+	public static final int MAX_POOL_SIZE						= 32;
 	// 100 seconds, experiment runs for 100 seconds
 	public static final int EXPERIMENT_TIME						= 100000;
 	
@@ -51,10 +54,14 @@ public class ThroughputMeasure
 	//private Random valueRand;
 	public static double searchRequestsps;
 	public static double updateRequestsps;
+	public static double overlapRequestsps;
+	
 	public static int numGuids;
 	
 	public static boolean runUpdate ;
 	public static boolean runSearch ;
+	public static boolean runOverlap ;
+	
 	public static int nodeId;
 	
 	public static ExecutorService	 taskES						= null;
@@ -66,8 +73,8 @@ public class ThroughputMeasure
 	{
 		try
 		{
-			//taskES = Executors.newFixedThreadPool(100);
-			taskES = Executors.newCachedThreadPool();
+			taskES = Executors.newFixedThreadPool(MAX_POOL_SIZE);
+			//taskES = Executors.newCachedThreadPool();
 			
 			dsInst = new DataSource();
 			testTableSize();
@@ -153,45 +160,45 @@ public class ThroughputMeasure
 	
 	public static void main(String[] args)
 	{
-		searchRequestsps = Double.parseDouble(args[0]);
+		runUpdate = Boolean.parseBoolean(args[0]);
 		updateRequestsps = Double.parseDouble(args[1]);
-		runUpdate = Boolean.parseBoolean(args[2]);
-		runSearch = Boolean.parseBoolean(args[3]);
-		nodeId = Integer.parseInt(args[4]);
+		runSearch = Boolean.parseBoolean(args[2]);
+		searchRequestsps = Double.parseDouble(args[3]);
+		
+		runOverlap = Boolean.parseBoolean(args[4]);
+		overlapRequestsps = Double.parseDouble(args[5]);
+		
+		nodeId = Integer.parseInt(args[6]);
+		
 		ThroughputMeasure throughputBech = new ThroughputMeasure();
+
 		
-//		long start = System.currentTimeMillis();
-//		InitializeClass initClass = new InitializeClass();
-//		new Thread(initClass).start();
-//		initClass.waitForThreadFinish();
-////			mysqlBech.insertRecords();
-//		System.out.println(numGuids+" records inserted in "+(System.currentTimeMillis()-start));
-		
-//		try
-//		{
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e)
-//		{
-//			e.printStackTrace();
-//		}
-		UpdateClass updateObj = null;
-		SearchClass searchObj = null;
+		UpdateClass updateObj   = null;
+		SearchClass searchObj   = null;
+		OverlapClass overlapObj = null;
 		
 		if(runUpdate)
 			updateObj = new UpdateClass();
 		if(runSearch)
 			searchObj = new SearchClass();
+		if(runOverlap)
+			overlapObj = new OverlapClass();
+		
 		
 		if(runUpdate)
 			new Thread(updateObj).start();
 		if(runSearch)
 			new Thread(searchObj).start();
+		if(runOverlap)
+			new Thread(overlapObj).start();
 		
 		
-		if(runSearch)
-			searchObj.waitForThreadFinish();
 		if(runUpdate)
 			updateObj.waitForThreadFinish();
+		if(runSearch)
+			searchObj.waitForThreadFinish();
+		if(runOverlap)
+			overlapObj.waitForThreadFinish();
 		
 		System.exit(0);
 	}
