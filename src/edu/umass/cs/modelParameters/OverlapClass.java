@@ -79,13 +79,13 @@ public class OverlapClass extends AbstractRequestSendingClass implements Runnabl
 		long endTime = System.currentTimeMillis();
 		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
 		double sendingRate = (numSent * 1.0)/(timeInSec);
-		System.out.println("Search eventual sending rate "+sendingRate);
+		System.out.println("Overlap eventual sending rate "+sendingRate);
 		
 		waitForFinish();
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
-		System.out.println("Search result:Goodput "+sysThrput);
+		System.out.println("Overlap result:Goodput "+sysThrput);
 	}
 	
 	private void sendQueryMessage(String mysqlQuery)
