@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 
 public class ThroughputMeasure
 {
-	
 	// d710 machines on emulab have 8 processsors, each with 4 cores.
 	public static final int MAX_POOL_SIZE						= 32;
 	// 100 seconds, experiment runs for 100 seconds
@@ -25,7 +24,7 @@ public class ThroughputMeasure
 	
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
-				
+	
 	// 1% loss tolerance
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
 	

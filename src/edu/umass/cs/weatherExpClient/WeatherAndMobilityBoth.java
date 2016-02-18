@@ -164,12 +164,13 @@ public class WeatherAndMobilityBoth
 		long end = System.currentTimeMillis();
 		System.out.println(numUsers+" initialization complete "+(end-start));
 		
-		
-		LocationUpdateFixedUsers locUpdate = null;
+		//LocationUpdateFixedUsers locUpdate = null;
+		LocationUpdateFixedMovingUsers locUpdate = null;
 		UniformQueryClass searchQClass = null;
+		
 		if(updateEnable)
 		{
-			locUpdate = new LocationUpdateFixedUsers();
+			locUpdate = new LocationUpdateFixedMovingUsers();
 			new Thread(locUpdate).start();
 		}
 		if(searchEnable)
@@ -210,7 +211,6 @@ public class WeatherAndMobilityBoth
 //		{
 //			searchQClass.waitForThreadFinish();
 //		}
-		
 		
 		System.exit(0);
 	}

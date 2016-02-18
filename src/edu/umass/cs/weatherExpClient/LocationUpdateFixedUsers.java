@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 public class LocationUpdateFixedUsers extends AbstractRequestSendingClass implements Runnable
 {
-	
 	private final Random updateRand;
 	public LocationUpdateFixedUsers()
 	{
@@ -19,11 +18,11 @@ public class LocationUpdateFixedUsers extends AbstractRequestSendingClass implem
 	@Override
 	public void run()
 	{
-		try 
+		try
 		{
 			this.startExpTime();
 			locUpdRateControlledRequestSender();
-		} catch (Exception e) 
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -31,7 +30,6 @@ public class LocationUpdateFixedUsers extends AbstractRequestSendingClass implem
 	
 	private void locUpdRateControlledRequestSender() throws Exception
 	{
-		//double reqspms = (WeatherAndMobilityBoth.numUsers * 1.0)/WeatherAndMobilityBoth.granularityOfGeolocationUpdate;
 		double reqspms = WeatherAndMobilityBoth.updateRate/1000.0;
 		long currTime = 0;
 		
@@ -107,7 +105,7 @@ public class LocationUpdateFixedUsers extends AbstractRequestSendingClass implem
 		WeatherAndMobilityBoth.taskES.execute(updTask);
 		
 	}
-
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
@@ -123,10 +121,10 @@ public class LocationUpdateFixedUsers extends AbstractRequestSendingClass implem
 			}
 		}
 	}
-
+	
+	
 	@Override
 	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
 	{
-		// TODO Auto-generated method stub
 	}
 }

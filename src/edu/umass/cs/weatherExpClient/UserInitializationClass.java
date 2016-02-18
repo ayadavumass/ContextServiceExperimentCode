@@ -18,7 +18,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	private void sendAInitMessage(int guidNum) throws Exception
 	{
 		GuidEntry userGuidEntry = null;
-		if(WeatherAndMobilityBoth.useGNS)
+		if( WeatherAndMobilityBoth.useGNS )
 		{
 			userGuidEntry = WeatherAndMobilityBoth.gnsClient.guidCreate(
 					WeatherAndMobilityBoth.accountGuid, WeatherAndMobilityBoth.guidPrefix+guidNum);
