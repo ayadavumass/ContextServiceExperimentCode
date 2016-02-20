@@ -13,7 +13,12 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 {
 	private final Random generalRand;
 	
-	private final Random queryRand;
+	private final Random latLowerValRand;
+	private final Random latPredLenRand;
+	
+	private final Random longLowerValRand;
+	private final Random longPredLenRand;
+	
 	private final Random updateRand;
 	
 	private double currUserGuidNum   = 0;
@@ -21,8 +26,13 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 	{
 		super( WeatherAndMobilityBoth.UPD_LOSS_TOLERANCE );
 		generalRand = new Random(WeatherAndMobilityBoth.myID);
-		queryRand = new Random(WeatherAndMobilityBoth.myID);
 		updateRand = new Random(WeatherAndMobilityBoth.myID);
+		
+		latLowerValRand = new Random(WeatherAndMobilityBoth.myID);
+		latPredLenRand = new Random(WeatherAndMobilityBoth.myID);
+		
+		longLowerValRand = new Random(WeatherAndMobilityBoth.myID);
+		longPredLenRand = new Random(WeatherAndMobilityBoth.myID);
 	}
 	
 	@Override
@@ -96,6 +106,7 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 			sendQueryMessage();
 		}
 	}
+	
 	private void sendUpdate()
 	{
 		sendALocMessage((int)currUserGuidNum);
@@ -106,10 +117,10 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 	private void sendQueryMessage()
 	{
 		double latitudeMin = WeatherAndMobilityBoth.LATITUDE_MIN 
-				+queryRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
+				+latLowerValRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 		
 		double predLength 
-		= (queryRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN));
+		= (latPredLenRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN));
 		
 		double latitudeMax = latitudeMin + predLength;
 //		double latitudeMax = latitudeMin 
@@ -123,9 +134,9 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 		
 		
 		double longitudeMin = WeatherAndMobilityBoth.LONGITUDE_MIN 
-				+queryRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN);
+				+longLowerValRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN);
 		
-		predLength = (queryRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN));
+		predLength = (longPredLenRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN));
 		double longitudeMax = longitudeMin + predLength;
 //		double longitudeMax = WeatherAndMobilityBoth.LONGITUDE_MIN 
 //				+queryRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN);

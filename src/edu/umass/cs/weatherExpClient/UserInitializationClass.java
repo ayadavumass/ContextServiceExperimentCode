@@ -8,11 +8,16 @@ import edu.umass.cs.gnsclient.client.GuidEntry;
 
 public class UserInitializationClass extends AbstractRequestSendingClass
 {
-	private Random generalRand;
+	private final Random angleRand;
+	private final Random latRand;
+	private final Random longRand;
+	
 	public UserInitializationClass()
 	{
 		super(WeatherAndMobilityBoth.INSERT_LOSS_TOLERANCE);
-		generalRand = new Random();
+		angleRand = new Random(WeatherAndMobilityBoth.myID);
+		latRand = new Random(WeatherAndMobilityBoth.myID);
+		longRand = new Random(WeatherAndMobilityBoth.myID);
 	}
 	
 	private void sendAInitMessage(int guidNum) throws Exception
@@ -24,13 +29,11 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 					WeatherAndMobilityBoth.accountGuid, WeatherAndMobilityBoth.guidPrefix+guidNum);
 		}
 		
-		double latRand   = generalRand.nextDouble();
-		double longRand  = generalRand.nextDouble();
 		double latDiff   = WeatherAndMobilityBoth.LATITUDE_MAX-WeatherAndMobilityBoth.LATITUDE_MIN;
 		double longDiff  = WeatherAndMobilityBoth.LONGITUDE_MAX-WeatherAndMobilityBoth.LONGITUDE_MIN;
 		
-		double userLat   = WeatherAndMobilityBoth.LATITUDE_MIN + latDiff * latRand;
-		double userLong  = WeatherAndMobilityBoth.LONGITUDE_MIN + longDiff * longRand;
+		double userLat   = WeatherAndMobilityBoth.LATITUDE_MIN + latDiff * latRand.nextDouble();
+		double userLong  = WeatherAndMobilityBoth.LONGITUDE_MIN + longDiff * longRand.nextDouble();
 		
 		int userState=-1;
 		
@@ -60,7 +63,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		// angle is between 0 to 360
 		// it is set once for each state of user activity
-		double angleOfMovement = generalRand.nextDouble()*360;
+		double angleOfMovement = angleRand.nextDouble()*360;
 		String userGUID = "";
 		if( WeatherAndMobilityBoth.useGNS )
 		{

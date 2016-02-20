@@ -19,7 +19,7 @@ public class LocationUpdateFixedMovingUsers extends AbstractRequestSendingClass 
 	public LocationUpdateFixedMovingUsers()
 	{
 		super(WeatherAndMobilityBoth.UPD_LOSS_TOLERANCE);
-		updateRand = new Random();
+		updateRand = new Random(WeatherAndMobilityBoth.myID);
 	}
 	
 	@Override
