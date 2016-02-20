@@ -167,25 +167,35 @@ public class WeatherAndMobilityBoth
 		//LocationUpdateFixedUsers locUpdate = null;
 		LocationUpdateFixedMovingUsers locUpdate = null;
 		UniformQueryClass searchQClass = null;
+		BothSearchAndUpdate bothSearchAndUpdate = null;
 		
-		if(updateEnable)
+		if(updateEnable && !searchEnable)
 		{
 			locUpdate = new LocationUpdateFixedMovingUsers();
 			new Thread(locUpdate).start();
 		}
-		if(searchEnable)
+		else if(searchEnable && !updateEnable)
 		{
 			searchQClass = new UniformQueryClass();
 			new Thread(searchQClass).start();
 		}
+		else if(searchEnable && updateEnable)
+		{
+			bothSearchAndUpdate = new BothSearchAndUpdate();
+			new Thread(bothSearchAndUpdate).start();
+		}
 		
-		if(updateEnable)
+		if(updateEnable && !searchEnable)
 		{
 			locUpdate.waitForThreadFinish();
 		}
-		if(searchEnable)
+		else if(searchEnable && !updateEnable)
 		{
 			searchQClass.waitForThreadFinish();
+		}
+		else if(searchEnable && updateEnable)
+		{
+			bothSearchAndUpdate.waitForThreadFinish();
 		}
 		
 		// based on weather and mobility model
