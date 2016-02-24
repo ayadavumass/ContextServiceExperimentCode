@@ -120,7 +120,8 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 				+latLowerValRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 		
 		double predLength 
-		= (latPredLenRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN));
+			= (latPredLenRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN));
+		predLength=predLength/2;
 		
 		double latitudeMax = latitudeMin + predLength;
 //		double latitudeMax = latitudeMin 
@@ -137,6 +138,9 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 				+longLowerValRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN);
 		
 		predLength = (longPredLenRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN));
+		
+		predLength=predLength/2;
+		
 		double longitudeMax = longitudeMin + predLength;
 //		double longitudeMax = WeatherAndMobilityBoth.LONGITUDE_MIN 
 //				+queryRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN);
