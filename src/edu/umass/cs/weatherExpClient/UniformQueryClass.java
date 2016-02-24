@@ -90,7 +90,7 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 		
 		double predLength 
 		= (latPredLenRand.nextDouble()*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN));
-		predLength=predLength/2;
+		predLength=predLength/4.0;
 		
 		double latitudeMax = latitudeMin + predLength;
 //		double latitudeMax = latitudeMin 
@@ -107,7 +107,7 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 				+longLowerValRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN);
 		
 		predLength = (longPredLenRand.nextDouble()*(WeatherAndMobilityBoth.LONGITUDE_MAX - WeatherAndMobilityBoth.LONGITUDE_MIN));
-		predLength=predLength/2;
+		predLength=predLength/4.0;
 		
 		double longitudeMax = longitudeMin + predLength;
 //		double longitudeMax = WeatherAndMobilityBoth.LONGITUDE_MIN 
