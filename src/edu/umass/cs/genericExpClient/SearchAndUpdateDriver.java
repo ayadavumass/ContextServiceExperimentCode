@@ -76,6 +76,8 @@ public class SearchAndUpdateDriver
 	
 	public static int numAttrsInQuery							= 1;
 	
+	public static double rhoValue								= 0.5;
+	
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -95,6 +97,8 @@ public class SearchAndUpdateDriver
 		updateRate = Double.parseDouble(args[11]);
 		numAttrs = Integer.parseInt(args[12]);
 		numAttrsInQuery = Integer.parseInt(args[13]);
+		rhoValue = Double.parseDouble(args[14]);
+		
 		
 		guidPrefix = guidPrefix+myID;
 		
@@ -149,26 +153,6 @@ public class SearchAndUpdateDriver
 		System.exit(0);
 	}
 	
-//	public static JSONObject getUpdateJSONForCS(int userState, double userLat, 
-//			double userLong) throws JSONException
-//	{
-//		JSONObject attrValJSON = new JSONObject();
-//		attrValJSON.put(latitudeAttrName, userLat);
-//		attrValJSON.put(longitudeAttrName, userLong);
-//		attrValJSON.put(userStateAttrName, userState);
-//		return attrValJSON;
-//	}
-	
-//	public static JSONObject getUpdateJSONForGNS(int userState, double userLat, 
-//			double userLong) throws JSONException
-//	{
-//		JSONObject attrValJSON = new JSONObject();
-//		attrValJSON.put(GEO_LOCATION_CURRENT, 
-//				GeoJSON.createGeoJSONCoordinate(new GlobalCoordinate(userLat, userLong)));
-//		attrValJSON.put(userStateAttrName, userState);
-//		return attrValJSON;
-//	}
-	
 	public static String getSHA1(String stringToHash)
 	{
 	   MessageDigest md=null;
@@ -194,4 +178,24 @@ public class SearchAndUpdateDriver
        String returnGUID = sb.toString();
        return returnGUID.substring(0, 40);
 	}
+	
+//	public static JSONObject getUpdateJSONForCS(int userState, double userLat, 
+//	double userLong) throws JSONException
+//{
+//JSONObject attrValJSON = new JSONObject();
+//attrValJSON.put(latitudeAttrName, userLat);
+//attrValJSON.put(longitudeAttrName, userLong);
+//attrValJSON.put(userStateAttrName, userState);
+//return attrValJSON;
+//}
+
+//public static JSONObject getUpdateJSONForGNS(int userState, double userLat, 
+//	double userLong) throws JSONException
+//{
+//JSONObject attrValJSON = new JSONObject();
+//attrValJSON.put(GEO_LOCATION_CURRENT, 
+//		GeoJSON.createGeoJSONCoordinate(new GlobalCoordinate(userLat, userLong)));
+//attrValJSON.put(userStateAttrName, userState);
+//return attrValJSON;
+//}
 }

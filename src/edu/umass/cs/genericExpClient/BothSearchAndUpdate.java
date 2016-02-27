@@ -84,13 +84,13 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 	private void sendRequest()
 	{
 		// send update
-		if(generalRand.nextDouble() < 0.5)
+		if(generalRand.nextDouble() < SearchAndUpdateDriver.rhoValue)
 		{
-			sendUpdate();
+			sendQueryMessage();
 		}
 		else
 		{
-			sendQueryMessage();
+			sendUpdate();
 		}
 	}
 	
