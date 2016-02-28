@@ -99,12 +99,12 @@ public class SearchAndUpdateDriver
 		numAttrsInQuery = Integer.parseInt(args[13]);
 		rhoValue = Double.parseDouble(args[14]);
 		
-		
+		System.out.println("Search and update client started ");
 		guidPrefix = guidPrefix+myID;
 		
 		gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
 		csClient = new ContextServiceClient<String>(csHost, csPort);
-		
+		System.out.println("ContextServiceClient created");
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;
 		//userInfoHashMap = new HashMap<String, UserRecordInfo>();

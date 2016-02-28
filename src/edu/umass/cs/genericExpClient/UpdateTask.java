@@ -37,6 +37,8 @@ public class UpdateTask implements Runnable
 			}
 			else
 			{
+				System.out.println("Sending update userGUID "
+									+userGUID+" attrValuePairs "+attrValuePairs);
 				long start = System.currentTimeMillis();
 				SearchAndUpdateDriver.csClient.sendUpdate(userGUID, attrValuePairs, -1, true);
 				long end = System.currentTimeMillis();
