@@ -17,7 +17,7 @@ public class SearchAndUpdateDriver
 	public static final int EXPERIMENT_TIME						= 100000;
 	
 	// 1% loss tolerance
-	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
+	public static final double INSERT_LOSS_TOLERANCE			= 0.9;
 	
 	// 1% loss tolerance
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
