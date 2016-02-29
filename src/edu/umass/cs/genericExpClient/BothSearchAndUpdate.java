@@ -119,8 +119,6 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 			double predLength 
 				= (searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
 			
-			predLength = predLength/2.0;
-			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
