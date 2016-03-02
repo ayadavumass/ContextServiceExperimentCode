@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
+import org.json.JSONArray;
+
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
 import edu.umass.cs.gnsclient.client.GuidEntry;
@@ -33,8 +35,10 @@ public class SearchAndUpdateDriver
 	
 	public static final String attrPrefix						= "attr";
 	
-	public static double numUsers 								= -1;
+	// every 1000 msec 
+	public static final int TRIGGER_READING_INTERVAL			= 1000;
 	
+	public static double numUsers 								= -1;
 	
 	//2% of domain queried
 	//public static final double percDomainQueried				= 0.35;
@@ -78,6 +82,8 @@ public class SearchAndUpdateDriver
 	
 	public static double rhoValue								= 0.5;
 	
+	public static boolean triggerEnable							= false;
+	
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -98,17 +104,23 @@ public class SearchAndUpdateDriver
 		numAttrs = Integer.parseInt(args[12]);
 		numAttrsInQuery = Integer.parseInt(args[13]);
 		rhoValue = Double.parseDouble(args[14]);
+		triggerEnable = Boolean.parseBoolean(args[15]);
+		
 		
 		System.out.println("Search and update client started ");
 		guidPrefix = guidPrefix+myID;
 		
 		gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient = new ContextServiceClient<String>(csHost, csPort);
+		csClient  = new ContextServiceClient<String>(csHost, csPort);
 		System.out.println("ContextServiceClient created");
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;
 		//userInfoHashMap = new HashMap<String, UserRecordInfo>();
 		//taskES = Executors.newCachedThreadPool();
+		if( triggerEnable )
+		{
+			new Thread(new ReadTriggerRecvd()).start();
+		}
 		
 		taskES = Executors.newFixedThreadPool(2000);
 		long start = System.currentTimeMillis();
@@ -120,6 +132,7 @@ public class SearchAndUpdateDriver
 		UpdateFixedUsers locUpdate = null;
 		UniformQueryClass searchQClass = null;
 		BothSearchAndUpdate bothSearchAndUpdate = null;
+		
 		
 		if(updateEnable && !searchEnable)
 		{
@@ -177,6 +190,30 @@ public class SearchAndUpdateDriver
        }
        String returnGUID = sb.toString();
        return returnGUID.substring(0, 40);
+	}
+	
+	public static class ReadTriggerRecvd implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				JSONArray triggerArray = new JSONArray();
+				csClient.getQueryUpdateTriggers(triggerArray);
+				
+				System.out.println("Reading triggers num read "
+												+triggerArray.length());
+				
+				try
+				{
+					Thread.sleep(TRIGGER_READING_INTERVAL);
+				} catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 //	public static JSONObject getUpdateJSONForCS(int userState, double userLat, 
