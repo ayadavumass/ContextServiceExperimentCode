@@ -84,27 +84,30 @@ public class SearchAndUpdateDriver
 	
 	public static boolean triggerEnable							= false;
 	
+	public static boolean searchUpdateSeparate					= false;
 	
-	public static void main(String[] args) throws Exception
+	
+	public static void main( String[] args ) throws Exception
 	{
 		ContextServiceLogger.getLogger().setLevel(Level.INFO);
 		
-		numUsers = Double.parseDouble(args[0]);
-		gnsHost  = args[1];
-		gnsPort  = Integer.parseInt(args[2]);
-		csHost   = args[3];
-		csPort   = Integer.parseInt(args[4]);
+		numUsers 		  = Double.parseDouble(args[0]);
+		gnsHost  		  = args[1];
+		gnsPort  		  = Integer.parseInt(args[2]);
+		csHost   		  = args[3];
+		csPort   		  = Integer.parseInt(args[4]);
 		useContextService = Boolean.parseBoolean(args[5]);
-		updateEnable = Boolean.parseBoolean(args[6]);
-		searchEnable = Boolean.parseBoolean(args[7]);
-		myID = Integer.parseInt(args[8]);
-		initRate = Double.parseDouble(args[9]);
-		searchQueryRate = Double.parseDouble(args[10]);
-		updateRate = Double.parseDouble(args[11]);
-		numAttrs = Integer.parseInt(args[12]);
-		numAttrsInQuery = Integer.parseInt(args[13]);
-		rhoValue = Double.parseDouble(args[14]);
-		triggerEnable = Boolean.parseBoolean(args[15]);
+		updateEnable 	  = Boolean.parseBoolean(args[6]);
+		searchEnable 	  = Boolean.parseBoolean(args[7]);
+		myID 			  = Integer.parseInt(args[8]);
+		initRate 		  = Double.parseDouble(args[9]);
+		searchQueryRate   = Double.parseDouble(args[10]);
+		updateRate 		  = Double.parseDouble(args[11]);
+		numAttrs 		  = Integer.parseInt(args[12]);
+		numAttrsInQuery   = Integer.parseInt(args[13]);
+		rhoValue 		  = Double.parseDouble(args[14]);
+		triggerEnable	  = Boolean.parseBoolean(args[15]);
+		searchUpdateSeparate = Boolean.parseBoolean(args[16]);
 		
 		
 		System.out.println("Search and update client started ");
@@ -134,35 +137,47 @@ public class SearchAndUpdateDriver
 		BothSearchAndUpdate bothSearchAndUpdate = null;
 		
 		
-		if(updateEnable && !searchEnable)
+		if( !searchUpdateSeparate )
 		{
-			locUpdate = new UpdateFixedUsers();
-			new Thread(locUpdate).start();
+			if(updateEnable && !searchEnable)
+			{
+				locUpdate = new UpdateFixedUsers();
+				new Thread(locUpdate).start();
+			}
+			else if(searchEnable && !updateEnable)
+			{
+				searchQClass = new UniformQueryClass();
+				new Thread(searchQClass).start();
+			}
+			else if(searchEnable && updateEnable)
+			{
+				bothSearchAndUpdate = new BothSearchAndUpdate();
+				new Thread(bothSearchAndUpdate).start();
+			}
+			
+			if(updateEnable && !searchEnable)
+			{
+				locUpdate.waitForThreadFinish();
+			}
+			else if(searchEnable && !updateEnable)
+			{
+				searchQClass.waitForThreadFinish();
+			}
+			else if(searchEnable && updateEnable)
+			{
+				bothSearchAndUpdate.waitForThreadFinish();
+			}
 		}
-		else if(searchEnable && !updateEnable)
+		else
 		{
 			searchQClass = new UniformQueryClass();
-			new Thread(searchQClass).start();
-		}
-		else if(searchEnable && updateEnable)
-		{
-			bothSearchAndUpdate = new BothSearchAndUpdate();
-			new Thread(bothSearchAndUpdate).start();
-		}
-		
-		if(updateEnable && !searchEnable)
-		{
+			searchQClass.run();
+			
+			locUpdate = new UpdateFixedUsers();
+			new Thread(locUpdate).start();
+			
 			locUpdate.waitForThreadFinish();
 		}
-		else if(searchEnable && !updateEnable)
-		{
-			searchQClass.waitForThreadFinish();
-		}
-		else if(searchEnable && updateEnable)
-		{
-			bothSearchAndUpdate.waitForThreadFinish();
-		}
-		
 		System.exit(0);
 	}
 	
