@@ -10,12 +10,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
+import edu.umass.cs.genericExpClient.SearchAndUpdateDriver.ReadTriggerRecvd;
 import edu.umass.cs.gnsclient.client.GuidEntry;
 import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 
@@ -41,6 +43,9 @@ public class WeatherAndMobilityBoth
 	
 	public static final double LATITUDE_MAX 					= 33.635;
 	public static final double LATITUDE_MIN 					= 31.854;
+	
+	// every 1000 msec 
+	public static final int TRIGGER_READING_INTERVAL			= 1000;
 	
 	public static double numUsers 								= -1;
 	
@@ -127,7 +132,10 @@ public class WeatherAndMobilityBoth
 	public static double searchQueryRate						= 1.0; //about every 300 sec
 	public static double updateRate								= 1.0; //about every 300 sec
 	
-		
+	public static boolean triggerEnable							= false;
+	public static boolean separateEnable						= false;
+	
+	
 	public static void main(String[] args) throws Exception
 	{
 		ContextServiceLogger.getLogger().setLevel(Level.INFO);
@@ -146,6 +154,8 @@ public class WeatherAndMobilityBoth
 		myID = Integer.parseInt(args[11]);
 		searchQueryRate = Double.parseDouble(args[12]);
 		updateRate = Double.parseDouble(args[13]);
+		triggerEnable = Boolean.parseBoolean(args[14]);
+		separateEnable = Boolean.parseBoolean(args[15]);
 		
 		guidPrefix = guidPrefix+myID;
 		
@@ -156,6 +166,11 @@ public class WeatherAndMobilityBoth
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;
 		
 		userInfoHashMap = new HashMap<String, UserRecordInfo>();
+	
+		if( triggerEnable )
+		{
+			new Thread(new ReadTriggerRecvd()).start();
+		}
 		
 		//taskES = Executors.newCachedThreadPool();
 		taskES = Executors.newFixedThreadPool(2000);
@@ -169,33 +184,45 @@ public class WeatherAndMobilityBoth
 		UniformQueryClass searchQClass = null;
 		BothSearchAndUpdate bothSearchAndUpdate = null;
 		
-		if(updateEnable && !searchEnable)
+		if( !separateEnable )
 		{
-			locUpdate = new LocationUpdateFixedMovingUsers();
-			new Thread(locUpdate).start();
+			if(updateEnable && !searchEnable)
+			{
+				locUpdate = new LocationUpdateFixedMovingUsers();
+				new Thread(locUpdate).start();
+			}
+			else if(searchEnable && !updateEnable)
+			{
+				searchQClass = new UniformQueryClass();
+				new Thread(searchQClass).start();
+			}
+			else if(searchEnable && updateEnable)
+			{
+				bothSearchAndUpdate = new BothSearchAndUpdate();
+				new Thread(bothSearchAndUpdate).start();
+			}
+			
+			if(updateEnable && !searchEnable)
+			{
+				locUpdate.waitForThreadFinish();
+			}
+			else if(searchEnable && !updateEnable)
+			{
+				searchQClass.waitForThreadFinish();
+			}
+			else if(searchEnable && updateEnable)
+			{
+				bothSearchAndUpdate.waitForThreadFinish();
+			}
 		}
-		else if(searchEnable && !updateEnable)
+		else
 		{
 			searchQClass = new UniformQueryClass();
-			new Thread(searchQClass).start();
-		}
-		else if(searchEnable && updateEnable)
-		{
-			bothSearchAndUpdate = new BothSearchAndUpdate();
-			new Thread(bothSearchAndUpdate).start();
-		}
-		
-		if(updateEnable && !searchEnable)
-		{
+			searchQClass.run();
+			
+			locUpdate = new LocationUpdateFixedMovingUsers();
+			new Thread(locUpdate).start();
 			locUpdate.waitForThreadFinish();
-		}
-		else if(searchEnable && !updateEnable)
-		{
-			searchQClass.waitForThreadFinish();
-		}
-		else if(searchEnable && updateEnable)
-		{
-			bothSearchAndUpdate.waitForThreadFinish();
 		}
 		
 		// based on weather and mobility model
@@ -269,5 +296,30 @@ public class WeatherAndMobilityBoth
        }
        String returnGUID = sb.toString();
        return returnGUID.substring(0, 40);
+	}
+	
+	
+	public static class ReadTriggerRecvd implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				JSONArray triggerArray = new JSONArray();
+				csClient.getQueryUpdateTriggers(triggerArray);
+				
+				System.out.println("Reading triggers num read "
+												+triggerArray.length());
+				
+				try
+				{
+					Thread.sleep(TRIGGER_READING_INTERVAL);
+				} catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
