@@ -7,9 +7,11 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
+import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.GuidEntry;
 import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 
@@ -35,8 +37,8 @@ public class SearchAndUpdateDriver
 	
 	public static final String attrPrefix						= "attr";
 	
-	// every 1000 msec 
-	public static final int TRIGGER_READING_INTERVAL			= 1000;
+	// every 1000 msec, 0 is immidiate reading
+	public static final int TRIGGER_READING_INTERVAL			= 0;
 	
 	public static double numUsers 								= -1;
 	
@@ -217,8 +219,30 @@ public class SearchAndUpdateDriver
 				JSONArray triggerArray = new JSONArray();
 				csClient.getQueryUpdateTriggers(triggerArray);
 				
-				System.out.println("Reading triggers num read "
-												+triggerArray.length());
+//				System.out.println("Reading triggers num read "
+//												+triggerArray.length());
+				
+				for( int i=0;i<triggerArray.length();i++ )
+				{
+					try 
+					{
+						RefreshTrigger<Integer> refreshTrig 
+							= new RefreshTrigger<Integer>(triggerArray.getJSONObject(i));
+						long timeTakenSinceUpdate 
+							= System.currentTimeMillis() - refreshTrig.getUpdateStartTime();
+						if(timeTakenSinceUpdate <= 0)
+						{
+							System.out.println("Trigger recvd time sync issue between two machines ");
+						}
+						else
+						{
+							System.out.println("Trigger recvd time taken "+timeTakenSinceUpdate);
+						}
+					} catch (JSONException e) 
+					{
+						e.printStackTrace();
+					}
+				}
 				
 				try
 				{

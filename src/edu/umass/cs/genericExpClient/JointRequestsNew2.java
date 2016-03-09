@@ -690,7 +690,8 @@ public class JointRequestsNew2<NodeIDType> implements PacketDemultiplexer<JSONOb
 				attrValuePair.put(attrName, newVal);
 				
 				ValueUpdateFromGNS<NodeIDType> valUpdFromGNS = 
-						new ValueUpdateFromGNS<NodeIDType>(myID, versionNum, GUID, attrValuePair, versionNum, sourceIP, sourcePort );
+				new ValueUpdateFromGNS<NodeIDType>
+				(myID, versionNum, GUID, attrValuePair, versionNum, sourceIP, sourcePort, System.currentTimeMillis() );
 				
 				niot.sendToAddress(getRandomNodeSock(), valUpdFromGNS.toJSONObject());
 			} catch (JSONException e)
