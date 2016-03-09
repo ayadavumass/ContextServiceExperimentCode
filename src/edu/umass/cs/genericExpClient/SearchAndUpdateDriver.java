@@ -40,6 +40,7 @@ public class SearchAndUpdateDriver
 	// every 1000 msec, 0 is immidiate reading
 	public static final int TRIGGER_READING_INTERVAL			= 0;
 	
+	
 	public static double numUsers 								= -1;
 	
 	//2% of domain queried
@@ -175,10 +176,12 @@ public class SearchAndUpdateDriver
 			searchQClass = new UniformQueryClass();
 			searchQClass.run();
 			
-			locUpdate = new UpdateFixedUsers();
-			new Thread(locUpdate).start();
+//			locUpdate = new UpdateFixedUsers();
+//			new Thread(locUpdate).start();
+			bothSearchAndUpdate = new BothSearchAndUpdate();
+			new Thread(bothSearchAndUpdate).start();
 			
-			locUpdate.waitForThreadFinish();
+			bothSearchAndUpdate.waitForThreadFinish();
 		}
 		System.exit(0);
 	}

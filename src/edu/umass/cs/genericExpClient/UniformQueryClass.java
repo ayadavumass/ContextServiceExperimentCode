@@ -119,7 +119,6 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
-		
 	}
 		
 	@Override
