@@ -18,7 +18,7 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 	// so that the number of search queries in the experiment remains same.
 	// so when number of search queries reaches threshold then we reset it to 
 	// the beginning.
-	private long numberSearchesSent		= 0;
+	//private long numberSearchesSent		= 0;
 	
 	public BothSearchAndUpdate()
 	{
@@ -93,14 +93,14 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 		// send update
 		if(generalRand.nextDouble() < SearchAndUpdateDriver.rhoValue)
 		{
-			numberSearchesSent++;
-			if( numberSearchesSent > 
-			(SearchAndUpdateDriver.searchQueryRate * (SearchAndUpdateDriver.EXPERIMENT_TIME/1000.0)) )
-			{
-				numberSearchesSent = 0;
-				// reinitialize rand number so that it gives the same seq again.
-				searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
-			}
+//			numberSearchesSent++;
+//			if( numberSearchesSent > 
+//			(SearchAndUpdateDriver.searchQueryRate * (SearchAndUpdateDriver.EXPERIMENT_TIME/1000.0)) )
+//			{
+//				numberSearchesSent = 0;
+//				// reinitialize rand number so that it gives the same seq again.
+//				searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
+//			}
 			sendQueryMessage();
 		}
 		else
