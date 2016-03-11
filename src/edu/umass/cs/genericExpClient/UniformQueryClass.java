@@ -11,7 +11,7 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 	public UniformQueryClass()
 	{
 		super(SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE);
-		searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
+		searchQueryRand = new Random(SearchAndUpdateDriver.myID*500);
 	}
 	
 	@Override

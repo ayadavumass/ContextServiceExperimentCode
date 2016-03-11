@@ -18,7 +18,7 @@ import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 public class SearchAndUpdateDriver
 {
 	// 100 seconds, experiment runs for 100 seconds
-	public static final int EXPERIMENT_TIME						= 100000;
+	public static 	 int EXPERIMENT_TIME						= 100000;
 	
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
@@ -173,9 +173,12 @@ public class SearchAndUpdateDriver
 		}
 		else
 		{
+			// just running so that system has queries average number of queries before
+			SearchAndUpdateDriver.EXPERIMENT_TIME = 30000;
 			searchQClass = new UniformQueryClass();
 			searchQClass.run();
 			
+			SearchAndUpdateDriver.EXPERIMENT_TIME = 100000;
 //			locUpdate = new UpdateFixedUsers();
 //			new Thread(locUpdate).start();
 			bothSearchAndUpdate = new BothSearchAndUpdate();
