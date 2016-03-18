@@ -80,9 +80,19 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 //			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
 //			+ " AND "
 //			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+		int randAttrNum = -1;
 		for( int i=0;i<SearchAndUpdateDriver.numAttrsInQuery;i++)
 		{
-			int randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
+			// if num attrs and num in query are same then send query on all attrs
+			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
+			{
+				randAttrNum++;
+			}
+			else
+			{
+				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
+			}
+			
 			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
 			double attrMin 
 				= SearchAndUpdateDriver.ATTR_MIN
@@ -111,7 +121,7 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 					+" <= "+attrMax+" AND ";
 			}
-		}	
+		}
 		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
 		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}

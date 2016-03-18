@@ -123,9 +123,20 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 //			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
 //			+ " AND "
 //			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+		int randAttrNum = -1;
 		for( int i=0;i<SearchAndUpdateDriver.numAttrsInQuery;i++)
 		{
-			int randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
+			// if num attrs and num in query are same then send query on all attrs
+			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
+			{
+				randAttrNum++;
+			}
+			else
+			{
+				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
+			}
+						
+			
 			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
 			double attrMin 
 				= SearchAndUpdateDriver.ATTR_MIN

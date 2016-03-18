@@ -40,7 +40,6 @@ public class SearchAndUpdateDriver
 	// every 1000 msec, 0 is immidiate reading
 	public static final int TRIGGER_READING_INTERVAL			= 0;
 	
-	
 	public static double numUsers 								= -1;
 	
 	//2% of domain queried
@@ -58,12 +57,10 @@ public class SearchAndUpdateDriver
 	// otherwise updates are directly sent to context service.
 	public static final boolean useGNS							= false;
 	
-	
 	public static UniversalTcpClient gnsClient;
 	public static GuidEntry accountGuid;
 	
 	//public static HashMap<String, UserRecordInfo> userInfoHashMap;
-	
 	public static ExecutorService taskES;
 	
 	public static int myID;
@@ -73,7 +70,7 @@ public class SearchAndUpdateDriver
 	private static boolean searchEnable							= false;
 	
 	public static ContextServiceClient<String> csClient;
-		
+	
 	// per sec
 	public static double initRate								= 1.0;
 	public static double searchQueryRate						= 1.0; //about every 300 sec
@@ -191,9 +188,9 @@ public class SearchAndUpdateDriver
 	
 	public static String getSHA1(String stringToHash)
 	{
-	   MessageDigest md=null;
-	   try
-	   {
+		MessageDigest md=null;
+		try
+		{
 		   md = MessageDigest.getInstance("SHA-256");
 	   } catch (NoSuchAlgorithmException e)
 	   {
