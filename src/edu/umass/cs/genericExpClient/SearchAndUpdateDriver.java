@@ -86,6 +86,8 @@ public class SearchAndUpdateDriver
 	
 	public static boolean searchUpdateSeparate					= false;
 	
+	public static boolean userInitEnable						= true;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -108,12 +110,13 @@ public class SearchAndUpdateDriver
 		rhoValue 		  = Double.parseDouble(args[14]);
 		triggerEnable	  = Boolean.parseBoolean(args[15]);
 		searchUpdateSeparate = Boolean.parseBoolean(args[16]);
+		userInitEnable	  = Boolean.parseBoolean(args[17]);
 		
 		
 		System.out.println("Search and update client started ");
 		guidPrefix = guidPrefix+myID;
 		
-		gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
+		//gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
 		csClient  = new ContextServiceClient<String>(csHost, csPort);
 		System.out.println("ContextServiceClient created");
 		// per 1 ms
@@ -122,18 +125,22 @@ public class SearchAndUpdateDriver
 		//taskES = Executors.newCachedThreadPool();
 		if( triggerEnable )
 		{
-			new Thread(new ReadTriggerRecvd()).start();
+			new Thread( new ReadTriggerRecvd() ).start();
 		}
 		
 		taskES = Executors.newFixedThreadPool(2000);
-		long start = System.currentTimeMillis();
-		new UserInitializationClass().initializaRateControlledRequestSender();
-		long end = System.currentTimeMillis();
-		System.out.println(numUsers+" initialization complete "+(end-start));
 		
-		//LocationUpdateFixedUsers locUpdate = null;
-		UpdateFixedUsers locUpdate = null;
-		UniformQueryClass searchQClass = null;
+		if( userInitEnable )
+		{
+			long start 	= System.currentTimeMillis();
+			new UserInitializationClass().initializaRateControlledRequestSender();
+			long end 	= System.currentTimeMillis();
+			System.out.println(numUsers+" initialization complete "+(end-start));
+		}
+		
+		// LocationUpdateFixedUsers locUpdate = null;
+		UpdateFixedUsers locUpdate 			 	= null;
+		UniformQueryClass searchQClass 		 	= null;
 		BothSearchAndUpdate bothSearchAndUpdate = null;
 		
 		
