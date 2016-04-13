@@ -122,7 +122,8 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 					+" <= "+attrMax+" AND ";
 			}
 		}
-		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
+		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), null, 
+				this);
 		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
