@@ -6,7 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class BothSearchAndUpdate extends AbstractRequestSendingClass implements Runnable
+import edu.umass.cs.gnsclient.client.GuidEntry;
+
+public class BothSearchAndUpdate extends 
+									AbstractRequestSendingClass implements Runnable
 {
 	private final Random generalRand;
 	private Random searchQueryRand;
@@ -18,15 +21,14 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 	// so that the number of search queries in the experiment remains same.
 	// so when number of search queries reaches threshold then we reset it to 
 	// the beginning.
-	//private long numberSearchesSent		= 0;
 	
 	public BothSearchAndUpdate()
 	{
 		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );
 		generalRand = new Random(SearchAndUpdateDriver.myID);
-		updateRand = new Random(SearchAndUpdateDriver.myID*100);
+		updateRand = new Random((SearchAndUpdateDriver.myID+1)*100);
 		
-		searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
+		searchQueryRand = new Random((SearchAndUpdateDriver.myID+1)*200);
 	}
 	
 	@Override
@@ -58,11 +60,13 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 				sendRequest();
 				numSent++;
 			}
+			
 			currTime = System.currentTimeMillis();
 			
 			double timeElapsed = ((currTime- expStartTime)*1.0);
 			double numberShouldBeSentByNow = timeElapsed*reqspms;
 			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
+			
 			if(needsToBeSentBeforeSleep > 0)
 			{
 				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
@@ -118,13 +122,15 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 	
 	private void sendQueryMessage()
 	{
-		String searchQuery
+		String searchQuery 
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
 //			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
 //			+ " AND "
 //			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+		
 		int randAttrNum = -1;
-		for( int i=0;i<SearchAndUpdateDriver.numAttrsInQuery;i++)
+		
+		for( int i=0; i<SearchAndUpdateDriver.numAttrsInQuery; i++ )
 		{
 			// if num attrs and num in query are same then send query on all attrs
 			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
@@ -135,7 +141,6 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 			{
 				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
 			}
-						
 			
 			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
 			double attrMin 
@@ -155,7 +160,7 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
 			}
 			// last so no AND
-			if(i == (SearchAndUpdateDriver.numAttrsInQuery-1))
+			if( i == (SearchAndUpdateDriver.numAttrsInQuery-1) )
 			{
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 						+" <= "+attrMax;
@@ -165,40 +170,38 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 					+" <= "+attrMax+" AND ";
 			}
-		}	
-		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
+		}
+		
+		int randIndex = searchQueryRand.nextInt( SearchAndUpdateDriver.usersVector.size() );
+		UserEntry queryingUserEntry = SearchAndUpdateDriver.usersVector.get(randIndex);
+		
+		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();
+		
+		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), queryingGuidEntry, this );
 		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
 	private void sendALocMessage(int currUserGuidNum)
 	{
-//		UserRecordInfo currUserInfo = SearchAndUpdateDriver.userInfoHashMap.get
-//				(SearchAndUpdateDriver.guidPrefix+currUserGuidNum);
-		
-		String userGUID = "";
-		if( SearchAndUpdateDriver.useGNS )
-		{
-//			userGUID = userGuidEntry.getGuid();
-		}
-		else
-		{
-			userGUID = SearchAndUpdateDriver.getSHA1(SearchAndUpdateDriver.guidPrefix+currUserGuidNum);
-		}
+		UserEntry currUserEntry 
+					= SearchAndUpdateDriver.usersVector.get(currUserGuidNum);
 		
 		int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
 		double randVal = SearchAndUpdateDriver.ATTR_MIN 
 				+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
 		
 		JSONObject attrValJSON = new JSONObject();
+		
 		try
 		{			
 			attrValJSON.put(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
-		} catch (JSONException e)
+		} 
+		catch (JSONException e)
 		{
 			e.printStackTrace();
 		}
-		//System.out.println("Updating "+currUserGuidNum+" "+attrValJSON);
-		UpdateTask updTask = new UpdateTask( attrValJSON, null, this );
+		
+		UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
 		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
@@ -218,7 +221,6 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 		}
 	}
 	
-	
 	@Override
 	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
 	{
@@ -234,4 +236,5 @@ public class BothSearchAndUpdate extends AbstractRequestSendingClass implements 
 			}
 		}
 	}
+	
 }
