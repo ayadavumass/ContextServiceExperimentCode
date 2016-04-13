@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.json.JSONObject;
 
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.exceptions.GnsException;
 
 /**
  * Class implements the task used for 
@@ -44,17 +43,15 @@ public class UpdateTask implements Runnable
 				String userGUID = userRecordInfo.getGUIDString();
 				long start = System.currentTimeMillis();
 			
-				WeatherAndMobilityBoth.csClient.sendUpdate(userGUID, attrValuePairs, -1, true);
+				WeatherAndMobilityBoth.csClient.sendUpdate
+								(userGUID, null, attrValuePairs, -1, true);
 				long end = System.currentTimeMillis();
 				requestSendingTask.incrementUpdateNumRecvd(userGUID, end-start);
 			}
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-		} catch (GnsException e)
-		{
-			e.printStackTrace();
-		} catch(Exception ex)
+		}  catch(Exception ex)
 		{
 			ex.printStackTrace();
 		}

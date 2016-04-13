@@ -557,7 +557,8 @@ public class WeatherCaseStudyClient
 				JSONObject attrValuePair = new JSONObject();
 				attrValuePair.put(attrName, newVal);
 			
-				csClient.sendUpdate(GUID, attrValuePair, versionNum, true);
+				csClient.sendUpdate(GUID, null, 
+						attrValuePair, versionNum, true);
 //				ValueUpdateFromGNS<NodeIDType> valUpdFromGNS = 
 //						new ValueUpdateFromGNS<NodeIDType>(myID, versionNum, GUID, attrValuePair, sourceIP, sourcePort, versionNum );
 //				

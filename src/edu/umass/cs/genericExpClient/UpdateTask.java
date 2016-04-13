@@ -40,7 +40,8 @@ public class UpdateTask implements Runnable
 				System.out.println("Sending update userGUID "
 									+userGUID+" attrValuePairs "+attrValuePairs);
 				long start = System.currentTimeMillis();
-				SearchAndUpdateDriver.csClient.sendUpdate(userGUID, attrValuePairs, -1, true);
+				SearchAndUpdateDriver.csClient.sendUpdate(userGUID, null, 
+						attrValuePairs, -1, true);
 				long end = System.currentTimeMillis();
 				requestSendingTask.incrementUpdateNumRecvd(userGUID, end-start);
 			}

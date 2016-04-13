@@ -3,6 +3,7 @@ package edu.umass.cs.weatherExpClient;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,7 +77,8 @@ public class WeatherAlertClient
 	// if false it will use gns
 	private static boolean useContextService	= false;
 	
-	public WeatherAlertClient(String gnsHost, int gnsPort, String csHost, int csPort) throws IOException, ParseException
+	public WeatherAlertClient(String gnsHost, int gnsPort, String csHost, int csPort) 
+											throws IOException, ParseException, NoSuchAlgorithmException
 	{
 		csClient = new ContextServiceClient<String>(csHost, csPort);
 		clockTimer = new Timer();
@@ -287,7 +289,7 @@ public class WeatherAlertClient
 		return null;
 	}
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws NoSuchAlgorithmException
 	{
 		int numUsers = Integer.parseInt(args[0]);
 		String gnsHost  = args[1];
@@ -298,7 +300,8 @@ public class WeatherAlertClient
 		
 		try
 		{
-			WeatherAlertClient wObj = new WeatherAlertClient(gnsHost, gnsPort, csHost, csPort);
+			WeatherAlertClient wObj 
+						= new WeatherAlertClient(gnsHost, gnsPort, csHost, csPort);
 			System.out.println("WeatherAlertClient complete");
 			wObj.testAreaExtent(numUsers);
 			Thread.sleep(10000);

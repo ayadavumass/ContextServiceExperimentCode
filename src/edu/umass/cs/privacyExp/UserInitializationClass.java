@@ -1,0 +1,236 @@
+package edu.umass.cs.privacyExp;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import org.json.JSONObject;
+
+import edu.umass.cs.contextservice.client.common.ACLEntry;
+import edu.umass.cs.contextservice.client.common.AnonymizedIDEntry;
+import edu.umass.cs.contextservice.config.ContextServiceConfig;
+import edu.umass.cs.contextservice.utils.Utils;
+import edu.umass.cs.gnsclient.client.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidUtils;
+
+public class UserInitializationClass extends 
+										AbstractRequestSendingClass
+{
+	// different random generator for each variable, as using one for 
+	// all of them doesn't give uniform properties.
+	
+	private final Random initRand;
+	private final KeyPairGenerator kpg;
+	private final Random aclRand;
+	
+	public UserInitializationClass() throws Exception
+	{
+		super( SearchAndUpdateDriver.INSERT_LOSS_TOLERANCE );
+		initRand = new Random(SearchAndUpdateDriver.myID*100);
+		aclRand  = new Random((SearchAndUpdateDriver.myID+1)*102);
+		
+		kpg = KeyPairGenerator.getInstance
+					( ContextServiceConfig.AssymmetricEncAlgorithm );
+		
+		// just generate all user entries.
+		generateUserEntries();
+	}
+	
+	private void sendAInitMessage(int guidNum) throws Exception
+	{
+		UserEntry userEntry 
+					= SearchAndUpdateDriver.usersVector.get(guidNum);
+		
+		JSONObject attrValJSON = new JSONObject();
+		
+		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
+		
+		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
+		{
+			String attrName = SearchAndUpdateDriver.attrPrefix+i;
+			double attrVal  = SearchAndUpdateDriver.ATTR_MIN 
+					+ attrDiff * initRand.nextDouble();
+			attrValJSON.put(attrName, attrVal);
+		}
+		//String userGUID = userEntry.getGuidEntry().getGuid();
+		
+		UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
+		SearchAndUpdateDriver.taskES.execute(updTask);
+	}
+	
+	/**
+	 * All things happen in this function are local
+	 * no cs communication so no need for rate control.
+	 * @throws Exception
+	 */
+	private void generateUserEntries() throws Exception
+	{
+		// generate guids
+		for( int i=0; i < SearchAndUpdateDriver.numUsers; i++ )
+		{
+			int guidNum = i;
+			
+			if( SearchAndUpdateDriver.useGNS )
+			{
+				GuidEntry userGuidEntry = SearchAndUpdateDriver.gnsClient.guidCreate(
+						SearchAndUpdateDriver.accountGuid, SearchAndUpdateDriver.guidPrefix+guidNum);
+			}
+			else
+			{
+				String alias = SearchAndUpdateDriver.guidPrefix+guidNum;
+				KeyPair kp0 = kpg.genKeyPair();
+				PublicKey publicKey0 = kp0.getPublic();
+				PrivateKey privateKey0 = kp0.getPrivate();
+				byte[] publicKeyByteArray0 = publicKey0.getEncoded();
+				
+				String guid0 = GuidUtils.createGuidFromPublicKey(publicKeyByteArray0);
+				GuidEntry myGUID = new GuidEntry(alias, guid0, publicKey0, privateKey0);
+				
+				UserEntry userEntry = new UserEntry(myGUID);
+				SearchAndUpdateDriver.usersVector.add(userEntry);
+			}
+		}
+		
+		// generate ACLs.
+		for( int i=0; i < SearchAndUpdateDriver.numUsers; i++ )
+		{
+			UserEntry currUserEntry = SearchAndUpdateDriver.usersVector.get(i);
+			List<ACLEntry> unionACLEntry = new LinkedList<ACLEntry>();
+			
+			for( int j=0; j<SearchAndUpdateDriver.UNION_ACL_SIZE; j++ )
+			{
+				int randIndex = aclRand.nextInt(SearchAndUpdateDriver.usersVector.size());
+				GuidEntry randGuidEntry = SearchAndUpdateDriver.usersVector.get(randIndex).getGuidEntry();
+				byte[] guidACLMember = Utils.hexStringToByteArray(randGuidEntry.getGuid());
+				byte[] publicKeyBytes = randGuidEntry.getPublicKey().getEncoded();
+				
+				ACLEntry aclEntry = new ACLEntry(guidACLMember, publicKeyBytes);
+				unionACLEntry.add(aclEntry);
+			}
+			currUserEntry.setUnionOfACLs(unionACLEntry);
+			
+			// generate ACLs by picking 10 random entries 
+			// from the union of ACLs for each attribute.
+			HashMap<String, List<ACLEntry>> aclMap 
+								= new HashMap<String, List<ACLEntry>>();
+			
+			for( int j=0; j < SearchAndUpdateDriver.numAttrs; j++ )
+			{
+				List<ACLEntry> attrACLList 
+										= new LinkedList<ACLEntry>();
+				
+				for( int k = 0 ; k < SearchAndUpdateDriver.ACL_SIZE; k++ )
+				{
+					int randIndex = aclRand.nextInt( unionACLEntry.size() );
+					attrACLList.add( unionACLEntry.get(randIndex) );
+				}
+				
+				String attrName = "attr"+j;
+				
+				aclMap.put(attrName, attrACLList);
+			}
+			currUserEntry.setACLMap( aclMap );
+			
+			List<AnonymizedIDEntry> anonymizedIDList = 
+						SearchAndUpdateDriver.csClient.computeAnonymizedIDs(aclMap);
+			
+			currUserEntry.setAnonymizedIDList(anonymizedIDList);
+		}
+	}
+	
+	public void initializaRateControlledRequestSender() throws Exception
+	{	
+		this.startExpTime();
+		double reqspms = SearchAndUpdateDriver.initRate/1000.0;
+		long currTime = 0;
+		
+		// sleep for 100ms
+		double numberShouldBeSentPerSleep = reqspms*100.0;
+		
+		double totalNumUsersSent = 0;
+		
+		while(  totalNumUsersSent < SearchAndUpdateDriver.numUsers  )
+		{
+			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+			{
+				sendAInitMessage((int)totalNumUsersSent);
+				totalNumUsersSent++;
+				numSent++;
+				assert(numSent == totalNumUsersSent);
+				if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+				{
+					break;
+				}
+			}
+			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+			{
+				break;
+			}
+			currTime = System.currentTimeMillis();
+			
+			double timeElapsed = ((currTime- expStartTime)*1.0);
+			double numberShouldBeSentByNow = timeElapsed*reqspms;
+			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
+			if(needsToBeSentBeforeSleep > 0)
+			{
+				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
+			}
+			
+			for(int i=0;i<needsToBeSentBeforeSleep;i++)
+			{
+				sendAInitMessage((int)totalNumUsersSent);
+				totalNumUsersSent++;
+				numSent++;
+				assert(numSent == totalNumUsersSent);
+				if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+				{
+					break;
+				}
+			}
+			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+			{
+				break;
+			}
+			Thread.sleep(100);
+		}
+		
+		long endTime = System.currentTimeMillis();
+		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
+		double sendingRate = (numSent * 1.0)/(timeInSec);
+		System.out.println("UserInit eventual sending rate "+sendingRate);
+		
+		waitForFinish();
+		
+		double endTimeReplyRecvd = System.currentTimeMillis();
+		double sysThrput = (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+		
+		System.out.println("UserInit result:Goodput "+sysThrput);
+	}
+	
+	
+	@Override
+	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+	{
+		synchronized(waitLock)
+		{
+			numRecvd++;
+			System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
+					" numSent "+numSent+" numRecvd "+numRecvd);
+			//if(currNumReplyRecvd == currNumReqSent)
+			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
+			{
+				waitLock.notify();
+			}
+		}
+	}
+	
+	@Override
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	{
+	}
+}
