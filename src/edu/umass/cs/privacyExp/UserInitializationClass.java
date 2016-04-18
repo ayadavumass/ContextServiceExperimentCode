@@ -143,7 +143,8 @@ public class UserInitializationClass extends
 			{
 				for(int k=0; k<anonymizedIDList.size(); k++)
 				{
-					System.out.println(anonymizedIDList.get(k).toString());
+					System.out.println("UserNum"+i+" "+
+									anonymizedIDList.get(k).toString());
 				}
 			}
 			
