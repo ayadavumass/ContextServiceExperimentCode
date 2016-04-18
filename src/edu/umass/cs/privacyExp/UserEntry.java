@@ -22,7 +22,7 @@ public class UserEntry
 	// first a group of guids are chosen then they 
 	// are distributed into
 	// ACLs.
-	private List<ACLEntry> unionOfACLs;
+	private HashMap<String, ACLEntry> unionOfACLsMap;
 	
 	public UserEntry(GuidEntry myGuidEntry)
 	{
@@ -54,13 +54,13 @@ public class UserEntry
 		this.anonymizedIDList = anonymizedIDList;
 	}
 	
-	public List<ACLEntry> getUnionOfACLs()
+	public HashMap<String, ACLEntry> getUnionOfACLs()
 	{
-		return this.unionOfACLs;
+		return this.unionOfACLsMap;
 	}
 	
-	public void setUnionOfACLs(List<ACLEntry> unionOfACLs)
+	public void setUnionOfACLs(HashMap<String, ACLEntry> unionOfACLs)
 	{
-		this.unionOfACLs = unionOfACLs;
+		this.unionOfACLsMap = unionOfACLs;
 	}
 }

@@ -5,6 +5,7 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -100,19 +101,28 @@ public class UserInitializationClass extends
 		for( int i=0; i < SearchAndUpdateDriver.numUsers; i++ )
 		{
 			UserEntry currUserEntry = SearchAndUpdateDriver.usersVector.get(i);
-			List<ACLEntry> unionACLEntry = new LinkedList<ACLEntry>();
+			// there is a map to have unique 20 elements
+			HashMap<String, ACLEntry> unionACLEntryMap 
+								= new HashMap<String, ACLEntry>();
 			
-			for( int j=0; j<SearchAndUpdateDriver.UNION_ACL_SIZE; j++ )
+			//List<ACLEntry> unionACLEntry = new LinkedList<ACLEntry>();
+			
+			while( unionACLEntryMap.size() != SearchAndUpdateDriver.UNION_ACL_SIZE )
 			{
-				int randIndex = aclRand.nextInt(SearchAndUpdateDriver.usersVector.size());
-				GuidEntry randGuidEntry = SearchAndUpdateDriver.usersVector.get(randIndex).getGuidEntry();
+				int randIndex = aclRand.nextInt(
+						SearchAndUpdateDriver.usersVector.size() );
+				GuidEntry randGuidEntry 
+						= SearchAndUpdateDriver.usersVector.get(randIndex).getGuidEntry();
 				byte[] guidACLMember = Utils.hexStringToByteArray(randGuidEntry.getGuid());
 				byte[] publicKeyBytes = randGuidEntry.getPublicKey().getEncoded();
 				
 				ACLEntry aclEntry = new ACLEntry(guidACLMember, publicKeyBytes);
-				unionACLEntry.add(aclEntry);
-			}
-			currUserEntry.setUnionOfACLs(unionACLEntry);
+				unionACLEntryMap.put( Utils.bytArrayToHex(guidACLMember), 
+						aclEntry );
+				//unionACLEntry.add(aclEntry);
+			}			
+			
+			currUserEntry.setUnionOfACLs(unionACLEntryMap);
 			
 			// generate ACLs by picking 10 random entries 
 			// from the union of ACLs for each attribute.
@@ -121,18 +131,34 @@ public class UserInitializationClass extends
 			
 			for( int j=0; j < SearchAndUpdateDriver.numAttrs; j++ )
 			{
-				List<ACLEntry> attrACLList 
-										= new LinkedList<ACLEntry>();
+				//List<ACLEntry> attrACLList 
+				//						= new LinkedList<ACLEntry>();
 				
-				for( int k = 0 ; k < SearchAndUpdateDriver.ACL_SIZE; k++ )
+				String[] guidArray = (String[]) unionACLEntryMap.keySet().toArray();
+				
+				HashMap<String, ACLEntry> attrACLMap 
+										= new HashMap<String, ACLEntry>();
+				
+				while( attrACLMap.size() != SearchAndUpdateDriver.ACL_SIZE )
 				{
-					int randIndex = aclRand.nextInt( unionACLEntry.size() );
-					attrACLList.add( unionACLEntry.get(randIndex) );
+					int randIndex = aclRand.nextInt( guidArray.length );
+					ACLEntry aclEntry = unionACLEntryMap.get(guidArray[randIndex]);
+					
+					attrACLMap.put(Utils.bytArrayToHex(aclEntry.getACLMemberGUID()), aclEntry);
 				}
+				
+				Iterator<String> guidIter = attrACLMap.keySet().iterator();
+				List<ACLEntry> aclList = new LinkedList<ACLEntry>();
+				while( guidIter.hasNext() )
+				{
+					String guidStr = guidIter.next();
+					aclList.add(attrACLMap.get(guidStr));
+				}
+				
 				
 				String attrName = "attr"+j;
 				
-				aclMap.put(attrName, attrACLList);
+				aclMap.put(attrName, aclList);
 			}
 			currUserEntry.setACLMap( aclMap );
 			
@@ -150,6 +176,7 @@ public class UserInitializationClass extends
 			
 			currUserEntry.setAnonymizedIDList(anonymizedIDList);
 		}
+		
 	}
 	
 	public void initializaRateControlledRequestSender() throws Exception
