@@ -139,6 +139,14 @@ public class UserInitializationClass extends
 			List<AnonymizedIDEntry> anonymizedIDList = 
 						SearchAndUpdateDriver.csClient.computeAnonymizedIDs(aclMap);
 			
+			if(anonymizedIDList != null)
+			{
+				for(int k=0; k<anonymizedIDList.size(); k++)
+				{
+					System.out.println(anonymizedIDList.get(k).toString());
+				}
+			}
+			
 			currUserEntry.setAnonymizedIDList(anonymizedIDList);
 		}
 	}
