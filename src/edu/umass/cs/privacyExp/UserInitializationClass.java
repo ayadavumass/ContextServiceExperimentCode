@@ -133,8 +133,9 @@ public class UserInitializationClass extends
 			{
 				//List<ACLEntry> attrACLList 
 				//						= new LinkedList<ACLEntry>();
+				String[] guidArray = new String[unionACLEntryMap.size()];
 				
-				String[] guidArray = (String[]) unionACLEntryMap.keySet().toArray();
+				guidArray = unionACLEntryMap.keySet().toArray(guidArray);
 				
 				HashMap<String, ACLEntry> attrACLMap 
 										= new HashMap<String, ACLEntry>();
