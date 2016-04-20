@@ -8,7 +8,7 @@ import java.util.Random;
  * @author adipc
  */
 public class UpdateClass extends AbstractRequestSendingClass implements Runnable
-{	
+{
 	private Random updateRand;
 	public UpdateClass()
 	{

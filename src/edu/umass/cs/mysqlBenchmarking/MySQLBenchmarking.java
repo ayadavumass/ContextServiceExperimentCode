@@ -133,7 +133,7 @@ public class MySQLBenchmarking
 //		mysqlBech.insertRecords();
 		System.out.println(numGuids+" records inserted in "+(System.currentTimeMillis()-start));
 		
-		try 
+		try
 		{
 			Thread.sleep(10000);
 		} catch (InterruptedException e)

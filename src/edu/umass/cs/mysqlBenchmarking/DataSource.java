@@ -14,15 +14,15 @@ public class DataSource
     private static DataSource     datasource;
     private ComboPooledDataSource cpds;
 
-    public DataSource() throws IOException, SQLException, PropertyVetoException 
+    public DataSource() throws IOException, SQLException, PropertyVetoException
     {
     	int portNum = 6000;
     	String dirName = "mysqlDir-serv0";
         cpds = new ComboPooledDataSource();
-        dropDB();
-        createDB();
+        //dropDB();
+        //createDB();
         cpds.setDriverClass("com.mysql.jdbc.Driver"); //loads the jdbc driver
-        cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB?socket=/home/"+dirName+"/thesock");
+        cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0?socket=/home/"+dirName+"/thesock");
         cpds.setUser("root");
         cpds.setPassword("aditya");
 
@@ -31,7 +31,6 @@ public class DataSource
         //cpds.setAcquireIncrement(5);
         cpds.setMaxPoolSize(150);
         //cpds.setMaxStatements(180);
-        
     }
 
     public static DataSource getInstance() throws IOException, SQLException, PropertyVetoException 

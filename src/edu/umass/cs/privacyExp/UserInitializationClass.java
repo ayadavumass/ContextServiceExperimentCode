@@ -177,7 +177,6 @@ public class UserInitializationClass extends
 			
 			currUserEntry.setAnonymizedIDList(anonymizedIDList);
 		}
-		
 	}
 	
 	public void initializaRateControlledRequestSender() throws Exception
