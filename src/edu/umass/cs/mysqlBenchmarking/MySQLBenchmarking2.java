@@ -75,6 +75,14 @@ public class MySQLBenchmarking2
 				
 				double timeTaken = end-start;
 				resultlist.add(timeTaken);
+				
+				try 
+				{
+					Thread.sleep(100);
+				} catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
 			}
 			System.out.println("Update times "+
 			StatisticsClass.toString(StatisticsClass.computeStats(resultlist)));
