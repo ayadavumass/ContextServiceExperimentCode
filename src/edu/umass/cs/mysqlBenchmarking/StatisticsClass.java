@@ -64,7 +64,7 @@ public class StatisticsClass
 	{
 		String str ="";
 		str = MeanKey+"="+statMap.get(MeanKey)+" , "+MinKey+"="+statMap.get(MinKey)+" , "
-				+FivePercKey+"="+statMap.get(FivePercKey)+" , "+MedianKey+"="+statMap.get(MedianKey)
+				+FivePercKey+"="+statMap.get(FivePercKey)+" , "+MedianKey+"="+statMap.get(MedianKey)+" , "
 				+NinetyFivePercKey+"="+statMap.get(NinetyFivePercKey)+" , "+MaxKey+"="+statMap.get(MaxKey);
 		return str;
 	}
