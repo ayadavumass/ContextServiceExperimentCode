@@ -345,9 +345,10 @@ public class JointRequestsNew2<NodeIDType> implements PacketDemultiplexer<JSONOb
 		waitTimer.schedule(new WaitTimerTask(), WAIT_TIME);
 		
 		//while( currNumReplyRecvd < currNumReqSent )
-		while( !checkForCompletionWithLossTolerance() )
+		
+		synchronized(this.replyWaitMonitor)
 		{
-			synchronized(this.replyWaitMonitor)
+			while( !checkForCompletionWithLossTolerance() )
 			{
 				try
 				{
@@ -358,6 +359,7 @@ public class JointRequestsNew2<NodeIDType> implements PacketDemultiplexer<JSONOb
 				}
 			}
 		}
+		
 		stopThis();	
 		waitTimer.cancel();
 		//System.exit(0);

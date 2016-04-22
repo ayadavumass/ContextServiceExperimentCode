@@ -35,9 +35,10 @@ public abstract class AbstractRequestSendingClass
 	{
 		waitTimer.schedule(new WaitTimerTask(), SearchAndUpdateDriver.WAIT_TIME);
 		
-		while( !checkForCompletionWithLossTolerance(numSent, numRecvd) )
+		
+		synchronized(waitLock)
 		{
-			synchronized(waitLock)
+			while( !checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
 				try
 				{
@@ -48,6 +49,7 @@ public abstract class AbstractRequestSendingClass
 				}
 			}
 		}
+		
 		//stopThis();	
 		waitTimer.cancel();
 		
@@ -61,9 +63,9 @@ public abstract class AbstractRequestSendingClass
 	
 	public void waitForThreadFinish()
 	{
-		while( !threadFinished )
+		synchronized( threadFinishLock )
 		{
-			synchronized( threadFinishLock )
+			while( !threadFinished )
 			{
 				try 
 				{
