@@ -133,6 +133,15 @@ public class BothSearchAndUpdate extends
 			currUserGuidNum=((int)currUserGuidNum)%SearchAndUpdateDriver.numUsers;
 			
 			numSent++;
+			
+			try
+			{
+				Thread.sleep(500);
+			} catch (InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	
