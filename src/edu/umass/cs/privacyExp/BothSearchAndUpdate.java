@@ -105,6 +105,7 @@ public class BothSearchAndUpdate extends
 	 */
 	private void singleRequestSender()
 	{
+		System.out.println("singleRequestSender used");
 		while( ( (System.currentTimeMillis() - expStartTime) < SearchAndUpdateDriver.EXPERIMENT_TIME ) )
 		{		
 			UserEntry currUserEntry 
