@@ -37,7 +37,15 @@ public class BothSearchAndUpdate extends
 		try
 		{
 			this.startExpTime();
-			rateControlledRequestSender();
+			
+			if(!SearchAndUpdateDriver.singleRequest)
+			{
+				rateControlledRequestSender();
+			}
+			else
+			{
+				singleRequestSender();
+			}
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -90,6 +98,41 @@ public class BothSearchAndUpdate extends
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
 		System.out.println("Both result:Goodput "+sysThrput);
+	}
+	
+	/**
+	 * This is mainly used to measure very low load latency
+	 */
+	private void singleRequestSender()
+	{
+		while( ( (System.currentTimeMillis() - expStartTime) < SearchAndUpdateDriver.EXPERIMENT_TIME ) )
+		{		
+			UserEntry currUserEntry 
+				= SearchAndUpdateDriver.usersVector.get((int)currUserGuidNum);
+
+			int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
+			double randVal = SearchAndUpdateDriver.ATTR_MIN 
+					+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
+
+			JSONObject attrValJSON = new JSONObject();
+
+			try
+			{			
+				attrValJSON.put(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
+			} 
+			catch (JSONException e)
+			{
+				e.printStackTrace();
+			}
+
+			UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
+			updTask.run();
+			
+			currUserGuidNum++;
+			currUserGuidNum=((int)currUserGuidNum)%SearchAndUpdateDriver.numUsers;
+			
+			numSent++;
+		}
 	}
 	
 	private void sendRequest()

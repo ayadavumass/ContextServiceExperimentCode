@@ -94,6 +94,7 @@ public class SearchAndUpdateDriver
 	
 	public static boolean userInitEnable						= true;
 	
+	public static boolean singleRequest							= false;
 	public static Vector<UserEntry> usersVector;
 	
 	
@@ -101,24 +102,51 @@ public class SearchAndUpdateDriver
 	{
 		ContextServiceLogger.getLogger().setLevel(Level.INFO);
 		
-		numUsers 		  = Double.parseDouble(args[0]);
-		gnsHost  		  = args[1];
-		gnsPort  		  = Integer.parseInt(args[2]);
-		csHost   		  = args[3];
-		csPort   		  = Integer.parseInt(args[4]);
-		useContextService = Boolean.parseBoolean(args[5]);
-		updateEnable 	  = Boolean.parseBoolean(args[6]);
-		searchEnable 	  = Boolean.parseBoolean(args[7]);
-		myID 			  = Integer.parseInt(args[8]);
-		initRate 		  = Double.parseDouble(args[9]);
-		searchQueryRate   = Double.parseDouble(args[10]);
-		updateRate 		  = Double.parseDouble(args[11]);
-		numAttrs 		  = Integer.parseInt(args[12]);
-		numAttrsInQuery   = Integer.parseInt(args[13]);
-		rhoValue 		  = Double.parseDouble(args[14]);
-		triggerEnable	  = Boolean.parseBoolean(args[15]);
-		searchUpdateSeparate = Boolean.parseBoolean(args[16]);
-		userInitEnable	  = Boolean.parseBoolean(args[17]);
+		if(args.length >= 18)
+		{
+			numUsers 		  = Double.parseDouble(args[0]);
+			gnsHost  		  = args[1];
+			gnsPort  		  = Integer.parseInt(args[2]);
+			csHost   		  = args[3];
+			csPort   		  = Integer.parseInt(args[4]);
+			useContextService = Boolean.parseBoolean(args[5]);
+			updateEnable 	  = Boolean.parseBoolean(args[6]);
+			searchEnable 	  = Boolean.parseBoolean(args[7]);
+			myID 			  = Integer.parseInt(args[8]);
+			initRate 		  = Double.parseDouble(args[9]);
+			searchQueryRate   = Double.parseDouble(args[10]);
+			updateRate 		  = Double.parseDouble(args[11]);
+			numAttrs 		  = Integer.parseInt(args[12]);
+			numAttrsInQuery   = Integer.parseInt(args[13]);
+			rhoValue 		  = Double.parseDouble(args[14]);
+			triggerEnable	  = Boolean.parseBoolean(args[15]);
+			searchUpdateSeparate = Boolean.parseBoolean(args[16]);
+			userInitEnable	  = Boolean.parseBoolean(args[17]);
+			singleRequest     = Boolean.parseBoolean(args[18]);
+		}
+		else
+		{
+			// for local test
+			numUsers 		  = 100.0;
+			gnsHost  		  = "127.0.0.1";
+			gnsPort  		  = 24398;
+			csHost   		  = "127.0.0.1";
+			csPort   		  = 8000;
+			useContextService = true;
+			updateEnable 	  = true;
+			searchEnable 	  = true;
+			myID 			  = 0;
+			initRate 		  = 1.0;
+			searchQueryRate   = 0.1;
+			updateRate 		  = 0.1;
+			numAttrs 		  = 6;
+			numAttrsInQuery   = 2;
+			rhoValue 		  = 0.0;
+			triggerEnable	  = false;
+			searchUpdateSeparate = false;
+			userInitEnable	  = true;
+			singleRequest	  = true;
+		}
 		
 		
 		usersVector = new Vector<UserEntry>();
