@@ -107,30 +107,19 @@ public class BothSearchAndUpdate extends
 	{
 		System.out.println("singleRequestSender used");
 		while( ( (System.currentTimeMillis() - expStartTime) < SearchAndUpdateDriver.EXPERIMENT_TIME ) )
-		{		
-			UserEntry currUserEntry 
-				= SearchAndUpdateDriver.usersVector.get((int)currUserGuidNum);
-
-			int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
-			double randVal = SearchAndUpdateDriver.ATTR_MIN 
-					+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
-
-			JSONObject attrValJSON = new JSONObject();
-
-			try
-			{			
-				attrValJSON.put(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
-			} 
-			catch (JSONException e)
+		{	
+			if( generalRand.nextDouble() 
+					< SearchAndUpdateDriver.rhoValue )
 			{
-				e.printStackTrace();
+				//sendQueryMessage();
+				sendSingleSearch();
 			}
-
-			UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
-			updTask.run();
+			else
+			{
+				//sendUpdate();
+				sendSingleUpdate();
+			}
 			
-			currUserGuidNum++;
-			currUserGuidNum=((int)currUserGuidNum)%SearchAndUpdateDriver.numUsers;
 			
 			numSent++;
 			
@@ -141,14 +130,104 @@ public class BothSearchAndUpdate extends
 			{
 				e.printStackTrace();
 			}
-			
 		}
+	}
+	
+	private void sendSingleUpdate()
+	{
+		UserEntry currUserEntry
+				= SearchAndUpdateDriver.usersVector.get((int)currUserGuidNum);
+		
+		int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
+		double randVal = SearchAndUpdateDriver.ATTR_MIN 
+			+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
+
+		JSONObject attrValJSON = new JSONObject();
+
+		try
+		{			
+			attrValJSON.put(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
+		} 
+		catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
+
+		UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
+		updTask.run();
+	
+		currUserGuidNum++;
+		currUserGuidNum=((int)currUserGuidNum)%SearchAndUpdateDriver.numUsers;
+	}
+	
+	private void sendSingleSearch()
+	{
+		String searchQuery 
+				= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
+		//		+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
+		//		+ " AND "
+		//		+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+	
+		int randAttrNum = -1;
+		
+		for( int i=0; i<SearchAndUpdateDriver.numAttrsInQuery; i++ )
+		{
+			// if num attrs and num in query are same then send query on all attrs
+			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
+			{
+				randAttrNum++;
+			}
+			else
+			{
+				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
+			}
+			
+			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
+			double attrMin 
+				= SearchAndUpdateDriver.ATTR_MIN
+				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
+			
+			double predLength 
+				= (searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
+			
+			double attrMax = attrMin + predLength;
+			//		double latitudeMax = latitudeMin 
+			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
+			// making it curcular
+			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
+			{
+				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
+				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+			}
+			// last so no AND
+			if( i == (SearchAndUpdateDriver.numAttrsInQuery-1) )
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+						+" <= "+attrMax;
+			}
+			else
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+					+" <= "+attrMax+" AND ";
+			}
+		}
+	
+		int randIndex = searchQueryRand.nextInt( SearchAndUpdateDriver.usersVector.size() );
+		UserEntry queryingUserEntry = SearchAndUpdateDriver.usersVector.get(randIndex);
+		
+		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();
+		
+		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), 
+				queryingGuidEntry, this );
+		
+		searchTask.run();
 	}
 	
 	private void sendRequest()
 	{
 		// send update
-		if(generalRand.nextDouble() < SearchAndUpdateDriver.rhoValue)
+		if( generalRand.nextDouble() 
+				< SearchAndUpdateDriver.rhoValue )
 		{
 //			numberSearchesSent++;
 //			if( numberSearchesSent > 
@@ -234,7 +313,8 @@ public class BothSearchAndUpdate extends
 		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
-	private void sendALocMessage(int currUserGuidNum)
+	
+	private void sendALocMessage( int currUserGuidNum )
 	{
 		UserEntry currUserEntry 
 					= SearchAndUpdateDriver.usersVector.get(currUserGuidNum);
@@ -246,7 +326,7 @@ public class BothSearchAndUpdate extends
 		JSONObject attrValJSON = new JSONObject();
 		
 		try
-		{			
+		{		
 			attrValJSON.put(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
 		} 
 		catch (JSONException e)
