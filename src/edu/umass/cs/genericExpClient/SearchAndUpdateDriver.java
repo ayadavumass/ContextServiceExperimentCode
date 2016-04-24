@@ -88,6 +88,8 @@ public class SearchAndUpdateDriver
 	
 	public static boolean userInitEnable						= true;
 	
+	public static boolean singleRequest							= false;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -113,6 +115,7 @@ public class SearchAndUpdateDriver
 			triggerEnable	  = Boolean.parseBoolean(args[15]);
 			searchUpdateSeparate = Boolean.parseBoolean(args[16]);
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
+			singleRequest     = Boolean.parseBoolean(args[18]);
 		}
 		else
 		{
