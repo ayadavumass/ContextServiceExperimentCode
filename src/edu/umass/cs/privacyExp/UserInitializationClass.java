@@ -168,6 +168,8 @@ public class UserInitializationClass extends
 			
 			if(anonymizedIDList != null)
 			{
+				System.out.println( "Number of anonymized IDs created "+
+						anonymizedIDList.size() );
 				for(int k=0; k<anonymizedIDList.size(); k++)
 				{
 					System.out.println("UserNum"+i+" "+
