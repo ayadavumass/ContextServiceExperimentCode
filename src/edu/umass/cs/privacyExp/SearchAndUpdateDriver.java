@@ -44,7 +44,7 @@ public class SearchAndUpdateDriver
 	public static double numUsers 								= -1;
 	
 	
-	public static final int UNION_ACL_SIZE						= 20;
+	public static final int UNION_ACL_SIZE						= 50;
 	
 	public static final int ACL_SIZE							= 10;
 	
