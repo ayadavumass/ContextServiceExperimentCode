@@ -19,7 +19,7 @@ import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 public class SearchAndUpdateDriver
 {
 	// 100 seconds, experiment runs for 100 seconds
-	public static 	 int EXPERIMENT_TIME						= 100000;
+	public static int EXPERIMENT_TIME							= 100000;
 	
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
@@ -95,6 +95,9 @@ public class SearchAndUpdateDriver
 	public static boolean userInitEnable						= true;
 	
 	public static boolean singleRequest							= false;
+	
+	public static int transformType								= -1;
+	
 	public static Vector<UserEntry> usersVector;
 	
 	
@@ -123,6 +126,7 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = Boolean.parseBoolean(args[16]);
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
 			singleRequest     = Boolean.parseBoolean(args[18]);
+			transformType     = Integer.parseInt(args[19]);
 		}
 		else
 		{
@@ -146,6 +150,7 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = false;
 			userInitEnable	  = true;
 			singleRequest	  = true;
+			transformType     = ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM;
 		}
 		
 		
@@ -155,7 +160,8 @@ public class SearchAndUpdateDriver
 		guidPrefix = guidPrefix+myID;
 		
 		//gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient  = new ContextServiceClient<String>(csHost, csPort);
+		csClient  = new ContextServiceClient<String>( csHost, csPort,
+				transformType );
 		System.out.println("ContextServiceClient created");
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;

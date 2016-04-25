@@ -90,6 +90,8 @@ public class SearchAndUpdateDriver
 	
 	public static boolean singleRequest							= false;
 	
+	public static int transformType								= -1;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -116,6 +118,7 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = Boolean.parseBoolean(args[16]);
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
 			singleRequest     = Boolean.parseBoolean(args[18]);
+			transformType     = Integer.parseInt(args[19]);
 		}
 		else
 		{
@@ -138,6 +141,7 @@ public class SearchAndUpdateDriver
 			triggerEnable	  = false;
 			searchUpdateSeparate = false;
 			userInitEnable	  = true;
+			transformType     = ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM;
 		}
 		
 		
@@ -145,7 +149,8 @@ public class SearchAndUpdateDriver
 		guidPrefix = guidPrefix+myID;
 		
 		//gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient  = new ContextServiceClient<String>(csHost, csPort);
+		csClient  = new ContextServiceClient<String>(csHost, csPort, transformType);
+		
 		System.out.println("ContextServiceClient created");
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;

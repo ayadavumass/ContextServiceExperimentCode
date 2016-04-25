@@ -80,7 +80,8 @@ public class WeatherAlertClient
 	public WeatherAlertClient(String gnsHost, int gnsPort, String csHost, int csPort) 
 											throws IOException, ParseException, NoSuchAlgorithmException
 	{
-		csClient = new ContextServiceClient<String>(csHost, csPort);
+		csClient = new ContextServiceClient<String>(csHost, csPort, 
+				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
 		clockTimer = new Timer();
 		 
 		boolean disableSSL = true;

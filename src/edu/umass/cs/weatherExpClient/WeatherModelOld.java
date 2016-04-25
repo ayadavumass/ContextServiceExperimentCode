@@ -103,7 +103,8 @@ public class WeatherModelOld
 		myID = Integer.parseInt(args[6]);
 		
 		gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient = new ContextServiceClient<String>(csHost, csPort);
+		csClient = new ContextServiceClient<String>(csHost, csPort,
+				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
 		
 		//taskES = Executors.newCachedThreadPool();
 		taskES = Executors.newFixedThreadPool(1000);

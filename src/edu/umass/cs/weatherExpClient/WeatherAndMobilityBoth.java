@@ -160,7 +160,8 @@ public class WeatherAndMobilityBoth
 		guidPrefix = guidPrefix+myID;
 		
 		gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient = new ContextServiceClient<String>(csHost, csPort);
+		csClient = new ContextServiceClient<String>(csHost, csPort, 
+				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
 	
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;

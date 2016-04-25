@@ -218,7 +218,8 @@ public class WeatherCaseStudyClient
 		
 		queryGenRandom = new Random((Integer)myID);
 		
-		csClient = new ContextServiceClient<String>(csHost, csPort);
+		csClient = new ContextServiceClient<String>(csHost, csPort, 
+				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
         
 		//eservice = Executors.newFixedThreadPool(1000);
 		eservice = Executors.newCachedThreadPool();
