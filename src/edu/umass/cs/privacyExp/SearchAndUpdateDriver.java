@@ -44,9 +44,9 @@ public class SearchAndUpdateDriver
 	public static double numUsers 								= -1;
 	
 	
-	public static final int UNION_ACL_SIZE						= 50;
+	public static int UNION_ACL_SIZE							= 50;
 	
-	public static final int ACL_SIZE							= 10;
+	public static int ACL_SIZE									= 10;
 	
 	//2% of domain queried
 	//public static final double percDomainQueried				= 0.35;
@@ -105,7 +105,7 @@ public class SearchAndUpdateDriver
 	{
 		ContextServiceLogger.getLogger().setLevel(Level.INFO);
 		
-		if(args.length >= 18)
+		if( args.length >= 18 )
 		{
 			numUsers 		  = Double.parseDouble(args[0]);
 			gnsHost  		  = args[1];
@@ -127,6 +127,8 @@ public class SearchAndUpdateDriver
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
 			singleRequest     = Boolean.parseBoolean(args[18]);
 			transformType     = Integer.parseInt(args[19]);
+			UNION_ACL_SIZE	  = Integer.parseInt(args[20]);
+			ACL_SIZE		  = Integer.parseInt(args[21]);
 		}
 		else
 		{
