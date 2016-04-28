@@ -10,11 +10,10 @@ import java.util.logging.Logger;
 import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.utils.DelayProfiler;
 
-public class MySQLBenchmarking3 
+public class MySQLBenchmarking3
 {
 	public static void main(String[] args) 
 	{
-
 		Connection con = null;
 		PreparedStatement pst = null;
 		
