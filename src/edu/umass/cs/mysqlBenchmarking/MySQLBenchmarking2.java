@@ -28,26 +28,26 @@ public class MySQLBenchmarking2
 		// check time for update
 		benchmarkAttrUpdateTime();
 		
-		try 
-		{
-			Thread.sleep(5000);
-		} catch (InterruptedException e) 
-		{
-			e.printStackTrace();
-		}
-		
-		benchmarkPrivacyInsertTimeSingleInsert();
-		
-		try 
-		{
-			Thread.sleep(5000);
-		} catch (InterruptedException e) 
-		{
-			e.printStackTrace();
-		}
-		
-		
-		benchmarkPrivacyInsertTimeMultipleInsert();
+//		try 
+//		{
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) 
+//		{
+//			e.printStackTrace();
+//		}
+//		
+//		benchmarkPrivacyInsertTimeSingleInsert();
+//		
+//		try 
+//		{
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) 
+//		{
+//			e.printStackTrace();
+//		}
+//		
+//		
+//		benchmarkPrivacyInsertTimeMultipleInsert();
 	}
 	
 	
@@ -112,6 +112,8 @@ public class MySQLBenchmarking2
 			}
 			System.out.println("benchmarkAttrUpdateTime: Update times "+
 			StatisticsClass.toString(StatisticsClass.computeStats(resultlist)));
+			
+			System.out.println(DelayProfiler.getStats());
 		} catch (SQLException e) 
 		{
 			e.printStackTrace();
