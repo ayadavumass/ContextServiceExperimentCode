@@ -17,10 +17,14 @@ public class MySQLBenchmarking3
 
 		Connection con = null;
 		PreparedStatement pst = null;
-
-		String url = "jdbc:mysql://localhost:3306/contextDB0";
+		
+		String dirName = "mysqlDir-serv0";
+		int portNum = 6000;
+		//String url = "jdbc:mysql://localhost:3306/contextDB0";
+		String url ="jdbc:mysql://localhost:"+portNum+"/contextDB0?socket=/home/"+dirName+"/thesock";
 		String user = "root";
 		String password = "aditya";
+		
 
 		int n = args.length > 0 ? Integer.valueOf(args[0]) : 1000;
 
