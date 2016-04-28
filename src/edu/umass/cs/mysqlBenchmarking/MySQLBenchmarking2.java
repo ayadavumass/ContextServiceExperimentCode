@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.Vector;
 
 import edu.umass.cs.contextservice.utils.Utils;
-import edu.umass.cs.utils.DelayProfiler;
 
 /**
  * This class benchmarks the the mysql operations
@@ -28,26 +27,26 @@ public class MySQLBenchmarking2
 		// check time for update
 		benchmarkAttrUpdateTime();
 		
-//		try 
-//		{
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) 
-//		{
-//			e.printStackTrace();
-//		}
-//		
-//		benchmarkPrivacyInsertTimeSingleInsert();
-//		
-//		try 
-//		{
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) 
-//		{
-//			e.printStackTrace();
-//		}
-//		
-//		
-//		benchmarkPrivacyInsertTimeMultipleInsert();
+		try 
+		{
+			Thread.sleep(5000);
+		} catch (InterruptedException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		benchmarkPrivacyInsertTimeSingleInsert();
+		
+		try 
+		{
+			Thread.sleep(5000);
+		} catch (InterruptedException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		
+		benchmarkPrivacyInsertTimeMultipleInsert();
 	}
 	
 	
@@ -84,7 +83,7 @@ public class MySQLBenchmarking2
 			
 			Vector<Double> resultlist = new Vector<Double>();
 			Random rand = new Random();
-			for(int i=0; i<1000; i++)
+			for(int i=0; i<100; i++)
 			{
 				String updateGUID = guidList.get(rand.nextInt(guidList.size()));
 				String updateAttr = "attr"+rand.nextInt(6);
@@ -94,10 +93,8 @@ public class MySQLBenchmarking2
 						" SET "+updateAttr+" = "+udpateVal+" WHERE nodeGUID=X'"+updateGUID+"'";
 				
 				long start = System.currentTimeMillis();
-				long nanot = System.nanoTime();
 				statement.executeUpdate(updateTableSQL);
 				long end = System.currentTimeMillis();
-				DelayProfiler.updateDelayNano("benchmarkAttrUpdateTime", nanot);
 				
 				double timeTaken = end-start;
 				resultlist.add(timeTaken);
@@ -112,8 +109,6 @@ public class MySQLBenchmarking2
 			}
 			System.out.println("benchmarkAttrUpdateTime: Update times "+
 			StatisticsClass.toString(StatisticsClass.computeStats(resultlist)));
-			
-			System.out.println(DelayProfiler.getStats());
 		} catch (SQLException e) 
 		{
 			e.printStackTrace();
