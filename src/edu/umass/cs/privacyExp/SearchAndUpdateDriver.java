@@ -44,9 +44,9 @@ public class SearchAndUpdateDriver
 	public static double numUsers 								= -1;
 	
 	
-	//public static int UNION_ACL_SIZE							= 50;
+	public static int UNION_ACL_SIZE							= 50;
 	
-	//public static int ACL_SIZE								= 10;
+	public static int ACL_SIZE								= 10;
 	
 	//2% of domain queried
 	//public static final double percDomainQueried				= 0.35;
