@@ -44,9 +44,9 @@ public class SearchAndUpdateDriver
 	public static double numUsers 								= -1;
 	
 	
-	public static int UNION_ACL_SIZE							= 50;
+	//public static int UNION_ACL_SIZE							= 50;
 	
-	public static int ACL_SIZE									= 10;
+	//public static int ACL_SIZE								= 10;
 	
 	//2% of domain queried
 	//public static final double percDomainQueried				= 0.35;
@@ -101,9 +101,9 @@ public class SearchAndUpdateDriver
 	public static Vector<UserEntry> usersVector;
 	
 	// number of guids in each class.
-	public static final int CLASS_SIZE							= 5;
+	public static  int CLASS_SIZE								= 5;
 	// number of classes used to generate ACLs
-	public static final int NUM_CLASSES							= 5;
+	public static  int NUM_CLASSES								= 5;
 	
 	
 	public static void main( String[] args ) throws Exception
@@ -132,8 +132,8 @@ public class SearchAndUpdateDriver
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
 			singleRequest     = Boolean.parseBoolean(args[18]);
 			transformType     = Integer.parseInt(args[19]);
-			UNION_ACL_SIZE	  = Integer.parseInt(args[20]);
-			ACL_SIZE		  = Integer.parseInt(args[21]);
+			NUM_CLASSES	 	  = Integer.parseInt(args[20]);
+			CLASS_SIZE		  = Integer.parseInt(args[21]);
 		}
 		else
 		{
