@@ -118,7 +118,8 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = Boolean.parseBoolean(args[16]);
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
 			singleRequest     = Boolean.parseBoolean(args[18]);
-			transformType     = Integer.parseInt(args[19]);
+			//transformType     = Integer.parseInt(args[19]);
+			transformType     = ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM;
 		}
 		else
 		{
