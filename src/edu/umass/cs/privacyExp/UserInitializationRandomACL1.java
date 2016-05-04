@@ -19,7 +19,7 @@ import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.gnsclient.client.GuidEntry;
 import edu.umass.cs.gnsclient.client.util.GuidUtils;
 
-public class UserInitializationClass extends 
+public class UserInitializationRandomACL1 extends 
 										AbstractRequestSendingClass
 {
 	// different random generator for each variable, as using one for 
@@ -29,7 +29,7 @@ public class UserInitializationClass extends
 	private final KeyPairGenerator kpg;
 	private final Random aclRand;
 	
-	public UserInitializationClass() throws Exception
+	public UserInitializationRandomACL1() throws Exception
 	{
 		super( SearchAndUpdateDriver.INSERT_LOSS_TOLERANCE );
 		initRand = new Random(SearchAndUpdateDriver.myID*100);

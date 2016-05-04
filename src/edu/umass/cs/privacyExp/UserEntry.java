@@ -24,6 +24,9 @@ public class UserEntry
 	// ACLs.
 	private HashMap<String, ACLEntry> unionOfACLsMap;
 	
+	// acl classes, where key is the class num.
+	private HashMap<Integer, List<ACLEntry>> aclClasses;
+	
 	public UserEntry(GuidEntry myGuidEntry)
 	{
 		this.myGuidEntry = myGuidEntry;
@@ -62,5 +65,10 @@ public class UserEntry
 	public void setUnionOfACLs(HashMap<String, ACLEntry> unionOfACLs)
 	{
 		this.unionOfACLsMap = unionOfACLs;
+	}
+	
+	public void setACLClasses(HashMap<Integer, List<ACLEntry>> aclClasses)
+	{
+		this.aclClasses = aclClasses;
 	}
 }

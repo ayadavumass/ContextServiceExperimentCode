@@ -100,6 +100,11 @@ public class SearchAndUpdateDriver
 	
 	public static Vector<UserEntry> usersVector;
 	
+	// number of guids in each class.
+	public static final int CLASS_SIZE							= 5;
+	// number of classes used to generate ACLs
+	public static final int NUM_CLASSES							= 5;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -179,7 +184,7 @@ public class SearchAndUpdateDriver
 		if( userInitEnable )
 		{
 			long start 	= System.currentTimeMillis();
-			new UserInitializationClass().initializaRateControlledRequestSender();
+			new UserInitializationACLWithClasses().initializaRateControlledRequestSender();
 			long end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization complete "+(end-start));
 		}
