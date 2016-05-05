@@ -192,6 +192,18 @@ public class UserInitializationACLWithClasses extends
 					}
 				}
 				
+				// don't want ACL to be empty
+				if(attrACL.size() == 0)
+				{
+					int randClass = aclRand.nextInt(SearchAndUpdateDriver.NUM_CLASSES);
+					List<ACLEntry> classMemberList = aclClasses.get(randClass);
+					for( int l = 0; l < classMemberList.size(); l++ )
+					{
+						ACLEntry aclEntry = classMemberList.get(l);
+						attrACL.add(aclEntry);
+					}
+				}
+				
 				String attrName = "attr"+j;
 				aclMap.put(attrName, attrACL);
 			}
