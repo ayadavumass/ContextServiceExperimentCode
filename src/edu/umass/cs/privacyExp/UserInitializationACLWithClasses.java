@@ -145,6 +145,13 @@ public class UserInitializationACLWithClasses extends
 					aclClassList = new LinkedList<ACLEntry>();
 					aclClassList.add(currACLEntry);
 					currClassSize++;
+					
+					if( currClassSize == SearchAndUpdateDriver.CLASS_SIZE )
+					{
+						aclClasses.put(classnum, aclClassList);
+						classnum++;
+						currClassSize = 0;
+					}
 				}
 				else
 				{
