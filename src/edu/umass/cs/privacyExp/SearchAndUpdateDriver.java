@@ -184,7 +184,8 @@ public class SearchAndUpdateDriver
 		if( userInitEnable )
 		{
 			long start 	= System.currentTimeMillis();
-			new UserInitializationACLWithClasses().initializaRateControlledRequestSender();
+			//new UserInitializationACLWithClasses().initializaRateControlledRequestSender();
+			new UserInitializationACLWithClasses().backToBackRequestSender();
 			long end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization complete "+(end-start));
 		}

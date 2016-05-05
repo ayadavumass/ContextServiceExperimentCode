@@ -1,9 +1,7 @@
 package edu.umass.cs.privacyExp;
 
-import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -17,7 +15,6 @@ import edu.umass.cs.contextservice.client.common.AnonymizedIDEntry;
 import edu.umass.cs.contextservice.config.ContextServiceConfig;
 import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.client.util.GuidUtils;
 
 public class UserInitializationACLWithClasses extends 
 												AbstractRequestSendingClass
@@ -40,27 +37,6 @@ public class UserInitializationACLWithClasses extends
 		
 		// just generate all user entries.
 		generateUserEntries();
-	}
-	
-	private void sendAInitMessage(int guidNum) throws Exception
-	{
-		UserEntry userEntry 
-					= SearchAndUpdateDriver.usersVector.get(guidNum);
-		
-		JSONObject attrValJSON = new JSONObject();
-		
-		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
-		
-		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
-		{
-			String attrName = SearchAndUpdateDriver.attrPrefix+i;
-			double attrVal  = SearchAndUpdateDriver.ATTR_MIN 
-					+ attrDiff * initRand.nextDouble();
-			attrValJSON.put(attrName, attrVal);
-		}
-		//String userGUID = userEntry.getGuidEntry().getGuid();	
-		UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
-		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
 	private void generateUserEntries() throws Exception
@@ -228,7 +204,78 @@ public class UserInitializationACLWithClasses extends
 			currUserEntry.setAnonymizedIDList(anonymizedIDList);
 		}
 	}
+	
+	private void sendAInitMessage(int guidNum) throws Exception
+	{
+		UserEntry userEntry 
+					= SearchAndUpdateDriver.usersVector.get(guidNum);
 		
+		JSONObject attrValJSON = new JSONObject();
+		
+		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
+		
+		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
+		{
+			String attrName = SearchAndUpdateDriver.attrPrefix+i;
+			double attrVal  = SearchAndUpdateDriver.ATTR_MIN 
+					+ attrDiff * initRand.nextDouble();
+			attrValJSON.put(attrName, attrVal);
+		}
+		//String userGUID = userEntry.getGuidEntry().getGuid();	
+		UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
+		SearchAndUpdateDriver.taskES.execute(updTask);
+	}
+	
+	private void sendAInitMessageBlocking(int guidNum) throws Exception
+	{
+		UserEntry userEntry 
+					= SearchAndUpdateDriver.usersVector.get(guidNum);
+		
+		JSONObject attrValJSON = new JSONObject();
+		
+		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
+		
+		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
+		{
+			String attrName = SearchAndUpdateDriver.attrPrefix+i;
+			double attrVal  = SearchAndUpdateDriver.ATTR_MIN 
+					+ attrDiff * initRand.nextDouble();
+			attrValJSON.put(attrName, attrVal);
+		}
+
+		long start = System.currentTimeMillis();
+
+		GuidEntry myGUIDInfo = userEntry.getGuidEntry();
+		String guidString = userEntry.getGuidEntry().getGuid();
+
+
+		SearchAndUpdateDriver.csClient.sendUpdateSecure( 
+				guidString, myGUIDInfo, attrValJSON, -1, true, 
+				userEntry.getACLMap(), userEntry.getAnonymizedIDList() );
+
+		long end = System.currentTimeMillis();
+		
+		System.out.println("sendAInitMessageBlocking guidNum "+guidNum
+				+" time "+(end-start));
+	}
+	
+	public void backToBackRequestSender() throws Exception
+	{
+		double totalNumUsersSent = 0;
+		
+		while(  totalNumUsersSent < SearchAndUpdateDriver.numUsers  )
+		{
+			sendAInitMessageBlocking((int)totalNumUsersSent);
+			totalNumUsersSent++;
+			numSent++;
+			assert(numSent == totalNumUsersSent);
+			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+			{
+				break;
+			}		
+		}
+	}
+	
 	public void initializaRateControlledRequestSender() throws Exception
 	{	
 		this.startExpTime();
