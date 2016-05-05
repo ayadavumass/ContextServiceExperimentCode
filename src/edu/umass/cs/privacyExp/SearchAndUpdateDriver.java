@@ -179,7 +179,7 @@ public class SearchAndUpdateDriver
 			new Thread( new ReadTriggerRecvd() ).start();
 		}
 		
-		taskES = Executors.newFixedThreadPool(1);
+		taskES = Executors.newFixedThreadPool(200);
 		
 		if( userInitEnable )
 		{

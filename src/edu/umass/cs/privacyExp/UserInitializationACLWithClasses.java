@@ -252,8 +252,7 @@ public class UserInitializationACLWithClasses extends
 				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
 			}
 			
-			// this causes problems in privacy case
-			/*for(int i=0;i<needsToBeSentBeforeSleep;i++)
+			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
 				sendAInitMessage((int)totalNumUsersSent);
 				totalNumUsersSent++;
@@ -263,7 +262,7 @@ public class UserInitializationACLWithClasses extends
 				{
 					break;
 				}
-			}*/
+			}
 			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
 			{
 				break;
