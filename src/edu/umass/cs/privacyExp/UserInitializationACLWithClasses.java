@@ -306,29 +306,29 @@ public class UserInitializationACLWithClasses extends
 			}
 			currTime = System.currentTimeMillis();
 			
-			double timeElapsed = ((currTime- expStartTime)*1.0);
-			double numberShouldBeSentByNow = timeElapsed*reqspms;
-			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
-			if(needsToBeSentBeforeSleep > 0)
-			{
-				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
-			}
-			
-			for(int i=0;i<needsToBeSentBeforeSleep;i++)
-			{
-				sendAInitMessage((int)totalNumUsersSent);
-				totalNumUsersSent++;
-				numSent++;
-				assert(numSent == totalNumUsersSent);
-				if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
-				{
-					break;
-				}
-			}
-			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
-			{
-				break;
-			}
+//			double timeElapsed = ((currTime- expStartTime)*1.0);
+//			double numberShouldBeSentByNow = timeElapsed*reqspms;
+//			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
+//			if(needsToBeSentBeforeSleep > 0)
+//			{
+//				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
+//			}
+//			
+//			for(int i=0;i<needsToBeSentBeforeSleep;i++)
+//			{
+//				sendAInitMessage((int)totalNumUsersSent);
+//				totalNumUsersSent++;
+//				numSent++;
+//				assert(numSent == totalNumUsersSent);
+//				if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+//				{
+//					break;
+//				}
+//			}
+//			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+//			{
+//				break;
+//			}
 			Thread.sleep(100);
 		}
 		
