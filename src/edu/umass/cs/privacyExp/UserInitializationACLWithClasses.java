@@ -68,25 +68,21 @@ public class UserInitializationACLWithClasses extends
 		System.out.println("generateUserEntries started "
 									+SearchAndUpdateDriver.numUsers);
 		
-		KeyPairGenerator kpg = KeyPairGenerator.getInstance( "RSA" );
+		
 		// generate guids
 		for( int i=0; i < SearchAndUpdateDriver.numUsers; i++ )
 		{
 			int guidNum = i;
-			
-			System.out.println("for i "+i);
-			String alias = "GUID"+guidNum;
-			KeyPair kp0 = kpg.generateKeyPair();
-			PublicKey publicKey0 = kp0.getPublic();
-			PrivateKey privateKey0 = kp0.getPrivate();
-			byte[] publicKeyByteArray0 = publicKey0.getEncoded();
-			
-			String guid0 = GuidUtils.createGuidFromPublicKey(publicKeyByteArray0);
-			GuidEntry myGUID = new GuidEntry(alias, guid0, 
-					publicKey0, privateKey0);
-			
-			UserEntry userEntry = new UserEntry(myGUID);
-			SearchAndUpdateDriver.usersVector.add(userEntry);
+			InitTask currT = new InitTask(guidNum);
+			SearchAndUpdateDriver.taskES.execute(currT);
+		}
+		
+		synchronized(SearchAndUpdateDriver.usersVector)
+		{
+			while(SearchAndUpdateDriver.usersVector.size() != SearchAndUpdateDriver.numUsers)
+			{
+				SearchAndUpdateDriver.usersVector.wait();
+			}
 		}
 		
 		System.out.println("Guid creation complete");
