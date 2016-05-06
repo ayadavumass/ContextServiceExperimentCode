@@ -54,11 +54,11 @@ public class BothSearchAndUpdate extends
 	
 	private void rateControlledRequestSender() throws Exception
 	{
-		double reqspms = SearchAndUpdateDriver.updateRate/1000.0;
+		double reqsps = SearchAndUpdateDriver.updateRate;
 		long currTime = 0;
 		
 		// sleep for 100ms
-		double numberShouldBeSentPerSleep = reqspms*100.0;
+		double numberShouldBeSentPerSleep = reqsps;
 		
 		//while( ( totalNumUsersSent < numUsers ) )
 		while( ( (System.currentTimeMillis() - expStartTime) < SearchAndUpdateDriver.EXPERIMENT_TIME ) )
@@ -71,8 +71,8 @@ public class BothSearchAndUpdate extends
 			
 			currTime = System.currentTimeMillis();
 			
-			double timeElapsed = ((currTime- expStartTime)*1.0);
-			double numberShouldBeSentByNow = timeElapsed*reqspms;
+			double timeElapsed = ((currTime- expStartTime)/1000.0);
+			double numberShouldBeSentByNow = timeElapsed*reqsps;
 			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
 			
 			if(needsToBeSentBeforeSleep > 0)
@@ -85,7 +85,7 @@ public class BothSearchAndUpdate extends
 				sendRequest();
 				numSent++;
 			}
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		}
 		
 		long endTime = System.currentTimeMillis();
