@@ -279,17 +279,14 @@ public class UserInitializationACLWithClasses extends
 	public void initializaRateControlledRequestSender() throws Exception
 	{	
 		this.startExpTime();
-		double reqspms = SearchAndUpdateDriver.initRate/1000.0;
-		long currTime = 0;
 		
-		// sleep for 100ms
-		double numberShouldBeSentPerSleep = reqspms*100.0;
+		double reqsps = SearchAndUpdateDriver.initRate;
 		
 		double totalNumUsersSent = 0;
 		
 		while(  totalNumUsersSent < SearchAndUpdateDriver.numUsers  )
 		{
-			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+			for(int i=0; i<reqsps; i++ )
 			{
 				sendAInitMessage((int)totalNumUsersSent);
 				totalNumUsersSent++;
@@ -304,32 +301,7 @@ public class UserInitializationACLWithClasses extends
 			{
 				break;
 			}
-			currTime = System.currentTimeMillis();
-			
-//			double timeElapsed = ((currTime- expStartTime)*1.0);
-//			double numberShouldBeSentByNow = timeElapsed*reqspms;
-//			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
-//			if(needsToBeSentBeforeSleep > 0)
-//			{
-//				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
-//			}
-//			
-//			for(int i=0;i<needsToBeSentBeforeSleep;i++)
-//			{
-//				sendAInitMessage((int)totalNumUsersSent);
-//				totalNumUsersSent++;
-//				numSent++;
-//				assert(numSent == totalNumUsersSent);
-//				if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
-//				{
-//					break;
-//				}
-//			}
-//			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
-//			{
-//				break;
-//			}
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		}
 		
 		long endTime = System.currentTimeMillis();
