@@ -1,6 +1,5 @@
 package edu.umass.cs.privacyExp;
 
-import java.security.KeyPairGenerator;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,28 +11,27 @@ import org.json.JSONObject;
 
 import edu.umass.cs.contextservice.client.common.ACLEntry;
 import edu.umass.cs.contextservice.client.common.AnonymizedIDEntry;
-import edu.umass.cs.contextservice.config.ContextServiceConfig;
 import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.gnsclient.client.GuidEntry;
 
-public class UserInitializationACLWithClasses extends 
-												AbstractRequestSendingClass
+public class UserInitializationACLWithCircles extends 
+									AbstractRequestSendingClass
 {
 	// different random generator for each variable, as using one for 
 	// all of them doesn't give uniform properties.
 		
 	private final Random initRand;
-	private final KeyPairGenerator kpg;
+	//private final KeyPairGenerator kpg;
 	private final Random aclRand;
 		
-	public UserInitializationACLWithClasses() throws Exception
+	public UserInitializationACLWithCircles() throws Exception
 	{
 		super( SearchAndUpdateDriver.INSERT_LOSS_TOLERANCE );
 		initRand = new Random(SearchAndUpdateDriver.myID*100);
 		aclRand  = new Random((SearchAndUpdateDriver.myID+1)*102);
 		
-		kpg = KeyPairGenerator.getInstance
-					( ContextServiceConfig.AssymmetricEncAlgorithm );
+//		kpg = KeyPairGenerator.getInstance
+//					( ContextServiceConfig.AssymmetricEncAlgorithm );
 		
 		// just generate all user entries.
 		generateUserEntries();
@@ -43,7 +41,6 @@ public class UserInitializationACLWithClasses extends
 	{
 		System.out.println("generateUserEntries started "
 									+SearchAndUpdateDriver.numUsers);
-		
 		
 		// generate guids
 		for( int i=0; i < SearchAndUpdateDriver.numUsers; i++ )
@@ -70,7 +67,7 @@ public class UserInitializationACLWithClasses extends
 						= SearchAndUpdateDriver.usersVector.get(i);
 			
 			int totalDistinctGuidsNeeded 
-						= SearchAndUpdateDriver.CLASS_SIZE*SearchAndUpdateDriver.NUM_CLASSES;
+						= SearchAndUpdateDriver.totalACLMems;
 			
 			HashMap<String, ACLEntry> distinctGuidMap 
 									= new HashMap<String, ACLEntry>();
@@ -95,51 +92,54 @@ public class UserInitializationACLWithClasses extends
 				//unionACLEntry.add(aclEntry);
 			}
 			
-			HashMap<Integer, List<ACLEntry>> aclClasses 
+			HashMap<Integer, List<ACLEntry>> circlesMap 
 								= new HashMap<Integer, List<ACLEntry>>();
 			
 			Iterator<String> guidMapIter 
 								= distinctGuidMap.keySet().iterator();
 			
-			int classnum = 0;
-			int currClassSize = 0;
-			
-			List<ACLEntry> aclClassList = null;
+			int circlenum = 0;
 			
 			while( guidMapIter.hasNext() )
 			{
 				String guidACLMemberString = guidMapIter.next();
 				ACLEntry currACLEntry = distinctGuidMap.get(guidACLMemberString);
 				
+				List<ACLEntry> circleGUIDs = 
+						circlesMap.get(circlenum);
 				
-				if( currClassSize == 0 )
+				if( circleGUIDs == null )
 				{
-					aclClassList = new LinkedList<ACLEntry>();
-					aclClassList.add(currACLEntry);
-					currClassSize++;
-					
-					if( currClassSize == SearchAndUpdateDriver.CLASS_SIZE )
-					{
-						aclClasses.put(classnum, aclClassList);
-						classnum++;
-						currClassSize = 0;
-					}
+					circleGUIDs = new LinkedList<ACLEntry>();
+					circleGUIDs.add(currACLEntry);
+					circlesMap.put(circlenum, circleGUIDs);
 				}
 				else
 				{
-					aclClassList.add(currACLEntry);
-					currClassSize++;
-					
-					if( currClassSize == SearchAndUpdateDriver.CLASS_SIZE )
-					{
-						aclClasses.put(classnum, aclClassList);
-						classnum++;
-						currClassSize = 0;
-					}
+					circleGUIDs.add(currACLEntry);
+				}
+				circlenum++;
+				circlenum = circlenum%SearchAndUpdateDriver.numCircles; 
+			}
+			
+			// probablistically add each guid to one more circle
+			Random rand = new Random();
+			while( guidMapIter.hasNext() )
+			{
+				circlenum = rand.nextInt(SearchAndUpdateDriver.numCircles);
+				String guidACLMemberString = guidMapIter.next();
+				ACLEntry currACLEntry = distinctGuidMap.get(guidACLMemberString);
+				
+				List<ACLEntry> circleGUIDs = 
+									circlesMap.get(circlenum);
+				
+				if(rand.nextDouble() <= SearchAndUpdateDriver.overlapProbability)
+				{
+					circleGUIDs.add(currACLEntry);
 				}
 			}
-			currUserEntry.setACLClasses(aclClasses);
 			
+			currUserEntry.setCirclesMap(circlesMap);
 			
 			// generate ACLs
 			HashMap<String, List<ACLEntry>> aclMap 
@@ -147,11 +147,9 @@ public class UserInitializationACLWithClasses extends
 
 			for( int j=0; j < SearchAndUpdateDriver.numAttrs; j++ )
 			{
-				//List<ACLEntry> attrACLList 
-				//						= new LinkedList<ACLEntry>();
 				List<ACLEntry> attrACL  = new LinkedList<ACLEntry>();
 				
-				for( int k = 0; k < SearchAndUpdateDriver.NUM_CLASSES; k++ )
+				for( int k = 0; k < SearchAndUpdateDriver.numCircles; k++ )
 				{
 					double randVal = aclRand.nextDouble();
 					
@@ -159,7 +157,7 @@ public class UserInitializationACLWithClasses extends
 					// this class for ACL
 					if( randVal <= 0.5 )
 					{
-						List<ACLEntry> classMemberList = aclClasses.get(k);
+						List<ACLEntry> classMemberList = circlesMap.get(k);
 						for( int l = 0; l < classMemberList.size(); l++ )
 						{
 							ACLEntry aclEntry = classMemberList.get(l);
@@ -171,8 +169,8 @@ public class UserInitializationACLWithClasses extends
 				// don't want ACL to be empty
 				if(attrACL.size() == 0)
 				{
-					int randClass = aclRand.nextInt(SearchAndUpdateDriver.NUM_CLASSES);
-					List<ACLEntry> classMemberList = aclClasses.get(randClass);
+					int randClass = aclRand.nextInt(SearchAndUpdateDriver.numCircles);
+					List<ACLEntry> classMemberList = circlesMap.get(randClass);
 					for( int l = 0; l < classMemberList.size(); l++ )
 					{
 						ACLEntry aclEntry = classMemberList.get(l);
@@ -187,9 +185,9 @@ public class UserInitializationACLWithClasses extends
 			
 			
 			// generate anonymized IDs
-			
 			List<AnonymizedIDEntry> anonymizedIDList = 
-					SearchAndUpdateDriver.csClient.computeAnonymizedIDs(aclMap);
+					SearchAndUpdateDriver.csClient.computeAnonymizedIDs
+					(currUserEntry.getGuidEntry(), aclMap);
 			
 			if( anonymizedIDList != null )
 			{

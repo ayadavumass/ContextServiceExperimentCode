@@ -25,8 +25,8 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		GuidEntry userGuidEntry = null;
 		if( WeatherAndMobilityBoth.useGNS )
 		{
-			userGuidEntry = WeatherAndMobilityBoth.gnsClient.guidCreate(
-					WeatherAndMobilityBoth.accountGuid, WeatherAndMobilityBoth.guidPrefix+guidNum);
+//			userGuidEntry = WeatherAndMobilityBoth.gnsClient.guidCreate(
+//					WeatherAndMobilityBoth.accountGuid, WeatherAndMobilityBoth.guidPrefix+guidNum);
 		}
 		
 		double latDiff   = WeatherAndMobilityBoth.LATITUDE_MAX-WeatherAndMobilityBoth.LATITUDE_MIN;
@@ -92,9 +92,9 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	{
 		if(WeatherAndMobilityBoth.useGNS)
 		{
-			WeatherAndMobilityBoth.accountGuid = WeatherAndMobilityBoth.gnsClient.accountGuidCreate("gnsumass@gmail.com", "testPass");
-			Thread.sleep(5000);
-			System.out.println("account guid created "+WeatherAndMobilityBoth.accountGuid.getGuid());
+//			WeatherAndMobilityBoth.accountGuid = WeatherAndMobilityBoth.gnsClient.accountGuidCreate("gnsumass@gmail.com", "testPass");
+//			Thread.sleep(5000);
+//			System.out.println("account guid created "+WeatherAndMobilityBoth.accountGuid.getGuid());
 		}
 		
 		this.startExpTime();

@@ -2,8 +2,8 @@ package edu.umass.cs.genericExpClient;
 
 import org.json.JSONObject;
 
+import edu.umass.cs.gnsclient.client.GNSClientCommands;
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 
 public class GNSTesting 
 {
@@ -12,8 +12,8 @@ public class GNSTesting
 		String gnsHost = args[0];
 		int gnsPort = Integer.parseInt(args[1]);
 				
-		UniversalTcpClient gnsClient 
-			= new UniversalTcpClient(gnsHost, gnsPort, true);
+		GNSClientCommands gnsClient 
+			= new GNSClientCommands();
 		
 
 		GuidEntry accountGuid = gnsClient.accountGuidCreate("gnsumass@gmail.com", "testPass");

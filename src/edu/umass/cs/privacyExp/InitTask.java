@@ -6,8 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.client.util.GuidUtils;
 
 
 public class InitTask implements Runnable
@@ -30,7 +30,7 @@ public class InitTask implements Runnable
 		PrivateKey privateKey0 = kp0.getPrivate();
 		byte[] publicKeyByteArray0 = publicKey0.getEncoded();
 		
-		String guid0 = GuidUtils.createGuidFromPublicKey(publicKeyByteArray0);
+		String guid0 = Utils.convertPublicKeyToGUIDString(publicKeyByteArray0);
 		GuidEntry myGUID = new GuidEntry(alias, guid0, 
 				publicKey0, privateKey0);
 		

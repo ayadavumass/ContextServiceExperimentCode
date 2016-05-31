@@ -1,10 +1,7 @@
 package edu.umass.cs.weatherExpClient;
 
-import java.io.IOException;
 
 import org.json.JSONObject;
-
-import edu.umass.cs.gnsclient.client.GuidEntry;
 
 /**
  * Class implements the task used for 
@@ -32,11 +29,11 @@ public class UpdateTask implements Runnable
 		{
 			if( WeatherAndMobilityBoth.useGNS )
 			{
-				GuidEntry guidEntry = userRecordInfo.getUserGuidEntry();
-				long start = System.currentTimeMillis();
-				WeatherAndMobilityBoth.gnsClient.update(guidEntry.getGuid(), attrValuePairs, guidEntry);
-				long end = System.currentTimeMillis();
-				requestSendingTask.incrementUpdateNumRecvd(guidEntry.getGuid(), end-start);
+//				GuidEntry guidEntry = userRecordInfo.getUserGuidEntry();
+//				long start = System.currentTimeMillis();
+//				WeatherAndMobilityBoth.gnsClient.update(guidEntry.getGuid(), attrValuePairs, guidEntry);
+//				long end = System.currentTimeMillis();
+//				requestSendingTask.incrementUpdateNumRecvd(guidEntry.getGuid(), end-start);
 			}
 			else
 			{
@@ -48,10 +45,7 @@ public class UpdateTask implements Runnable
 				long end = System.currentTimeMillis();
 				requestSendingTask.incrementUpdateNumRecvd(userGUID, end-start);
 			}
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}  catch(Exception ex)
+		} catch(Exception ex)
 		{
 			ex.printStackTrace();
 		}

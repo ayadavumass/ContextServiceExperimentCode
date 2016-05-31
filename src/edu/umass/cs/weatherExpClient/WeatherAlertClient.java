@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +19,7 @@ import org.json.JSONObject;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
-import edu.umass.cs.gnsclient.client.UniversalTcpClient;
+import edu.umass.cs.gnsclient.client.GNSClientCommands;
 
 public class WeatherAlertClient
 {
@@ -68,7 +67,7 @@ public class WeatherAlertClient
 	
 	
 	private final ContextServiceClient<String> csClient;
-	private final UniversalTcpClient gnsClient;
+	private final GNSClientCommands gnsClient;
 	
 	private final Timer clockTimer;
 	
@@ -86,7 +85,7 @@ public class WeatherAlertClient
 		 
 		boolean disableSSL = true;
 		System.out.println("gnsHost "+gnsHost+" gnsPort "+gnsPort);
-		gnsClient = new UniversalTcpClient(gnsHost, gnsPort, disableSSL);
+		gnsClient = new GNSClientCommands();
 		//useContextService = true;
 		currUnixTimeStamp = dateFormat.parse(TRACE_START_TIME).getTime();
 		clockTimer.schedule(new ClockTimer(),

@@ -24,8 +24,8 @@ public class UserEntry
 	// ACLs.
 	private HashMap<String, ACLEntry> unionOfACLsMap;
 	
-	// acl classes, where key is the class num.
-	private HashMap<Integer, List<ACLEntry>> aclClasses;
+	// circles, where key is the circle num.
+	private HashMap<Integer, List<ACLEntry>> circlesMap;
 	
 	public UserEntry(GuidEntry myGuidEntry)
 	{
@@ -67,8 +67,9 @@ public class UserEntry
 		this.unionOfACLsMap = unionOfACLs;
 	}
 	
-	public void setACLClasses(HashMap<Integer, List<ACLEntry>> aclClasses)
+	public void setCirclesMap(HashMap<Integer, List<ACLEntry>> 
+														cirlcesMap)
 	{
-		this.aclClasses = aclClasses;
+		this.circlesMap = cirlcesMap;
 	}
 }

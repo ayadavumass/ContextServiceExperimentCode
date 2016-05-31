@@ -14,7 +14,6 @@ import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
 import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 
 public class SearchAndUpdateDriver
 {
@@ -63,7 +62,7 @@ public class SearchAndUpdateDriver
 	// otherwise updates are directly sent to context service.
 	public static final boolean useGNS							= false;
 	
-	public static UniversalTcpClient gnsClient;
+	//public static GNSClientCommands gnsClient;
 	public static GuidEntry accountGuid;
 	
 	//public static HashMap<String, UserRecordInfo> userInfoHashMap;
@@ -101,9 +100,12 @@ public class SearchAndUpdateDriver
 	public static Vector<UserEntry> usersVector;
 	
 	// number of guids in each class.
-	public static  int CLASS_SIZE								= 5;
+	public static  int numCircles								= 5;
 	// number of classes used to generate ACLs
-	public static  int NUM_CLASSES								= 5;
+	public static  int totalACLMems								= 5;
+	
+	// probablity that a GUID will be present in more than one circle
+	public static double overlapProbability						= 0.5;
 	
 	
 	public static void main( String[] args ) throws Exception
@@ -112,28 +114,29 @@ public class SearchAndUpdateDriver
 		
 		if( args.length >= 18 )
 		{
-			numUsers 		  = Double.parseDouble(args[0]);
-			gnsHost  		  = args[1];
-			gnsPort  		  = Integer.parseInt(args[2]);
-			csHost   		  = args[3];
-			csPort   		  = Integer.parseInt(args[4]);
-			useContextService = Boolean.parseBoolean(args[5]);
-			updateEnable 	  = Boolean.parseBoolean(args[6]);
-			searchEnable 	  = Boolean.parseBoolean(args[7]);
-			myID 			  = Integer.parseInt(args[8]);
-			initRate 		  = Double.parseDouble(args[9]);
-			searchQueryRate   = Double.parseDouble(args[10]);
-			updateRate 		  = Double.parseDouble(args[11]);
-			numAttrs 		  = Integer.parseInt(args[12]);
-			numAttrsInQuery   = Integer.parseInt(args[13]);
-			rhoValue 		  = Double.parseDouble(args[14]);
-			triggerEnable	  = Boolean.parseBoolean(args[15]);
+			numUsers 		   = Double.parseDouble(args[0]);
+			gnsHost  		   = args[1];
+			gnsPort  		   = Integer.parseInt(args[2]);
+			csHost   		   = args[3];
+			csPort   		   = Integer.parseInt(args[4]);
+			useContextService  = Boolean.parseBoolean(args[5]);
+			updateEnable 	   = Boolean.parseBoolean(args[6]);
+			searchEnable 	   = Boolean.parseBoolean(args[7]);
+			myID 			   = Integer.parseInt(args[8]);
+			initRate 		   = Double.parseDouble(args[9]);
+			searchQueryRate    = Double.parseDouble(args[10]);
+			updateRate 		   = Double.parseDouble(args[11]);
+			numAttrs 		   = Integer.parseInt(args[12]);
+			numAttrsInQuery    = Integer.parseInt(args[13]);
+			rhoValue 		   = Double.parseDouble(args[14]);
+			triggerEnable	   = Boolean.parseBoolean(args[15]);
 			searchUpdateSeparate = Boolean.parseBoolean(args[16]);
-			userInitEnable	  = Boolean.parseBoolean(args[17]);
-			singleRequest     = Boolean.parseBoolean(args[18]);
-			transformType     = Integer.parseInt(args[19]);
-			NUM_CLASSES	 	  = Integer.parseInt(args[20]);
-			CLASS_SIZE		  = Integer.parseInt(args[21]);
+			userInitEnable	   = Boolean.parseBoolean(args[17]);
+			singleRequest      = Boolean.parseBoolean(args[18]);
+			transformType      = Integer.parseInt(args[19]);
+			numCircles	 	   = Integer.parseInt(args[20]);
+			totalACLMems	   = Integer.parseInt(args[21]);
+			overlapProbability = Double.parseDouble(args[22]);
 		}
 		else
 		{
@@ -157,7 +160,7 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = false;
 			userInitEnable	  = true;
 			singleRequest	  = true;
-			transformType     = ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM;
+			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
 		}
 		
 		
@@ -184,7 +187,7 @@ public class SearchAndUpdateDriver
 		if( userInitEnable )
 		{
 			long start 	= System.currentTimeMillis();
-			new UserInitializationACLWithClasses().initializaRateControlledRequestSender();
+			new UserInitializationACLWithCircles().initializaRateControlledRequestSender();
 			//new UserInitializationACLWithClasses().backToBackRequestSender();
 			long end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization complete "+(end-start));

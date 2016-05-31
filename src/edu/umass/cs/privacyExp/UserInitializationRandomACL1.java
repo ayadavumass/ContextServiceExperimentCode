@@ -17,7 +17,6 @@ import edu.umass.cs.contextservice.client.common.AnonymizedIDEntry;
 import edu.umass.cs.contextservice.config.ContextServiceConfig;
 import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.client.util.GuidUtils;
 
 public class UserInitializationRandomACL1 extends 
 										AbstractRequestSendingClass
@@ -78,8 +77,9 @@ public class UserInitializationRandomACL1 extends
 			
 			if( SearchAndUpdateDriver.useGNS )
 			{
-				GuidEntry userGuidEntry = SearchAndUpdateDriver.gnsClient.guidCreate(
-						SearchAndUpdateDriver.accountGuid, SearchAndUpdateDriver.guidPrefix+guidNum);
+				assert(false);
+//				GuidEntry userGuidEntry = SearchAndUpdateDriver.gnsClient.guidCreate(
+//						SearchAndUpdateDriver.accountGuid, SearchAndUpdateDriver.guidPrefix+guidNum);
 			}
 			else
 			{
@@ -89,7 +89,7 @@ public class UserInitializationRandomACL1 extends
 				PrivateKey privateKey0 = kp0.getPrivate();
 				byte[] publicKeyByteArray0 = publicKey0.getEncoded();
 				
-				String guid0 = GuidUtils.createGuidFromPublicKey(publicKeyByteArray0);
+				String guid0 = Utils.convertPublicKeyToGUIDString(publicKeyByteArray0);
 				GuidEntry myGUID = new GuidEntry(alias, guid0, publicKey0, privateKey0);
 				
 				UserEntry userEntry = new UserEntry(myGUID);
@@ -164,7 +164,8 @@ public class UserInitializationRandomACL1 extends
 			currUserEntry.setACLMap( aclMap );
 			
 			List<AnonymizedIDEntry> anonymizedIDList = 
-						SearchAndUpdateDriver.csClient.computeAnonymizedIDs(aclMap);
+						SearchAndUpdateDriver.csClient.computeAnonymizedIDs
+							(currUserEntry.getGuidEntry(), aclMap);
 			
 			if(anonymizedIDList != null)
 			{

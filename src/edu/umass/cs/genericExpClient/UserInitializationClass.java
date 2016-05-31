@@ -1,7 +1,6 @@
 package edu.umass.cs.genericExpClient;
 
 import java.util.Random;
-import java.util.Vector;
 
 import org.json.JSONObject;
 import edu.umass.cs.gnsclient.client.GuidEntry;
@@ -21,11 +20,11 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	private void sendAInitMessage(int guidNum) throws Exception
 	{
 		GuidEntry userGuidEntry = null;
-		if( SearchAndUpdateDriver.useGNS )
-		{
-			userGuidEntry = SearchAndUpdateDriver.gnsClient.guidCreate(
-					SearchAndUpdateDriver.accountGuid, SearchAndUpdateDriver.guidPrefix+guidNum);
-		}
+//		if( SearchAndUpdateDriver.useGNS )
+//		{
+//			userGuidEntry = SearchAndUpdateDriver.gnsClient.guidCreate(
+//					SearchAndUpdateDriver.accountGuid, SearchAndUpdateDriver.guidPrefix+guidNum);
+//		}
 		JSONObject attrValJSON = new JSONObject();
 		
 		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
@@ -54,12 +53,12 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	
 	public void initializaRateControlledRequestSender() throws Exception
 	{
-		if(SearchAndUpdateDriver.useGNS)
-		{
-			SearchAndUpdateDriver.accountGuid = SearchAndUpdateDriver.gnsClient.accountGuidCreate("gnsumass@gmail.com", "testPass");
-			Thread.sleep(5000);
-			System.out.println("account guid created "+SearchAndUpdateDriver.accountGuid.getGuid());
-		}
+//		if(SearchAndUpdateDriver.useGNS)
+//		{
+//			SearchAndUpdateDriver.accountGuid = SearchAndUpdateDriver.gnsClient.accountGuidCreate("gnsumass@gmail.com", "testPass");
+//			Thread.sleep(5000);
+//			System.out.println("account guid created "+SearchAndUpdateDriver.accountGuid.getGuid());
+//		}
 		
 		this.startExpTime();
 		double reqspms = SearchAndUpdateDriver.initRate/1000.0;

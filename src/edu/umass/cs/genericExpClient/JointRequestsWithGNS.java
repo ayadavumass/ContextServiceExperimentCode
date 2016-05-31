@@ -681,7 +681,8 @@ public class JointRequestsWithGNS<NodeIDType> implements PacketDemultiplexer<JSO
 				
 				ValueUpdateFromGNS<NodeIDType> valUpdFromGNS = 
 				new ValueUpdateFromGNS<NodeIDType>
-				(myID, versionNum, GUID, attrValuePair, versionNum, sourceIP, sourcePort, System.currentTimeMillis() );
+				(myID, versionNum, GUID, attrValuePair, versionNum, sourceIP, sourcePort, 
+						System.currentTimeMillis(), null );
 				
 				niot.sendToAddress(getRandomNodeSock(), valUpdFromGNS.toJSONObject());
 			} catch (JSONException e)

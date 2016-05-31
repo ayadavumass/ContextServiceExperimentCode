@@ -15,8 +15,8 @@ import org.json.JSONObject;
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
+import edu.umass.cs.gnsclient.client.GNSClientCommands;
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 
 public class WeatherModelOld 
 {
@@ -75,7 +75,7 @@ public class WeatherModelOld
 	public static final boolean useGNS							= false;
 		
 		
-	public static UniversalTcpClient gnsClient;
+	public static GNSClientCommands gnsClient;
 	public static GuidEntry accountGuid;
 	
 	public static ExecutorService taskES;
@@ -102,7 +102,7 @@ public class WeatherModelOld
 		//granularityOfStateChange = Double.parseDouble(args[9]);
 		myID = Integer.parseInt(args[6]);
 		
-		gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
+		gnsClient = new GNSClientCommands();
 		csClient = new ContextServiceClient<String>(csHost, csPort,
 				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
 		

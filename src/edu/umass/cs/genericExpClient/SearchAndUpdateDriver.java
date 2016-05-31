@@ -13,7 +13,6 @@ import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
 import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.GuidEntry;
-import edu.umass.cs.gnsclient.client.UniversalTcpClient;
 
 public class SearchAndUpdateDriver
 {
@@ -57,7 +56,7 @@ public class SearchAndUpdateDriver
 	// otherwise updates are directly sent to context service.
 	public static final boolean useGNS							= false;
 	
-	public static UniversalTcpClient gnsClient;
+	//public static UniversalTcpClient gnsClient;
 	public static GuidEntry accountGuid;
 	
 	//public static HashMap<String, UserRecordInfo> userInfoHashMap;
