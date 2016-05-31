@@ -118,7 +118,7 @@ public class SearchAndUpdateDriver
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
 			singleRequest     = Boolean.parseBoolean(args[18]);
 			//transformType     = Integer.parseInt(args[19]);
-			transformType     = ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM;
+			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
 		}
 		else
 		{
@@ -141,7 +141,7 @@ public class SearchAndUpdateDriver
 			triggerEnable	  = false;
 			searchUpdateSeparate = false;
 			userInitEnable	  = true;
-			transformType     = ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM;
+			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
 		}
 		
 		
