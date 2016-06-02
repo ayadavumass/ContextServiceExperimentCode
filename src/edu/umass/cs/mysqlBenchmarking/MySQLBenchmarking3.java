@@ -7,12 +7,14 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.codec.DecoderException;
+
 import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.utils.DelayProfiler;
 
 public class MySQLBenchmarking3
 {
-	public static void main(String[] args) 
+	public static void main(String[] args) throws DecoderException 
 	{
 		Connection con = null;
 		PreparedStatement pst = null;
