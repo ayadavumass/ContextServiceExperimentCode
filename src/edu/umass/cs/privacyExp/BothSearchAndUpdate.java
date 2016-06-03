@@ -237,7 +237,8 @@ public class BothSearchAndUpdate extends
 //				// reinitialize rand number so that it gives the same seq again.
 //				searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
 //			}
-			sendQueryMessage();
+			//sendQueryMessage();
+			sendQueryMessageWithSmallRanges();
 		}
 		else
 		{
@@ -281,6 +282,71 @@ public class BothSearchAndUpdate extends
 			
 			double predLength 
 				= (searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
+			
+			double attrMax = attrMin + predLength;
+			//		double latitudeMax = latitudeMin 
+			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
+			// making it curcular
+			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
+			{
+				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
+				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+			}
+			// last so no AND
+			if( i == (SearchAndUpdateDriver.numAttrsInQuery-1) )
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+						+" <= "+attrMax;
+			}
+			else
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+					+" <= "+attrMax+" AND ";
+			}
+		}
+		
+		int randIndex = searchQueryRand.nextInt( SearchAndUpdateDriver.usersVector.size() );
+		UserEntry queryingUserEntry = SearchAndUpdateDriver.usersVector.get(randIndex);
+		
+		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();
+		
+		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), queryingGuidEntry, this );
+		SearchAndUpdateDriver.taskES.execute(searchTask);
+	}
+	
+	
+	private void sendQueryMessageWithSmallRanges()
+	{
+		String searchQuery 
+			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
+//			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
+//			+ " AND "
+//			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+		
+		int randAttrNum = -1;
+		
+		for( int i=0; i<SearchAndUpdateDriver.numAttrsInQuery; i++ )
+		{
+			// if num attrs and num in query are same then send query on all attrs
+			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
+			{
+				randAttrNum++;
+			}
+			else
+			{
+				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
+			}
+			
+			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
+			double attrMin 
+				= SearchAndUpdateDriver.ATTR_MIN
+				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
+			
+//			double predLength 
+//				= (searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
+			
+			double predLength 
+				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
