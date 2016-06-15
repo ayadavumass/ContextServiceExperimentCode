@@ -237,8 +237,8 @@ public class BothSearchAndUpdate extends
 //				// reinitialize rand number so that it gives the same seq again.
 //				searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
 //			}
-			sendQueryMessage();
-			//sendQueryMessageWithSmallRanges();
+			//sendQueryMessage();
+			sendQueryMessageWithSmallRanges();
 		}
 		else
 		{
@@ -342,11 +342,8 @@ public class BothSearchAndUpdate extends
 				= SearchAndUpdateDriver.ATTR_MIN
 				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
 			
-//			double predLength 
-//				= (searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
-			
 			double predLength 
-				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
+				= (0.3*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
