@@ -5,6 +5,7 @@ import java.util.Random;
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import edu.umass.cs.contextservice.utils.Utils;
 
@@ -20,13 +21,35 @@ public class JSONStrinigificationOverhead
 		long start = System.currentTimeMillis();
 		for(int i=0; i<numGuids; i++)
 		{
+			JSONObject jsoObject = new JSONObject();
+			
 			byte[] guidBytes = new byte[20];
 			rand.nextBytes(guidBytes);
 			//String guidString = Utils.bytArrayToHex(guidBytes);
 			byte[] charArr = hex.encode(guidBytes);
 			String guidString = new String(charArr);
 			
-			resultJSON.put(guidString);
+			jsoObject.put("GUID", guidString);
+			
+			byte[] encryptedBytes = new byte[128];
+			rand.nextBytes(encryptedBytes);
+			//String guidString = Utils.bytArrayToHex(guidBytes);
+			byte[] encArray = hex.encode(encryptedBytes);
+			String encStr = new String(encArray);
+			
+			jsoObject.put("EncArr1", encStr);
+			
+			
+			encryptedBytes = new byte[128];
+			rand.nextBytes(encryptedBytes);
+			//String guidString = Utils.bytArrayToHex(guidBytes);
+			encArray = hex.encode(encryptedBytes);
+			encStr = new String(encArray);
+			
+			jsoObject.put("EncArr2", encStr);
+			
+			
+			resultJSON.put(jsoObject);
 		}
 		System.out.println("time taken "+(System.currentTimeMillis() - start)+
 				" "+resultJSON.getString(0));
