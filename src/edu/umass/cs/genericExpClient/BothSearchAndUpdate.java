@@ -259,8 +259,7 @@ public class BothSearchAndUpdate extends
 			else
 			{
 				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
-			}
-						
+			}				
 			
 			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
 			double attrMin 
@@ -322,7 +321,7 @@ public class BothSearchAndUpdate extends
 			
 			// querying 10 % of domain
 			double predLength 
-				= (0.3*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 

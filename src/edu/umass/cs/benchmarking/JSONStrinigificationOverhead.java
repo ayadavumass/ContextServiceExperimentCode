@@ -7,8 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.umass.cs.contextservice.utils.Utils;
-
 public class JSONStrinigificationOverhead 
 {
 	public static void main(String[] args) throws JSONException
@@ -31,6 +29,7 @@ public class JSONStrinigificationOverhead
 			
 			jsoObject.put("GUID", guidString);
 			
+			
 			byte[] encryptedBytes = new byte[128];
 			rand.nextBytes(encryptedBytes);
 			//String guidString = Utils.bytArrayToHex(guidBytes);
@@ -47,6 +46,15 @@ public class JSONStrinigificationOverhead
 			encStr = new String(encArray);
 			
 			jsoObject.put("EncArr2", encStr);
+			
+			
+			encryptedBytes = new byte[128];
+			rand.nextBytes(encryptedBytes);
+			//String guidString = Utils.bytArrayToHex(guidBytes);
+			encArray = hex.encode(encryptedBytes);
+			encStr = new String(encArray);
+			
+			jsoObject.put("EncArr3", encStr);
 			
 			
 			resultJSON.put(jsoObject);
