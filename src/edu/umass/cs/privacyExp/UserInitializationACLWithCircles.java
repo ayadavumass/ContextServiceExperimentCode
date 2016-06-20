@@ -231,7 +231,8 @@ public class UserInitializationACLWithCircles extends
 		
 		JSONObject attrValJSON = new JSONObject();
 		
-		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
+		double attrDiff   
+			= SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
 		
 		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
 		{
@@ -245,14 +246,12 @@ public class UserInitializationACLWithCircles extends
 
 		GuidEntry myGUIDInfo = userEntry.getGuidEntry();
 		String guidString = userEntry.getGuidEntry().getGuid();
-
-
+		
 		SearchAndUpdateDriver.csClient.sendUpdateSecure( 
-				guidString, myGUIDInfo, attrValJSON, -1, true, 
+				guidString, myGUIDInfo, attrValJSON, -1, 
 				userEntry.getACLMap(), userEntry.getAnonymizedIDList() );
 
 		long end = System.currentTimeMillis();
-		
 		System.out.println("sendAInitMessageBlocking guidNum "+guidNum
 				+" time "+(end-start));
 	}

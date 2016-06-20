@@ -52,7 +52,7 @@ public class UpdateTask implements Runnable
 				
 				
 				SearchAndUpdateDriver.csClient.sendUpdateSecure( 
-						guidString, myGUIDInfo, attrValuePairs, -1, true, 
+						guidString, myGUIDInfo, attrValuePairs, -1, 
 						userEntry.getACLMap(), userEntry.getAnonymizedIDList() );
 				
 				long end = System.currentTimeMillis();

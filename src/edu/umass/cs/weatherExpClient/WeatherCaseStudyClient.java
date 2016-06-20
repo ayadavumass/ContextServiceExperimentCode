@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -557,9 +556,9 @@ public class WeatherCaseStudyClient
 			{
 				JSONObject attrValuePair = new JSONObject();
 				attrValuePair.put(attrName, newVal);
-			
+				
 				csClient.sendUpdate(GUID, null, 
-						attrValuePair, versionNum, true);
+						attrValuePair, versionNum);
 //				ValueUpdateFromGNS<NodeIDType> valUpdFromGNS = 
 //						new ValueUpdateFromGNS<NodeIDType>(myID, versionNum, GUID, attrValuePair, sourceIP, sourcePort, versionNum );
 //				
@@ -569,7 +568,7 @@ public class WeatherCaseStudyClient
 				e.printStackTrace();
 			}
 		}
-			
+		
 		public void sendGetToContextService(long versionNum, String GUID)
 		{
 //			try

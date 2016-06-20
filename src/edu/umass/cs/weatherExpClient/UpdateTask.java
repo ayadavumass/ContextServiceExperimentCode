@@ -41,7 +41,7 @@ public class UpdateTask implements Runnable
 				long start = System.currentTimeMillis();
 			
 				WeatherAndMobilityBoth.csClient.sendUpdate
-								(userGUID, null, attrValuePairs, -1, true);
+								(userGUID, null, attrValuePairs, -1);
 				long end = System.currentTimeMillis();
 				requestSendingTask.incrementUpdateNumRecvd(userGUID, end-start);
 			}
