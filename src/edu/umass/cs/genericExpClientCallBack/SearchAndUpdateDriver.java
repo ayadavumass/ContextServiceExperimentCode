@@ -144,7 +144,6 @@ public class SearchAndUpdateDriver
 			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
 		}
 		
-		
 		System.out.println("Search and update client started ");
 		guidPrefix = guidPrefix+myID;
 		

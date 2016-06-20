@@ -47,8 +47,15 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			userGUID = SearchAndUpdateDriver.getSHA1(SearchAndUpdateDriver.guidPrefix+guidNum);
 		}
 		
-		UpdateTask updTask = new UpdateTask(attrValJSON, userGUID, this);
-		SearchAndUpdateDriver.taskES.execute(updTask);
+		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(guidNum, userGUID);
+		
+		SearchAndUpdateDriver.csClient.sendUpdateWithCallBack
+										(userGUID, null, 
+										attrValJSON, -1, updateRep, this.getCallBack());
+		
+		
+//		UpdateTask updTask = new UpdateTask(attrValJSON, userGUID, this);
+//		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
 	public void initializaRateControlledRequestSender() throws Exception

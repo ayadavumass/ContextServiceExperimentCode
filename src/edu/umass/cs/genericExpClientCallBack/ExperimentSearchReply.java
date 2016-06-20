@@ -11,7 +11,6 @@ public class ExperimentSearchReply implements SearchReplyInterface
 	private int replySize;
 	private final long startTime;
 	
-	
 	public ExperimentSearchReply( long callerReqID )
 	{
 		this.callerReqID = callerReqID;
@@ -48,10 +47,13 @@ public class ExperimentSearchReply implements SearchReplyInterface
 		return replyArray;
 	}
 	
-	public void printCompletionTime()
+	public long getCompletionTime()
 	{
-		System.out.println("Search completion time reqID "+callerReqID
-				+ " time taken "+(System.currentTimeMillis()-startTime)
-				+" replySize "+replySize);
+		long timeTaken = (System.currentTimeMillis()-startTime);
+		return timeTaken;
+		
+//		System.out.println("Search completion time reqID "+callerReqID
+//				+ " time taken "+(System.currentTimeMillis()-startTime)
+//				+" replySize "+replySize);
 	}
 }

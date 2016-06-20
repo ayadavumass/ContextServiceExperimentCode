@@ -20,14 +20,15 @@ public class ExperimentCallBack implements CallBackInterface
 	@Override
 	public void searchCompletion(SearchReplyInterface searchRep)
 	{
-		((ExperimentSearchReply)searchRep).printCompletionTime();
-		reqSendClass.incrementSearchNumRecvd(searchRep.getReplySize(), -1);
+		long timeTaken = ((ExperimentSearchReply)searchRep).getCompletionTime();
+		reqSendClass.incrementSearchNumRecvd(searchRep.getReplySize(), timeTaken);
 	}
 	
 	@Override
 	public void updateCompletion(UpdateReplyInterface updateRep)
 	{
-		((ExperimentSearchReply)updateRep).printCompletionTime();
-		reqSendClass.incrementUpdateNumRecvd("", -1);
+		long timeTaken = ((ExperimentUpdateReply)updateRep).getCompletionTime();
+		String guid = ((ExperimentUpdateReply)updateRep).getGuid();
+		reqSendClass.incrementUpdateNumRecvd(guid, timeTaken);
 	}
 }

@@ -6,10 +6,12 @@ public class ExperimentUpdateReply implements UpdateReplyInterface
 {
 	private final long callerReqID;
 	private final long startTime;
+	private final String guidString;
 	
-	public ExperimentUpdateReply( long callerReqID )
+	public ExperimentUpdateReply( long callerReqID, String Guid )
 	{
 		this.callerReqID = callerReqID;
+		this.guidString  = Guid;
 		startTime = System.currentTimeMillis();
 	}
 	
@@ -19,9 +21,16 @@ public class ExperimentUpdateReply implements UpdateReplyInterface
 		return callerReqID;
 	}
 	
-	public void printCompletionTime()
+	public long getCompletionTime()
 	{
-		System.out.println("Update completion time reqID "+callerReqID
-				+ " time taken "+(System.currentTimeMillis()-startTime));
+		long timeTaken = (System.currentTimeMillis()-startTime);
+		return timeTaken;
+//		System.out.println("Update completion time reqID "+callerReqID
+//				+ " time taken "+(System.currentTimeMillis()-startTime));
+	}
+	
+	public String getGuid()
+	{
+		return this.guidString;
 	}
 }
