@@ -23,13 +23,15 @@ public class UserInitializationACLWithCircles extends
 	private final Random initRand;
 	//private final KeyPairGenerator kpg;
 	private final Random aclRand;
-		
+	private final Random circleRand;
 	public UserInitializationACLWithCircles() throws Exception
 	{
 		super( SearchAndUpdateDriver.INSERT_LOSS_TOLERANCE );
 		initRand = new Random(SearchAndUpdateDriver.myID*100);
 		aclRand  = new Random((SearchAndUpdateDriver.myID+1)*102);
 		
+		
+		circleRand = new Random((SearchAndUpdateDriver.myID+1)*105);
 //		kpg = KeyPairGenerator.getInstance
 //					( ContextServiceConfig.AssymmetricEncAlgorithm );
 		
@@ -123,17 +125,16 @@ public class UserInitializationACLWithCircles extends
 			}
 			
 			// probablistically add each guid to one more circle
-			Random rand = new Random();
 			while( guidMapIter.hasNext() )
 			{
-				circlenum = rand.nextInt(SearchAndUpdateDriver.numCircles);
+				circlenum = circleRand.nextInt(SearchAndUpdateDriver.numCircles);
 				String guidACLMemberString = guidMapIter.next();
 				ACLEntry currACLEntry = distinctGuidMap.get(guidACLMemberString);
 				
 				List<ACLEntry> circleGUIDs = 
 									circlesMap.get(circlenum);
 				
-				if(rand.nextDouble() <= SearchAndUpdateDriver.overlapProbability)
+				if(circleRand.nextDouble() <= SearchAndUpdateDriver.overlapProbability)
 				{
 					circleGUIDs.add(currACLEntry);
 				}
