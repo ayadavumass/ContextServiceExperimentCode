@@ -65,7 +65,7 @@ public class BothSearchAndUpdate extends
 		while( ( (System.currentTimeMillis() - expStartTime) < 
 								SearchAndUpdateDriver.EXPERIMENT_TIME ) )
 		{
-			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+			for( int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
 				sendRequest(numSent);
 				numSent++;
@@ -82,7 +82,7 @@ public class BothSearchAndUpdate extends
 				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
 			}
 			
-			for(int i=0;i<needsToBeSentBeforeSleep;i++)
+			for(int i=0; i<needsToBeSentBeforeSleep; i++)
 			{
 				sendRequest(numSent);
 				numSent++;
@@ -420,11 +420,15 @@ public class BothSearchAndUpdate extends
 		ExperimentUpdateReply updateRep 
 					= new ExperimentUpdateReply(currReqId, guidString);
 		
+		long start = System.currentTimeMillis();
 		SearchAndUpdateDriver.csClient.sendUpdateSecureWithCallback
 						( guidString, myGUIDInfo, attrValJSON, -1, 
 								currUserEntry.getACLMap(), 
 								currUserEntry.getAnonymizedIDList(),
 								updateRep, this.getCallBack() );
+		System.out.println("sendUpdateSecureWithCallback time "
+								+(System.currentTimeMillis()-start));
+		
 //		UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
 //		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
