@@ -40,7 +40,6 @@ public abstract class AbstractRequestSendingClass
 	{
 		waitTimer.schedule(new WaitTimerTask(), SearchAndUpdateDriver.WAIT_TIME);
 		
-		
 		synchronized(waitLock)
 		{
 			while( !checkForCompletionWithLossTolerance(numSent, numRecvd) )
@@ -113,7 +112,8 @@ public abstract class AbstractRequestSendingClass
 		return this.expCallback;
 	}
 	
-	protected boolean checkForCompletionWithLossTolerance(double numSent, double numRecvd)
+	protected boolean checkForCompletionWithLossTolerance
+											(double numSent, double numRecvd)
 	{
 		boolean completion = false;
 		
@@ -126,6 +126,5 @@ public abstract class AbstractRequestSendingClass
 	}
 	
 	public abstract void incrementUpdateNumRecvd(String userGUID, long timeTaken);
-	
 	public abstract void incrementSearchNumRecvd(int resultSize, long timeTaken);
 }

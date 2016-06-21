@@ -219,9 +219,23 @@ public class UserInitializationACLWithCircles extends
 					+ attrDiff * initRand.nextDouble();
 			attrValJSON.put(attrName, attrVal);
 		}
+		
+		
+		GuidEntry myGUIDInfo = userEntry.getGuidEntry();
+		String guidString = userEntry.getGuidEntry().getGuid();
+		
+		ExperimentUpdateReply updateRep 
+					= new ExperimentUpdateReply(guidNum, guidString);
+		
+		SearchAndUpdateDriver.csClient.sendUpdateSecureWithCallback
+						( guidString, myGUIDInfo, attrValJSON, -1, 
+								userEntry.getACLMap(), 
+								userEntry.getAnonymizedIDList(),
+								updateRep, this.getCallBack() );
+		
 		//String userGUID = userEntry.getGuidEntry().getGuid();	
-		UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
-		SearchAndUpdateDriver.taskES.execute(updTask);
+//		UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
+//		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
 	private void sendAInitMessageBlocking(int guidNum) throws Exception

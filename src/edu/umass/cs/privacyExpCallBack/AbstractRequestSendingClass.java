@@ -3,6 +3,8 @@ package edu.umass.cs.privacyExpCallBack;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import edu.umass.cs.contextservice.client.callback.interfaces.CallBackInterface;
+
 
 public abstract class AbstractRequestSendingClass 
 {
@@ -17,8 +19,11 @@ public abstract class AbstractRequestSendingClass
 	// 1% loss tolerance
 	private final double lossTolerance;
 	
+	private final CallBackInterface expCallback;
+	
 	public AbstractRequestSendingClass( double lossTolerance )
 	{
+		expCallback =  new ExperimentCallBack(this);
 		threadFinished = false;
 		this.lossTolerance = lossTolerance;
 		numSent = 0;
@@ -112,6 +117,11 @@ public abstract class AbstractRequestSendingClass
 			completion = true;
 		}
 		return completion;
+	}
+	
+	public CallBackInterface getCallBack()
+	{
+		return this.expCallback;
 	}
 	
 	public abstract void incrementUpdateNumRecvd(String userGUID, long timeTaken);

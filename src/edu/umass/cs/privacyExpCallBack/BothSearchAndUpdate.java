@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import edu.umass.cs.gnsclient.client.GuidEntry;
 
 public class BothSearchAndUpdate extends 
-									AbstractRequestSendingClass implements Runnable
+						AbstractRequestSendingClass implements Runnable
 {
 	private final Random generalRand;
 	private Random searchQueryRand;
@@ -46,7 +46,8 @@ public class BothSearchAndUpdate extends
 			{
 				singleRequestSender();
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -61,11 +62,12 @@ public class BothSearchAndUpdate extends
 		double numberShouldBeSentPerSleep = reqsps;
 		
 		//while( ( totalNumUsersSent < numUsers ) )
-		while( ( (System.currentTimeMillis() - expStartTime) < SearchAndUpdateDriver.EXPERIMENT_TIME ) )
+		while( ( (System.currentTimeMillis() - expStartTime) < 
+								SearchAndUpdateDriver.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
-				sendRequest();
+				sendRequest(numSent);
 				numSent++;
 			}
 			
@@ -82,7 +84,7 @@ public class BothSearchAndUpdate extends
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
-				sendRequest();
+				sendRequest(numSent);
 				numSent++;
 			}
 			Thread.sleep(1000);
@@ -215,7 +217,7 @@ public class BothSearchAndUpdate extends
 		int randIndex = searchQueryRand.nextInt( SearchAndUpdateDriver.usersVector.size() );
 		UserEntry queryingUserEntry = SearchAndUpdateDriver.usersVector.get(randIndex);
 		
-		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();
+		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();		
 		
 		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), 
 				queryingGuidEntry, this );
@@ -223,7 +225,7 @@ public class BothSearchAndUpdate extends
 		searchTask.run();
 	}
 	
-	private void sendRequest()
+	private void sendRequest(long currReqId)
 	{
 		// send update
 		if( generalRand.nextDouble() 
@@ -238,22 +240,22 @@ public class BothSearchAndUpdate extends
 //				searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
 //			}
 			//sendQueryMessage();
-			sendQueryMessageWithSmallRanges();
+			sendQueryMessageWithSmallRanges(currReqId);
 		}
 		else
 		{
-			sendUpdate();
+			sendUpdate(currReqId);
 		}
 	}
 	
-	private void sendUpdate()
+	private void sendUpdate( long currReqId )
 	{
-		sendALocMessage((int)currUserGuidNum);
+		sendALocMessage((int)currUserGuidNum, currReqId);
 		currUserGuidNum++;
 		currUserGuidNum=((int)currUserGuidNum)%SearchAndUpdateDriver.numUsers;
 	}
 	
-	private void sendQueryMessage()
+	private void sendQueryMessage( long currReqId )
 	{
 		String searchQuery 
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
@@ -310,12 +312,19 @@ public class BothSearchAndUpdate extends
 		
 		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();
 		
-		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), queryingGuidEntry, this );
-		SearchAndUpdateDriver.taskES.execute(searchTask);
+		
+		ExperimentSearchReply searchRep 
+						= new ExperimentSearchReply( currReqId );
+
+		SearchAndUpdateDriver.csClient.sendSearchQuerySecureWithCallBack
+			(searchQuery, 300000, queryingGuidEntry, searchRep, this.getCallBack());
+		
+//		SearchTask searchTask = new SearchTask( searchQuery, 
+//								new JSONArray(), queryingGuidEntry, this );
+//		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
-	
-	private void sendQueryMessageWithSmallRanges()
+	private void sendQueryMessageWithSmallRanges(long currReqId)
 	{
 		String searchQuery 
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
@@ -367,17 +376,25 @@ public class BothSearchAndUpdate extends
 			}
 		}
 		
-		int randIndex = searchQueryRand.nextInt( SearchAndUpdateDriver.usersVector.size() );
-		UserEntry queryingUserEntry = SearchAndUpdateDriver.usersVector.get(randIndex);
+		int randIndex 
+			= searchQueryRand.nextInt( SearchAndUpdateDriver.usersVector.size() );
+		UserEntry queryingUserEntry 
+			= SearchAndUpdateDriver.usersVector.get(randIndex);
 		
 		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();
 		
-		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), queryingGuidEntry, this );
-		SearchAndUpdateDriver.taskES.execute(searchTask);
+		ExperimentSearchReply searchRep 
+			= new ExperimentSearchReply( currReqId );
+
+		SearchAndUpdateDriver.csClient.sendSearchQuerySecureWithCallBack
+			(searchQuery, 300000, queryingGuidEntry, searchRep, this.getCallBack());
+
+//		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), queryingGuidEntry, this );
+//		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
 	
-	private void sendALocMessage( int currUserGuidNum )
+	private void sendALocMessage( int currUserGuidNum, long currReqId )
 	{
 		UserEntry currUserEntry 
 					= SearchAndUpdateDriver.usersVector.get(currUserGuidNum);
@@ -397,8 +414,19 @@ public class BothSearchAndUpdate extends
 			e.printStackTrace();
 		}
 		
-		UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
-		SearchAndUpdateDriver.taskES.execute(updTask);
+		GuidEntry myGUIDInfo = currUserEntry.getGuidEntry();
+		String guidString = currUserEntry.getGuidEntry().getGuid();
+		
+		ExperimentUpdateReply updateRep 
+					= new ExperimentUpdateReply(currReqId, guidString);
+		
+		SearchAndUpdateDriver.csClient.sendUpdateSecureWithCallback
+						( guidString, myGUIDInfo, attrValJSON, -1, 
+								currUserEntry.getACLMap(), 
+								currUserEntry.getAnonymizedIDList(),
+								updateRep, this.getCallBack() );
+//		UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
+//		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
 	@Override

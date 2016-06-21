@@ -289,7 +289,7 @@ public class BothSearchAndUpdate extends
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 					+" <= "+attrMax+" AND ";
 			}
-		}	
+		}
 //		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
 //		SearchAndUpdateDriver.taskES.execute(searchTask);
 		
