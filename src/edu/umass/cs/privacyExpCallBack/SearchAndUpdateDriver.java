@@ -45,7 +45,7 @@ public class SearchAndUpdateDriver
 	
 	public static int UNION_ACL_SIZE							= 50;
 	
-	public static int ACL_SIZE								= 10;
+	public static int ACL_SIZE									= 10;
 	
 	//2% of domain queried
 	//public static final double percDomainQueried				= 0.35;
@@ -107,6 +107,8 @@ public class SearchAndUpdateDriver
 	// probablity that a GUID will be present in more than one circle
 	public static double overlapProbability						= 0.5;
 	
+	public static int numCirclesInACL							= 2;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -137,6 +139,7 @@ public class SearchAndUpdateDriver
 			numCircles	 	   = Integer.parseInt(args[20]);
 			totalACLMems	   = Integer.parseInt(args[21]);
 			overlapProbability = Double.parseDouble(args[22]);
+			numCirclesInACL    = Integer.parseInt(args[23]);
 		}
 		else
 		{

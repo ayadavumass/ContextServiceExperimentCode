@@ -24,6 +24,7 @@ public class UserInitializationACLWithCircles extends
 	//private final KeyPairGenerator kpg;
 	private final Random aclRand;
 	private final Random circleRand;
+	
 	public UserInitializationACLWithCircles() throws Exception
 	{
 		super( SearchAndUpdateDriver.INSERT_LOSS_TOLERANCE );
@@ -139,49 +140,15 @@ public class UserInitializationACLWithCircles extends
 					circleGUIDs.add(currACLEntry);
 				}
 			}
-			
 			currUserEntry.setCirclesMap(circlesMap);
 			
 			// generate ACLs
 			HashMap<String, List<ACLEntry>> aclMap 
 						= new HashMap<String, List<ACLEntry>>();
-
-			for( int j=0; j < SearchAndUpdateDriver.numAttrs; j++ )
-			{
-				List<ACLEntry> attrACL  = new LinkedList<ACLEntry>();
-				
-				for( int k = 0; k < SearchAndUpdateDriver.numCircles; k++ )
-				{
-					double randVal = aclRand.nextDouble();
-					
-					// if less than 0.5, with half chance we pick 
-					// this class for ACL
-					if( randVal <= 0.5 )
-					{
-						List<ACLEntry> classMemberList = circlesMap.get(k);
-						for( int l = 0; l < classMemberList.size(); l++ )
-						{
-							ACLEntry aclEntry = classMemberList.get(l);
-							attrACL.add(aclEntry);
-						}
-					}
-				}
-				
-				// don't want ACL to be empty
-				if(attrACL.size() == 0)
-				{
-					int randClass = aclRand.nextInt(SearchAndUpdateDriver.numCircles);
-					List<ACLEntry> classMemberList = circlesMap.get(randClass);
-					for( int l = 0; l < classMemberList.size(); l++ )
-					{
-						ACLEntry aclEntry = classMemberList.get(l);
-						attrACL.add(aclEntry);
-					}
-				}
-				
-				String attrName = "attr"+j;
-				aclMap.put(attrName, attrACL);
-			}
+			
+			generateACLWithFixedCircles( aclMap, 
+					circlesMap, SearchAndUpdateDriver.numCirclesInACL );
+			
 			currUserEntry.setACLMap( aclMap );
 			
 			
@@ -204,6 +171,102 @@ public class UserInitializationACLWithCircles extends
 		}
 	}
 	
+	private HashMap<Integer, Boolean> pickDistinctCircles( int totalCircles, 
+													int numCirclesToPick )
+	{
+		assert(numCirclesToPick <= totalCircles);
+		HashMap<Integer, Boolean> pickedCircleMap 
+									= new HashMap<Integer, Boolean>();
+		
+		while( pickedCircleMap.size() != numCirclesToPick )
+		{
+			int circleNum = circleRand.nextInt(totalCircles);
+			
+			if( pickedCircleMap.containsKey(circleNum) )
+			{
+				continue;
+			}
+			else
+			{
+				pickedCircleMap.put(circleNum, true);
+			}
+		}
+		return pickedCircleMap;
+	}
+	
+	
+	private void generateACLWithFixedCircles( HashMap<String, List<ACLEntry>> aclMap, 
+			HashMap<Integer, List<ACLEntry>> circlesMap, int numberCirlcesInACL )
+	{
+		for( int j=0; j < SearchAndUpdateDriver.numAttrs; j++ )
+		{
+			List<ACLEntry> attrACL  = new LinkedList<ACLEntry>();
+			HashMap<Integer, Boolean> pickDistinctCirlces = 
+						pickDistinctCircles( circlesMap.size(), numberCirlcesInACL );
+			
+			Iterator<Integer> iter 
+									= pickDistinctCirlces.keySet().iterator();
+			
+			while( iter.hasNext() )
+			{
+				int currCircleNum = iter.next();
+				List<ACLEntry> classMemberList = circlesMap.get(currCircleNum);
+				
+				for( int l = 0; l < classMemberList.size(); l++ )
+				{
+					ACLEntry aclEntry = classMemberList.get(l);
+					attrACL.add(aclEntry);
+				}
+			}
+			
+			String attrName = "attr"+j;
+			aclMap.put(attrName, attrACL);
+		}
+	}
+	
+	
+	private void generateACLUnifomrlyWithCircles( HashMap<String, List<ACLEntry>> aclMap, 
+			HashMap<Integer, List<ACLEntry>> circlesMap )
+	{
+		for( int j=0; j < SearchAndUpdateDriver.numAttrs; j++ )
+		{
+			List<ACLEntry> attrACL  = new LinkedList<ACLEntry>();
+			
+			for( int k = 0; k < SearchAndUpdateDriver.numCircles; k++ )
+			{
+				double randVal = aclRand.nextDouble();
+				
+				// if less than 0.5, with half chance we pick 
+				// this class for ACL
+				if( randVal <= 0.5 )
+				{
+					List<ACLEntry> classMemberList = circlesMap.get(k);
+					for( int l = 0; l < classMemberList.size(); l++ )
+					{
+						ACLEntry aclEntry = classMemberList.get(l);
+						attrACL.add(aclEntry);
+					}
+				}
+			}
+			
+			// don't want ACL to be empty
+			if(attrACL.size() == 0)
+			{
+				int randClass = aclRand.nextInt(SearchAndUpdateDriver.numCircles);
+				List<ACLEntry> classMemberList = circlesMap.get(randClass);
+				for( int l = 0; l < classMemberList.size(); l++ )
+				{
+					ACLEntry aclEntry = classMemberList.get(l);
+					attrACL.add(aclEntry);
+				}
+			}
+			
+			String attrName = "attr"+j;
+			aclMap.put(attrName, attrACL);
+		}
+	}
+	
+	
 	private void sendAInitMessage(int guidNum) throws Exception
 	{
 		UserEntry userEntry 
@@ -211,7 +274,7 @@ public class UserInitializationACLWithCircles extends
 		
 		JSONObject attrValJSON = new JSONObject();
 		
-		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
+		double attrDiff = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
 		
 		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
 		{
@@ -221,12 +284,12 @@ public class UserInitializationACLWithCircles extends
 			attrValJSON.put(attrName, attrVal);
 		}
 		
-		
 		GuidEntry myGUIDInfo = userEntry.getGuidEntry();
 		String guidString = userEntry.getGuidEntry().getGuid();
 		
 		ExperimentUpdateReply updateRep 
 					= new ExperimentUpdateReply(guidNum, guidString);
+	
 		
 		SearchAndUpdateDriver.csClient.sendUpdateSecureWithCallback
 						( guidString, myGUIDInfo, attrValJSON, -1, 
@@ -238,6 +301,7 @@ public class UserInitializationACLWithCircles extends
 //		UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
 //		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
+	
 	
 	private void sendAInitMessageBlocking(int guidNum) throws Exception
 	{
@@ -271,6 +335,7 @@ public class UserInitializationACLWithCircles extends
 		System.out.println("sendAInitMessageBlocking guidNum "+guidNum
 				+" time "+(end-start));
 	}
+	
 	
 	public void backToBackRequestSender() throws Exception
 	{
