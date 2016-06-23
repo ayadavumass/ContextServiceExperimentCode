@@ -151,7 +151,6 @@ public class UserInitializationACLWithCircles extends
 			
 			currUserEntry.setACLMap( aclMap );
 			
-			
 			// generate anonymized IDs
 			List<AnonymizedIDEntry> anonymizedIDList = 
 					SearchAndUpdateDriver.csClient.computeAnonymizedIDs

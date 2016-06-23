@@ -107,7 +107,7 @@ public class BothSearchAndUpdate extends
 	 */
 	private void singleRequestSender()
 	{
-		System.out.println("singleRequestSender used");
+		//System.out.println("singleRequestSender used");
 		while( ( (System.currentTimeMillis() - expStartTime) < SearchAndUpdateDriver.EXPERIMENT_TIME ) )
 		{	
 			if( generalRand.nextDouble() 
@@ -426,8 +426,8 @@ public class BothSearchAndUpdate extends
 								currUserEntry.getACLMap(), 
 								currUserEntry.getAnonymizedIDList(),
 								updateRep, this.getCallBack() );
-		System.out.println("sendUpdateSecureWithCallback time "
-								+(System.currentTimeMillis()-start));
+//		System.out.println("sendUpdateSecureWithCallback time "
+//								+(System.currentTimeMillis()-start));
 		
 //		UpdateTask updTask = new UpdateTask( attrValJSON, currUserEntry, this );
 //		SearchAndUpdateDriver.taskES.execute(updTask);
