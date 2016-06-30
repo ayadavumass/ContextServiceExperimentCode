@@ -239,8 +239,8 @@ public class BothSearchAndUpdate extends
 //				// reinitialize rand number so that it gives the same seq again.
 //				searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
 //			}
-			//sendQueryMessage();
-			sendQueryMessageWithSmallRanges(currReqId);
+			sendQueryMessage(currReqId);
+			//sendQueryMessageWithSmallRanges(currReqId);
 		}
 		else
 		{
