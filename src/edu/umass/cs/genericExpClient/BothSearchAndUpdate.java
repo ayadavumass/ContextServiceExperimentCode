@@ -289,7 +289,7 @@ public class BothSearchAndUpdate extends
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 					+" <= "+attrMax+" AND ";
 			}
-		}	
+		}
 		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
 		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
@@ -298,7 +298,6 @@ public class BothSearchAndUpdate extends
 	{
 		String searchQuery
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
-		
 		
 		int randAttrNum = -1;
 		for( int i=0;i<SearchAndUpdateDriver.numAttrsInQuery;i++)
@@ -319,9 +318,9 @@ public class BothSearchAndUpdate extends
 				= SearchAndUpdateDriver.ATTR_MIN
 				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
 			
-			// querying 10 % of domain
+			// querying 20 % of domain
 			double predLength 
-				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+				= (0.2*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
@@ -343,7 +342,7 @@ public class BothSearchAndUpdate extends
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 					+" <= "+attrMax+" AND ";
 			}
-		}	
+		}
 		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
 		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
