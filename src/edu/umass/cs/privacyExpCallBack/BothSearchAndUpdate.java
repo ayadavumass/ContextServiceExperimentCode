@@ -352,7 +352,7 @@ public class BothSearchAndUpdate extends
 				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
 			
 			double predLength 
-				= (0.2*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
+				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
