@@ -38,7 +38,7 @@ public class DataSource
         //cpds.setMinPoolSize(5);
         //cpds.setAcquireIncrement(5);
         // 151 is default but on d710 machines it is set to 214
-        cpds.setMaxPoolSize(213);
+        cpds.setMaxPoolSize(210);
         //cpds.setMaxStatements(180);
     }
 
