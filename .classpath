@@ -3,7 +3,5 @@
 	<classpathentry excluding="edu/umass/cs/expcode/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/context-client.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_25"/>
-	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.36-bin.jar"/>
-	<classpathentry kind="lib" path="libs/c3p0-0.9.5.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

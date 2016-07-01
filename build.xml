@@ -12,7 +12,7 @@
 
   <!-- Classpath definitions -->
   <path id="classpath.base">
-    <fileset dir="${lib.dir}" includes="context-client.jar, c3p0-0.9.5.1.jar, mysql-connector-java-5.1.36-bin.jar" />
+    <fileset dir="${lib.dir}" includes="context-client.jar" />
   </path>
 
   <!-- Init -->
@@ -45,7 +45,7 @@
 <jar jarfile="${release.dir}/weatherClient.jar">
   <fileset dir="${build.dir}/">
   </fileset>
-  <zipgroupfileset dir="${lib.dir}/" includes="context-client.jar, c3p0-0.9.5.1.jar, mysql-connector-java-5.1.36-bin.jar"/>
+  <zipgroupfileset dir="${lib.dir}/" includes="context-client.jar"/>
   <manifest>
     <attribute name="Built-By" value="Aditya Yadav" />
     <!-- Information about the program itself -->
