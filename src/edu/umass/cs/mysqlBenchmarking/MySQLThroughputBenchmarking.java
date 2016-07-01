@@ -49,7 +49,7 @@ public class MySQLThroughputBenchmarking
 	{	
 		try
 		{
-			taskES = Executors.newFixedThreadPool(210);
+			taskES = Executors.newFixedThreadPool(150);
 			
 			//valueRand = new Random();
 			dsInst = new DataSource();
