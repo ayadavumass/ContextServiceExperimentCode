@@ -3,6 +3,10 @@ package edu.umass.cs.mysqlBenchmarking;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Class implements the task used for 
@@ -13,16 +17,14 @@ import java.sql.Statement;
 public class UpdateTask implements Runnable
 {
 	private final String guid;
-	private final double value1;
-	private final double value2;
+	private final JSONObject updateJSON;
 	private final AbstractRequestSendingClass requestSendingTask;
 	
-	public UpdateTask(String guid, double value1, double value2,
+	public UpdateTask(String guid, JSONObject updateJSON,
 			AbstractRequestSendingClass requestSendingTask)
 	{
 		this.guid = guid;
-		this.value1 = value1;
-		this.value2 = value2;
+		this.updateJSON = updateJSON;
 		this.requestSendingTask = requestSendingTask;
 	}
 	
@@ -45,14 +47,51 @@ public class UpdateTask implements Runnable
 	
 	public void putValueObjectRecord() throws SQLException
 	{
-		Connection myConn = MySQLBenchmarking.dsInst.getConnection();
+		Connection myConn = null;
 		Statement statement = null;
+		
+		
 
-		String updateTableSQL = "UPDATE "+ MySQLBenchmarking.tableName+
-				" SET value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
+//		String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.tableName+
+//				" SET value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
 
 		try 
 		{
+			Iterator<String> attrIter = updateJSON.keys();
+			
+			String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.tableName+
+					" SET ";
+					//+ "value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
+			boolean first = true;
+			while( attrIter.hasNext() )
+			{
+				String attrName = attrIter.next();
+				
+				try
+				{
+					String value = updateJSON.getString(attrName);
+					
+					if( first )
+					{
+						updateTableSQL = updateTableSQL + attrName+" = "+value;
+						first = false;
+					}
+					else
+					{
+						updateTableSQL = updateTableSQL +" , "+attrName+" = "+value;
+					}
+				}
+				catch(JSONException jsoExcp)
+				{
+					jsoExcp.printStackTrace();
+				}
+			}
+			updateTableSQL = updateTableSQL +" where nodeGUID=X'"+guid+"'";
+			
+//			String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.tableName+
+//					" SET value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
+
+			myConn = MySQLThroughputBenchmarking.dsInst.getConnection();
 			statement = (Statement) myConn.createStatement();
 			
 			statement.executeUpdate(updateTableSQL);

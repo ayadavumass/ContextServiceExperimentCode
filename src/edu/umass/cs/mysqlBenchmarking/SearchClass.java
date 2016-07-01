@@ -13,7 +13,7 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 	
 	public SearchClass()
 	{
-		super(MySQLBenchmarking.SEARCH_LOSS_TOLERANCE);
+		super(MySQLThroughputBenchmarking.SEARCH_LOSS_TOLERANCE);
 		queryRand = new Random();
 	}
 	
@@ -35,13 +35,13 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{	
 		// as it is per ms
-		double reqspms = MySQLBenchmarking.searchRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.searchRequestsps/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms
 		double numberShouldBeSentPerSleep = reqspms*100.0;
 		
-		while( ( (System.currentTimeMillis() - expStartTime) < MySQLBenchmarking.EXPERIMENT_TIME ) )
+		while( ( (System.currentTimeMillis() - expStartTime) < MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
@@ -53,7 +53,7 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		    	int beg2 = this.queryRand.nextInt(1400);
 		    	int end2 = beg2+this.queryRand.nextInt(1500 - beg2-3);
 		    	
-				String selectTableSQL = "SELECT nodeGUID from "+MySQLBenchmarking.tableName+" WHERE "
+				String selectTableSQL = "SELECT nodeGUID from "+MySQLThroughputBenchmarking.tableName+" WHERE "
 				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
 				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
 				sendQueryMessage(selectTableSQL);
@@ -77,7 +77,7 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		    	int beg2 = this.queryRand.nextInt(1400);
 		    	int end2 = beg2+this.queryRand.nextInt(1500 - beg2-3);
 		    	
-				String selectTableSQL = "SELECT nodeGUID from "+MySQLBenchmarking.tableName+" WHERE "
+				String selectTableSQL = "SELECT nodeGUID from "+MySQLThroughputBenchmarking.tableName+" WHERE "
 				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
 				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
 				sendQueryMessage(selectTableSQL);
@@ -101,7 +101,7 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 	private void sendQueryMessage(String mysqlQuery)
 	{
 		SearchTask searchTask = new SearchTask( mysqlQuery, this );
-		MySQLBenchmarking.taskES.execute(searchTask);
+		MySQLThroughputBenchmarking.taskES.execute(searchTask);
 	}
 
 	@Override

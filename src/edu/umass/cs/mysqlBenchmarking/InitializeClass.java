@@ -2,12 +2,15 @@ package edu.umass.cs.mysqlBenchmarking;
 
 import java.util.Random;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class InitializeClass extends AbstractRequestSendingClass implements Runnable
 {
 	private Random updateRand;
 	public InitializeClass()
 	{
-		super(MySQLBenchmarking.INSERT_LOSS_TOLERANCE);
+		super(MySQLThroughputBenchmarking.INSERT_LOSS_TOLERANCE);
 		updateRand = new Random();
 	}
 	
@@ -34,18 +37,18 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 		
 		double currUserGuidNum   = 0;
 		
-		while( ( currUserGuidNum < MySQLBenchmarking.numGuids ) )
+		while( ( currUserGuidNum < MySQLThroughputBenchmarking.numGuids ) )
 		//while( ( (System.currentTimeMillis() - expStartTime) < MySQLBenchmarking.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
-				if(currUserGuidNum >= MySQLBenchmarking.numGuids)
+				if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
 					break;
 				//numSent++;
 			}
-			if(currUserGuidNum >= MySQLBenchmarking.numGuids)
+			if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
 				break;
 			currTime = System.currentTimeMillis();
 			
@@ -61,11 +64,11 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
-				if(currUserGuidNum >= MySQLBenchmarking.numGuids)
+				if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
 					break;
 				//numSent++;
 			}
-			if(currUserGuidNum >= MySQLBenchmarking.numGuids)
+			if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
 				break;
 			Thread.sleep(100);
 		}
@@ -86,12 +89,25 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 	private void doUpdate(int currUserGuidNum)
 	{
 		numSent++;
-		String guid = MySQLBenchmarking.getSHA1(MySQLBenchmarking.guidPrefix+currUserGuidNum);
-		double value1= 1+updateRand.nextInt(1499);
-		double value2 =  1+updateRand.nextInt(1499);
+		String guid = MySQLThroughputBenchmarking.getSHA1
+							(MySQLThroughputBenchmarking.guidPrefix+currUserGuidNum);
+		
+		JSONObject attrValJSON = new JSONObject();
+		
+		for(int i=0; i<MySQLThroughputBenchmarking.numAttrs; i++)
+		{
+			try 
+			{
+				attrValJSON.put("attr"+i, 1500 * updateRand.nextDouble());
+			} 
+			catch (JSONException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 
-		InitializeTask updTask = new InitializeTask( guid, value1, value2, this);
-		MySQLBenchmarking.taskES.execute(updTask);
+		InitializeTask updTask = new InitializeTask( guid, attrValJSON, this);
+		MySQLThroughputBenchmarking.taskES.execute(updTask);
 	}
 
 	@Override

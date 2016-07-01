@@ -3,27 +3,28 @@ package edu.umass.cs.mysqlBenchmarking;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class InitializeTask implements Runnable
 {
 	private final String guid;
-	private final double value1;
-	private final double value2;
+	private final JSONObject attrValJSON;
 	private final AbstractRequestSendingClass requestSendingTask;
 	
-	public InitializeTask(String guid, double value1, double value2,
+	public InitializeTask(String guid, JSONObject attrValJSON,
 			AbstractRequestSendingClass requestSendingTask)
 	{
 		this.guid = guid;
-		this.value1 = value1;
-		this.value2 = value2;
+		this.attrValJSON = attrValJSON;
 		this.requestSendingTask = requestSendingTask;
 	}
 	
 	@Override
 	public void run()
 	{
-		
 		try 
 		{
 			long start = System.currentTimeMillis();
@@ -34,41 +35,68 @@ public class InitializeTask implements Runnable
 		{
 			e.printStackTrace();
 		}
-		
 	}
 	
 	public void putValueObjectRecord() throws SQLException
 	{
-		Connection myConn = MySQLBenchmarking.dsInst.getConnection();
+		Connection myConn = null;
 		Statement statement = null;
-
-		String insertTableSQL = "INSERT INTO "+MySQLBenchmarking.tableName 
-				+" (value1, value2, nodeGUID, versionNum) " + "VALUES"
-				+ "("+value1+","+value2+",'"+guid+"',"+-1 +")";
-
-		try 
+		
+		try
 		{
-			statement = (Statement) myConn.createStatement();
+			myConn = MySQLThroughputBenchmarking.dsInst.getConnection();
 			
+//			String insertTableSQL = "INSERT INTO "+MySQLBenchmarking.tableName 
+//					+" (value1, value2, nodeGUID, versionNum) " + "VALUES"
+//					+ "("+value1+","+value2+",'"+guid+"',"+-1 +")";
+			
+			String insertTableSQL = "INSERT INTO "+MySQLThroughputBenchmarking.tableName 
+					+" ( nodeGUID ";
+			
+			Iterator<String> attrIter = attrValJSON.keys();
+			
+			while( attrIter.hasNext() )
+			{
+				String attrName = attrIter.next();
+				insertTableSQL = insertTableSQL + " , "+attrName;
+			}
+			insertTableSQL = insertTableSQL + " ) VALUES ( X'"+guid+"' ";
+			
+			
+			attrIter = attrValJSON.keys();
+			while( attrIter.hasNext() )
+			{
+				String attrName = attrIter.next();
+				try 
+				{
+					String value = attrValJSON.getString(attrName);
+					insertTableSQL = insertTableSQL + " , "+value;
+				} catch (JSONException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+			insertTableSQL = insertTableSQL + " ) ";
+			
+			statement = (Statement) myConn.createStatement();
 			statement.executeUpdate(insertTableSQL);
 		} catch (SQLException e) 
 		{
 			e.printStackTrace();
-		} finally
+		} 
+		finally
 		{
-			try 
+			try
 			{
 				if(statement != null)
 					statement.close();
 				
 				if(myConn != null)
 					myConn.close();
-				
-			} catch (SQLException e) 
+			} catch (SQLException e)
 			{
 				e.printStackTrace();
 			}
 		}
 	}
-
 }

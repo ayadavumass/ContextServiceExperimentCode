@@ -2,6 +2,9 @@ package edu.umass.cs.mysqlBenchmarking;
 
 
 import java.util.Random;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 /**
  * Updates locations of all users after every 
  * granularityOfGeolocationUpdate
@@ -12,7 +15,7 @@ public class UpdateClass extends AbstractRequestSendingClass implements Runnable
 	private Random updateRand;
 	public UpdateClass()
 	{
-		super(MySQLBenchmarking.UPD_LOSS_TOLERANCE);
+		super(MySQLThroughputBenchmarking.UPD_LOSS_TOLERANCE);
 		updateRand = new Random();
 	}
 	
@@ -22,16 +25,16 @@ public class UpdateClass extends AbstractRequestSendingClass implements Runnable
 		try 
 		{
 			this.startExpTime();
-			locUpdRateControlledRequestSender();
+			updRateControlledRequestSender();
 		} catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
 	}
 	
-	private void locUpdRateControlledRequestSender() throws Exception
+	private void updRateControlledRequestSender() throws Exception
 	{
-		double reqspms = MySQLBenchmarking.updateRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.updateRequestsps/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms
@@ -40,13 +43,14 @@ public class UpdateClass extends AbstractRequestSendingClass implements Runnable
 		double currUserGuidNum   = 0;
 		
 		//while( ( totalNumUsersSent < numUsers ) )
-		while( ( (System.currentTimeMillis() - expStartTime) < MySQLBenchmarking.EXPERIMENT_TIME ) )
+		while( ( (System.currentTimeMillis() - expStartTime) 
+						< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
-				currUserGuidNum=((int)currUserGuidNum)%MySQLBenchmarking.numGuids;
+				currUserGuidNum=((int)currUserGuidNum)%MySQLThroughputBenchmarking.numGuids;
 				//numSent++;
 			}
 			currTime = System.currentTimeMillis();
@@ -63,7 +67,7 @@ public class UpdateClass extends AbstractRequestSendingClass implements Runnable
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
-				currUserGuidNum=((int)currUserGuidNum)%MySQLBenchmarking.numGuids;
+				currUserGuidNum=((int)currUserGuidNum)%MySQLThroughputBenchmarking.numGuids;
 				//numSent++;
 			}
 			Thread.sleep(100);
@@ -82,15 +86,19 @@ public class UpdateClass extends AbstractRequestSendingClass implements Runnable
 	}
 	
 	
-	private void doUpdate(int currUserGuidNum)
+	private void doUpdate(int currUserGuidNum) throws JSONException
 	{
 		numSent++;
-		String guid = MySQLBenchmarking.getSHA1(MySQLBenchmarking.guidPrefix+currUserGuidNum);
-		double value1= 1+updateRand.nextInt(1499);
-		double value2 =  1+updateRand.nextInt(1499);
-
-		UpdateTask updTask = new UpdateTask( guid, value1, value2, this);
-		MySQLBenchmarking.taskES.execute(updTask);
+		String guid = MySQLThroughputBenchmarking.getSHA1
+				(MySQLThroughputBenchmarking.guidPrefix+currUserGuidNum);
+		String attrName = "attr"+updateRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
+		double value = 1500*+updateRand.nextDouble();
+		JSONObject updateJSON = new JSONObject();
+		
+		updateJSON.put(attrName, value);
+		
+		UpdateTask updTask = new UpdateTask( guid, updateJSON, this);
+		MySQLThroughputBenchmarking.taskES.execute(updTask);
 	}
 
 	@Override

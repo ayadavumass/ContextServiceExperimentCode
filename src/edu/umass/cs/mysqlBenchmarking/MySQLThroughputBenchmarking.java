@@ -10,14 +10,14 @@ import java.sql.Statement;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MySQLBenchmarking
+public class MySQLThroughputBenchmarking
 {
 	// 100 seconds, experiment runs for 100 seconds
 	public static final int EXPERIMENT_TIME						= 100000;
-	
+		
 	// after sending all the requests it waits for 100 seconds 
 	public static final int WAIT_TIME							= 100000;
-	
+		
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
 			
@@ -37,34 +37,31 @@ public class MySQLBenchmarking
 	public static double searchRequestsps;
 	public static double updateRequestsps;
 	public static int numGuids;
+	public static int numAttrs;
+	
 	
 	public static boolean runUpdate ;
 	public static boolean runSearch ;
 	
+	public static ExecutorService	 taskES						= null;
 	
-	public static ExecutorService	 taskES												= null;
-	
-	public MySQLBenchmarking()
-	{
-		Connection myConn = null;
-		Statement stmt = null;
-		
+	public MySQLThroughputBenchmarking()
+	{	
 		try
 		{
-			taskES = Executors.newFixedThreadPool(100);
+			taskES = Executors.newFixedThreadPool(214);
 			
 			//valueRand = new Random();
 			dsInst = new DataSource();
+			createTable();
 			
-			myConn = dsInst.getConnection();
-			
-			stmt = myConn.createStatement();
-			// char 45 for GUID because, GUID is 40 char in length, 5 just additional
-			String newTableCommand = "create table "+MySQLBenchmarking.tableName+" ( "
-					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
-					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
-			
-			stmt.executeUpdate(newTableCommand);
+//			myConn = dsInst.getConnection();
+//			stmt = myConn.createStatement();
+//			// char 45 for GUID because, GUID is 40 char in length, 5 just additional
+//			String newTableCommand = "create table "+tableName+" ( "
+//					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
+//					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
+//			stmt.executeUpdate(newTableCommand);
 			
 		} catch (IOException e) 
 		{
@@ -75,9 +72,44 @@ public class MySQLBenchmarking
 		} catch (PropertyVetoException e)
 		{
 			e.printStackTrace();
+		}
+	}
+	
+	private void createTable()
+	{
+		Connection myConn = null;
+		Statement stmt = null;
+		
+		try
+		{	
+			myConn = dsInst.getConnection();
+			stmt = myConn.createStatement();
+			
+			// char 45 for GUID because, GUID is 40 char in length, 5 just additional
+			String newTableCommand = "create table "+tableName+" ( nodeGUID Binary(20) PRIMARY KEY ";
+					//+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
+					//+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
+			
+			for( int i=0; i<numAttrs; i++ )
+			{
+				String attrName = "attr"+i;
+				
+				newTableCommand = newTableCommand +" , "+ attrName+" DOUBLE NOT NULL , "
+						+ "INDEX USING BTREE ("+attrName+")";
+			}
+			
+			newTableCommand = newTableCommand +" ) ";
+			
+//			String newTableCommand = "create table "+tableName+" ( "
+//					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
+//					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
+			stmt.executeUpdate(newTableCommand);
+		} catch ( SQLException e )
+		{
+			e.printStackTrace();
 		} finally
 		{
-			try 
+			try
 			{
 				if(stmt != null)
 					stmt.close();
@@ -85,13 +117,15 @@ public class MySQLBenchmarking
 				if(myConn != null)
 					myConn.close();
 				
-			} catch (SQLException e) 
+			} 
+			catch (SQLException e) 
 			{
 				e.printStackTrace();
 			}
 		}
 	}
-		
+	
+	
 	public static String getSHA1(String stringToHash)
 	{
 	   MessageDigest md=null;
@@ -120,17 +154,20 @@ public class MySQLBenchmarking
 	public static void main(String[] args)
 	{
 		numGuids = Integer.parseInt(args[0]);
-		searchRequestsps = Double.parseDouble(args[1]);
-		updateRequestsps = Double.parseDouble(args[2]);
-		runUpdate = Boolean.parseBoolean(args[3]);
-		runSearch = Boolean.parseBoolean(args[4]);
-		MySQLBenchmarking mysqlBech = new MySQLBenchmarking();
+		numAttrs = Integer.parseInt(args[1]);
+		searchRequestsps = Double.parseDouble(args[2]);
+		updateRequestsps = Double.parseDouble(args[3]);
+		runUpdate = Boolean.parseBoolean(args[4]);
+		runSearch = Boolean.parseBoolean(args[5]);
+		
+		MySQLThroughputBenchmarking mysqlBech 
+								= new MySQLThroughputBenchmarking();
 		
 		long start = System.currentTimeMillis();
 		InitializeClass initClass = new InitializeClass();
 		new Thread(initClass).start();
 		initClass.waitForThreadFinish();
-//		mysqlBech.insertRecords();
+//			mysqlBech.insertRecords();
 		System.out.println(numGuids+" records inserted in "+(System.currentTimeMillis()-start));
 		
 		try

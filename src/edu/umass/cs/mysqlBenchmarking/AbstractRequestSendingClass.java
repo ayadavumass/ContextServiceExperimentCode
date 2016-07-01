@@ -6,7 +6,6 @@ import java.util.TimerTask;
 
 public abstract class AbstractRequestSendingClass 
 {
-	
 	protected long expStartTime;
 	protected final Timer waitTimer;
 	protected final Object waitLock = new Object();
@@ -34,7 +33,7 @@ public abstract class AbstractRequestSendingClass
 	
 	protected void waitForFinish()
 	{
-		waitTimer.schedule(new WaitTimerTask(), MySQLBenchmarking.WAIT_TIME);
+		waitTimer.schedule(new WaitTimerTask(), MySQLThroughputBenchmarking.WAIT_TIME);
 		
 		while( !checkForCompletionWithLossTolerance(numSent, numRecvd) )
 		{

@@ -3,154 +3,161 @@ package edu.umass.cs.mysqlBenchmarking;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class DataSource 
+public class DataSource
 {
     private static DataSource     datasource;
     private ComboPooledDataSource cpds;
     
+    private final int portNum;
+    
+    private final String dirName;
+    
     public DataSource() throws IOException, SQLException, PropertyVetoException
     {
-    	//int portNum = 6000;
-    	int portNum = 3306;
-    	//String dirName = "mysqlDir-serv0";
+    	portNum = 6000;
+    	//int portNum = 3306;
+    	dirName = "mysqlDir-serv0";
+    	
+    	dropDB();
+    	createDB();
+    	
         cpds = new ComboPooledDataSource();
         cpds.setDriverClass("com.mysql.jdbc.Driver"); //loads the jdbc driver
-        //cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0?socket=/home/"+dirName+"/thesock");
-        cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0");
+        cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/testDB?socket=/home/"+dirName+"/thesock");
+        //cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0");
         cpds.setUser("root");
         cpds.setPassword("aditya");
 
         // the settings below are optional -- c3p0 can work with defaults
         //cpds.setMinPoolSize(5);
         //cpds.setAcquireIncrement(5);
-        cpds.setMaxPoolSize(150);
+        // 151 is default but on d710 machines it is set to 214
+        cpds.setMaxPoolSize(214);
         //cpds.setMaxStatements(180);
     }
 
     public static DataSource getInstance() throws IOException, SQLException, PropertyVetoException 
     {
-        if (datasource == null) 
+    	if (datasource == null) 
         {
-            datasource = new DataSource();
-            return datasource;
+    		datasource = new DataSource();
+    		return datasource;
         } else 
         {
-            return datasource;
+        	return datasource;
         }
     }
 
     public Connection getConnection() throws SQLException 
     {
-        return this.cpds.getConnection();
+    	return this.cpds.getConnection();
     }
     
-//    private void createDB()
-//    {
-//    	Connection conn = null;
-//    	Statement stmt = null;
-//    	try
-//    	{
-//    		//STEP 2: Register JDBC driver
-//    		Class.forName("com.mysql.jdbc.Driver");
+    private void createDB()
+    {
+    	Connection conn = null;
+    	Statement stmt = null;
+    	try
+    	{
+    		//STEP 2: Register JDBC driver
+    		Class.forName("com.mysql.jdbc.Driver");
+    		//int portNum = 6000;
+        	//String dirName = "mysqlDir-serv0";
+        	
+    		//STEP 3: Open a connection
+    		String jdbcURL = "jdbc:mysql://localhost:"
+    						+portNum+"?socket=/home/"+dirName+"/thesock";
+    		
+    	    //ContextServiceLogger.getLogger().fine("Connecting to database...");
+    	    conn = DriverManager.getConnection(jdbcURL, "root", "aditya");
+    	    
+		    //STEP 4: Execute a query
+		    //ContextServiceLogger.getLogger().fine("Creating database...");
+		    stmt = conn.createStatement();
+		    String sql = "CREATE DATABASE testDB";
+		    stmt.executeUpdate(sql);
+		}
+    	catch(SQLException se)
+    	{
+    		se.printStackTrace();
+    	}catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	finally
+    	{
+    		//finally block used to close resources
+    	    try
+    	    {
+    	    	if(stmt!=null)
+    	    		stmt.close();
+    	    }
+    	    catch(SQLException se2)
+    	    {
+    	    }// nothing we can do
+    	    try
+    	    {
+    	    	if(conn!=null)
+    	    		conn.close();
+    	    }
+    	    catch(SQLException se)
+    	    {
+    	    	se.printStackTrace();
+    	    }//end finally try
+    	}//end try
+    }
+    
+    private void dropDB()
+    {
+    	Connection conn = null;
+    	Statement stmt = null;
+    	try
+    	{
+    		Class.forName("com.mysql.jdbc.Driver");
 //    		int portNum = 6000;
 //        	String dirName = "mysqlDir-serv0";
-//        	
-//    		//STEP 3: Open a connection
-//    		String jdbcURL = "jdbc:mysql://localhost:"+portNum+"?socket=/home/"+dirName+"/thesock";
-//    		
-//    		
-//    	    //ContextServiceLogger.getLogger().fine("Connecting to database...");
-//    	    conn = DriverManager.getConnection(jdbcURL, "root", "aditya");
-//
-//		    //STEP 4: Execute a query
-//		    //ContextServiceLogger.getLogger().fine("Creating database...");
-//		    stmt = conn.createStatement();
-//		    String sql = "CREATE DATABASE contextDB";
-//		    stmt.executeUpdate(sql);
-//		}
-//    	catch(SQLException se)
-//    	{
-//    		se.printStackTrace();
-//    	}catch(Exception e)
-//    	{
-//    		e.printStackTrace();
-//    	}finally
-//    	{
-//    		//finally block used to close resources
-//    	    try
-//    	    {
-//    	    	if(stmt!=null)
-//    	    		stmt.close();
-//    	    }
-//    	    catch(SQLException se2)
-//    	    {
-//    	    }// nothing we can do
-//    	    try
-//    	    {
-//    	    	if(conn!=null)
-//    	    		conn.close();
-//    	    }
-//    	    catch(SQLException se)
-//    	    {
-//    	    	se.printStackTrace();
-//    	    }//end finally try
-//    	}//end try
-//    }
-//    
-//    private void dropDB()
-//    {
-//    	Connection conn = null;
-//    	Statement stmt = null;
-//    	try
-//    	{
-//    		//STEP 2: Register JDBC driver
-//    		Class.forName("com.mysql.jdbc.Driver");
-//    		int portNum = 6000;
-//        	String dirName = "mysqlDir-serv0";
-//        	
-//    		//STEP 3: Open a connection
-//    		String jdbcURL = "jdbc:mysql://localhost:"+portNum+"?socket=/home/"+dirName+"/thesock";
-//    		
-//    		
-//    	    //ContextServiceLogger.getLogger().fine("Connecting to database...");
-//    	    conn = DriverManager.getConnection(jdbcURL, "root", "aditya");
-//
-//		    //STEP 4: Execute a query
-//		    //ContextServiceLogger.getLogger().fine("Creating database...");
-//		    stmt = conn.createStatement();
-//		    String sql = "drop DATABASE contextDB";
-//		    stmt.executeUpdate(sql);
-//		}
-//    	catch(SQLException se)
-//    	{
-//    		se.printStackTrace();
-//    	}catch(Exception e)
-//    	{
-//    		e.printStackTrace();
-//    	}finally
-//    	{
-//    		//finally block used to close resources
-//    	    try
-//    	    {
-//    	    	if(stmt!=null)
-//    	    		stmt.close();
-//    	    }
-//    	    catch(SQLException se2)
-//    	    {
-//    	    }// nothing we can do
-//    	    try
-//    	    {
-//    	    	if(conn!=null)
-//    	    		conn.close();
-//    	    }
-//    	    catch(SQLException se)
-//    	    {
-//    	    	se.printStackTrace();
-//    	    }//end finally try
-//    	}//end try
-//    }
+        	
+    		String jdbcURL = "jdbc:mysql://localhost:"
+    							+portNum+"?socket=/home/"+dirName+"/thesock";
+    		
+    	    conn = DriverManager.getConnection(jdbcURL, "root", "aditya");
+    	    
+		    stmt = conn.createStatement();
+		    String sql = "drop DATABASE testDB";
+		    stmt.executeUpdate(sql);
+		}
+    	catch(SQLException se)
+    	{
+    		se.printStackTrace();
+    	}catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}finally
+    	{
+    		//finally block used to close resources
+    	    try
+    	    {
+    	    	if(stmt!=null)
+    	    		stmt.close();
+    	    }
+    	    catch(SQLException se2)
+    	    {
+    	    }// nothing we can do
+    	    try
+    	    {
+    	    	if(conn!=null)
+    	    		conn.close();
+    	    }
+    	    catch(SQLException se)
+    	    {
+    	    	se.printStackTrace();
+    	    }//end finally try
+    	}//end try
+    }
 }
