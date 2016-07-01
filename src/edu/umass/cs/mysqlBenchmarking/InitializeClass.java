@@ -116,8 +116,8 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Init reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+//			System.out.println("Init reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{

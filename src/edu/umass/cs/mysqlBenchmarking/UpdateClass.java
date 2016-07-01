@@ -107,8 +107,8 @@ public class UpdateClass extends AbstractRequestSendingClass implements Runnable
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Update reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+//			System.out.println("Update reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
