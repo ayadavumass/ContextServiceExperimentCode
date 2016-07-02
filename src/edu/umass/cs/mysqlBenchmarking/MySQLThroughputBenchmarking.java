@@ -14,10 +14,10 @@ public class MySQLThroughputBenchmarking
 {
 	// 100 seconds, experiment runs for 100 seconds
 	public static final int EXPERIMENT_TIME						= 100000;
-		
+	
 	// after sending all the requests it waits for 100 seconds 
 	public static final int WAIT_TIME							= 100000;
-		
+	
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
 			
@@ -30,6 +30,9 @@ public class MySQLThroughputBenchmarking
 	public static String guidPrefix								= "guidPrefix";
 	
 	public static final String tableName 						= "testTable";
+	
+	public static final int ATTR_MAX							= 1500;
+	public static final int ATTR_MIN							= 1;
 	
 	
 	public static DataSource dsInst;
@@ -46,6 +49,8 @@ public class MySQLThroughputBenchmarking
 	public static int PoolSize;
 	
 	public static int insertRequestsps;
+	
+	public static final int numAttrsInQuery						= 4;
 	
 	public static ExecutorService	 taskES						= null;
 	

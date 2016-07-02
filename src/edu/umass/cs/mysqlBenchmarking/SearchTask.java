@@ -7,6 +7,8 @@ import java.sql.Statement;
 
 import org.json.JSONArray;
 
+import edu.umass.cs.contextservice.utils.Utils;
+
 public class SearchTask implements Runnable
 {
 	private final String searchQuery;
@@ -60,9 +62,10 @@ public class SearchTask implements Runnable
 			{
 				//Retrieve by column name
 				//double value  	 = rs.getDouble("value");
-				String nodeGUID = rs.getString("nodeGUID");
+				byte[] nodeGUIDBytes  = rs.getBytes("nodeGUID");
+				String nodeGUIDString = Utils.bytArrayToHex(nodeGUIDBytes);
 			
-				jsoArray.put(nodeGUID);
+				jsoArray.put(nodeGUIDString);
 			}
 			
 			rs.close();
@@ -70,20 +73,19 @@ public class SearchTask implements Runnable
 		{
 			sqlex.printStackTrace();
 		}
-		 finally
+		finally
 		{
 			 try 
-			{
-				if(stmt != null)
-					stmt.close();
-					
-				if(myConn != null)
-					myConn.close();
-					
-			} catch (SQLException e) 
-			{
-				e.printStackTrace();
-			}
+			 {
+				 if(stmt != null)
+					 stmt.close();
+				 
+				 if(myConn != null)
+					 myConn.close();
+			 } catch (SQLException e) 
+			 {
+				 e.printStackTrace();
+			 }
 		}
 		return jsoArray;
 	}

@@ -2,6 +2,8 @@ package edu.umass.cs.mysqlBenchmarking;
 
 
 import java.util.Random;
+
+
 /**
  * Updates locations of all users after every 
  * granularityOfGeolocationUpdate
@@ -102,6 +104,129 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 	{
 		SearchTask searchTask = new SearchTask( mysqlQuery, this );
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
+	}
+	
+	private void sendQueryMessage(long reqIdNum)
+	{
+		String searchQuery
+			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ";
+//			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
+//			+ " AND "
+//			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+		
+		int randAttrNum = -1;
+		for( int i=0; i<MySQLThroughputBenchmarking.numAttrsInQuery; i++)
+		{
+			// if num attrs and num in query are same then send query on all attrs
+			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
+			{
+				randAttrNum++;
+			}
+			else
+			{
+				randAttrNum = queryRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
+			}				
+			
+			String attrName = "attr"+randAttrNum;
+			double attrMin 
+				= 1
+				+queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN);
+			
+			double predLength 
+				= (queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN));
+			
+			double attrMax = attrMin + predLength;
+			//		double latitudeMax = latitudeMin 
+			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
+			// making it curcular
+//			if( attrMax > MySQLThroughputBenchmarking.ATTR_MAX )
+//			{
+////				double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
+////				attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
+//			}
+			
+			// last so no AND
+			if(i == (MySQLThroughputBenchmarking.numAttrsInQuery-1))
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+						+" <= "+attrMax;
+			}
+			else
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+					+" <= "+attrMax+" AND ";
+			}
+		}
+//		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
+//		SearchAndUpdateDriver.taskES.execute(searchTask);
+		
+		SearchTask searchTask = new SearchTask( searchQuery, this );
+		MySQLThroughputBenchmarking.taskES.execute(searchTask);
+		
+//		ExperimentSearchReply searchRep 
+//					= new ExperimentSearchReply( reqIdNum );
+//		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
+//					(searchQuery, 300000, searchRep, this.getCallBack());
+	}
+	
+	private void sendQueryMessageWithSmallRanges(long reqIdNum)
+	{
+		String searchQuery
+			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ";
+		
+		int randAttrNum = -1;
+		for( int i=0; i<MySQLThroughputBenchmarking.numAttrsInQuery; i++)
+		{
+			// if num attrs and num in query are same then send query on all attrs
+			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
+			{
+				randAttrNum++;
+			}
+			else
+			{
+				randAttrNum = queryRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
+			}
+			
+			String attrName = "attr"+randAttrNum;
+			double attrMin 
+				= MySQLThroughputBenchmarking.ATTR_MIN
+				+queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN);
+			
+			// querying 10 % of domain
+			double predLength 
+				= (0.1*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN)) ;
+			
+			double attrMax = attrMin + predLength;
+			//		double latitudeMax = latitudeMin 
+			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
+			// making it curcular
+//			if( attrMax > MySQLThroughputBenchmarking.ATTR_MAX )
+//			{
+//				double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
+//				attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
+//			}
+			// last so no AND
+			if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+						+" <= "+attrMax;
+			}
+			else
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+					+" <= "+attrMax+" AND ";
+			}
+		}
+		
+//		ExperimentSearchReply searchRep 
+//				= new ExperimentSearchReply( reqIdNum );
+//		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
+//			(searchQuery, 300000, searchRep, this.getCallBack());
+		
+		SearchTask searchTask = new SearchTask( searchQuery, this );
+		MySQLThroughputBenchmarking.taskES.execute(searchTask);
+//		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
+//		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 
 	@Override
