@@ -26,7 +26,8 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		{
 			this.startExpTime();
 			searchQueryRateControlledRequestSender();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -43,22 +44,24 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		// sleep for 100ms
 		double numberShouldBeSentPerSleep = reqspms*100.0;
 		
-		while( ( (System.currentTimeMillis() - expStartTime) < MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
+		while( ( (System.currentTimeMillis() - expStartTime)
+				< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
 //				JSONObject queryGeoJSON = 
 //						weatherAlertsArray.get( queryRand.nextInt(weatherAlertsArray.size() ) );
-				int beg1 = this.queryRand.nextInt(1400);
-		    	int end1 = beg1+this.queryRand.nextInt(1500 - beg1-3);
-		    	
-		    	int beg2 = this.queryRand.nextInt(1400);
-		    	int end2 = beg2+this.queryRand.nextInt(1500 - beg2-3);
-		    	
-				String selectTableSQL = "SELECT nodeGUID from "+MySQLThroughputBenchmarking.tableName+" WHERE "
-				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
-				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
-				sendQueryMessage(selectTableSQL);
+//				int beg1 = this.queryRand.nextInt(1400);
+//		    	int end1 = beg1+this.queryRand.nextInt(1500 - beg1-3);
+//		    	
+//		    	int beg2 = this.queryRand.nextInt(1400);
+//		    	int end2 = beg2+this.queryRand.nextInt(1500 - beg2-3);
+//		    	
+//				String selectTableSQL = "SELECT nodeGUID from "+MySQLThroughputBenchmarking.tableName+" WHERE "
+//				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
+//				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
+//				sendQueryMessage(selectTableSQL);
+				sendQueryMessageWithSmallRanges();
 				numSent++;
 			}
 			currTime = System.currentTimeMillis();
@@ -73,16 +76,17 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
-				int beg1 = this.queryRand.nextInt(1400);
-		    	int end1 = beg1+this.queryRand.nextInt(1500 - beg1-3);
-		    	
-		    	int beg2 = this.queryRand.nextInt(1400);
-		    	int end2 = beg2+this.queryRand.nextInt(1500 - beg2-3);
-		    	
-				String selectTableSQL = "SELECT nodeGUID from "+MySQLThroughputBenchmarking.tableName+" WHERE "
-				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
-				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
-				sendQueryMessage(selectTableSQL);
+//				int beg1 = this.queryRand.nextInt(1400);
+//		    	int end1 = beg1+this.queryRand.nextInt(1500 - beg1-3);
+//		    	
+//		    	int beg2 = this.queryRand.nextInt(1400);
+//		    	int end2 = beg2+this.queryRand.nextInt(1500 - beg2-3);
+//		    	
+//				String selectTableSQL = "SELECT nodeGUID from "+MySQLThroughputBenchmarking.tableName+" WHERE "
+//				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
+//				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
+//				sendQueryMessage(selectTableSQL);
+				sendQueryMessageWithSmallRanges();
 				numSent++;
 			}
 			Thread.sleep(100);
@@ -106,7 +110,7 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
 	}
 	
-	private void sendQueryMessage(long reqIdNum)
+	private void sendQueryMessage()
 	{
 		String searchQuery
 			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ";
@@ -169,7 +173,7 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 //					(searchQuery, 300000, searchRep, this.getCallBack());
 	}
 	
-	private void sendQueryMessageWithSmallRanges(long reqIdNum)
+	private void sendQueryMessageWithSmallRanges()
 	{
 		String searchQuery
 			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ";
