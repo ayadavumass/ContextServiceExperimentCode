@@ -43,13 +43,15 @@ public class MySQLThroughputBenchmarking
 	public static boolean runUpdate ;
 	public static boolean runSearch ;
 	
+	public static int PoolSize;
+	
 	public static ExecutorService	 taskES						= null;
 	
 	public MySQLThroughputBenchmarking()
-	{	
+	{
 		try
 		{
-			taskES = Executors.newFixedThreadPool(10);
+			taskES = Executors.newFixedThreadPool(PoolSize);
 			
 			//valueRand = new Random();
 			dsInst = new DataSource();
@@ -125,7 +127,6 @@ public class MySQLThroughputBenchmarking
 		}
 	}
 	
-	
 	public static String getSHA1(String stringToHash)
 	{
 	   MessageDigest md=null;
@@ -159,6 +160,7 @@ public class MySQLThroughputBenchmarking
 		updateRequestsps = Double.parseDouble(args[3]);
 		runUpdate = Boolean.parseBoolean(args[4]);
 		runSearch = Boolean.parseBoolean(args[5]);
+		PoolSize  = Integer.parseInt(args[6]);
 		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
