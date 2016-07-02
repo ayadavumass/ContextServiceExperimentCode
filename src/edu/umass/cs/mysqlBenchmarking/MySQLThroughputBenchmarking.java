@@ -45,6 +45,8 @@ public class MySQLThroughputBenchmarking
 	
 	public static int PoolSize;
 	
+	public static int insertRequestsps;
+	
 	public static ExecutorService	 taskES						= null;
 	
 	public MySQLThroughputBenchmarking()
@@ -161,6 +163,7 @@ public class MySQLThroughputBenchmarking
 		runUpdate = Boolean.parseBoolean(args[4]);
 		runSearch = Boolean.parseBoolean(args[5]);
 		PoolSize  = Integer.parseInt(args[6]);
+		insertRequestsps = Integer.parseInt(args[7]);
 		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
