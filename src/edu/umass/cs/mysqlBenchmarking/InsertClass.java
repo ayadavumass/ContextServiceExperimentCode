@@ -5,10 +5,11 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class InitializeClass extends AbstractRequestSendingClass implements Runnable
+public class InsertClass extends AbstractRequestSendingClass implements Runnable
 {
 	private Random updateRand;
-	public InitializeClass()
+	
+	public InsertClass()
 	{
 		super(MySQLThroughputBenchmarking.INSERT_LOSS_TOLERANCE);
 		updateRand = new Random();
@@ -17,11 +18,11 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 	@Override
 	public void run()
 	{
-		try 
+		try
 		{
 			this.startExpTime();
 			updRateControlledRequestSender();
-		} catch (Exception e) 
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -30,26 +31,24 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 	private void updRateControlledRequestSender() throws Exception
 	{
 		double reqspms = MySQLThroughputBenchmarking.insertRequestsps/1000.0;
-		long currTime = 0;
+		long currTime  = 0;
 		
 		// sleep for 100ms
 		double numberShouldBeSentPerSleep = reqspms*100.0;
 		
-		double currUserGuidNum   = 0;
+		double currUserGuidNum   = 1000000;
 		
-		while( ( currUserGuidNum < MySQLThroughputBenchmarking.numGuids ) )
-		//while( ( (System.currentTimeMillis() - expStartTime) < MySQLBenchmarking.EXPERIMENT_TIME ) )
+		//while( ( currUserGuidNum < MySQLThroughputBenchmarking.numGuids ) )
+		while( ( (System.currentTimeMillis() - expStartTime)
+				< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
-				if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
-					break;
 				//numSent++;
 			}
-			if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
-				break;
+			
 			currTime = System.currentTimeMillis();
 			
 			double timeElapsed = ((currTime- expStartTime)*1.0);
@@ -64,27 +63,22 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
-				if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
-					break;
 				//numSent++;
-			}
-			if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
-				break;
+			}			
 			Thread.sleep(100);
 		}
 		
 		long endTime = System.currentTimeMillis();
 		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
 		double sendingRate = (numSent * 1.0)/(timeInSec);
-		System.out.println("Init eventual sending rate "+sendingRate);
+		System.out.println("Insert eventual sending rate "+sendingRate);
 		
 		waitForFinish();
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
-		System.out.println("Init result:Goodput "+sysThrput);
+		System.out.println("Insert result:Goodput "+sysThrput);
 	}
-	
 	
 	private void doUpdate(int currUserGuidNum)
 	{
@@ -105,8 +99,8 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 				e.printStackTrace();
 			}
 		}
-
-		InitializeTask updTask = new InitializeTask( guid, attrValJSON, this);
+		
+		InsertTask updTask = new InsertTask( guid, attrValJSON, this);
 		MySQLThroughputBenchmarking.taskES.execute(updTask);
 	}
 
@@ -116,7 +110,7 @@ public class InitializeClass extends AbstractRequestSendingClass implements Runn
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Init reply recvd "+userGUID+" time taken "+timeTaken+
+			System.out.println("Insert reply recvd "+userGUID+" time taken "+timeTaken+
 					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))

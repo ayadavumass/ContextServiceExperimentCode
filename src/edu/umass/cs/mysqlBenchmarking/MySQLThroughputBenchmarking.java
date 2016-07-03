@@ -45,6 +45,7 @@ public class MySQLThroughputBenchmarking
 	
 	public static boolean runUpdate ;
 	public static boolean runSearch ;
+	public static boolean runInsert;
 	
 	public static int PoolSize;
 	
@@ -59,7 +60,6 @@ public class MySQLThroughputBenchmarking
 		try
 		{
 			taskES = Executors.newFixedThreadPool(PoolSize);
-			
 			//valueRand = new Random();
 			dsInst = new DataSource();
 			createTable();
@@ -71,7 +71,6 @@ public class MySQLThroughputBenchmarking
 //					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
 //					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
 //			stmt.executeUpdate(newTableCommand);
-			
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
@@ -136,7 +135,7 @@ public class MySQLThroughputBenchmarking
 	
 	public static String getSHA1(String stringToHash)
 	{
-	   MessageDigest md=null;
+	   MessageDigest md = null;
 	   try
 	   {
 		   md = MessageDigest.getInstance("SHA-256");
@@ -163,12 +162,14 @@ public class MySQLThroughputBenchmarking
 	{
 		numGuids = Integer.parseInt(args[0]);
 		numAttrs = Integer.parseInt(args[1]);
-		searchRequestsps = Double.parseDouble(args[2]);
-		updateRequestsps = Double.parseDouble(args[3]);
-		runUpdate = Boolean.parseBoolean(args[4]);
-		runSearch = Boolean.parseBoolean(args[5]);
-		PoolSize  = Integer.parseInt(args[6]);
-		insertRequestsps = Integer.parseInt(args[7]);
+		updateRequestsps = Double.parseDouble(args[2]);
+		searchRequestsps = Double.parseDouble(args[3]);
+		insertRequestsps = Integer.parseInt(args[4]);
+		runUpdate = Boolean.parseBoolean(args[5]);
+		runSearch = Boolean.parseBoolean(args[6]);
+		runInsert = Boolean.parseBoolean(args[7]);
+		PoolSize  = Integer.parseInt(args[8]);
+		
 		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
@@ -178,7 +179,8 @@ public class MySQLThroughputBenchmarking
 		new Thread(initClass).start();
 		initClass.waitForThreadFinish();
 //			mysqlBech.insertRecords();
-		System.out.println(numGuids+" records inserted in "+(System.currentTimeMillis()-start));
+		System.out.println(numGuids+" records inserted in "
+									+(System.currentTimeMillis()-start));
 		
 		try
 		{
@@ -189,22 +191,30 @@ public class MySQLThroughputBenchmarking
 		}
 		UpdateClass updateObj = null;
 		SearchClass searchObj = null;
+		InsertClass insertObj = null;
 		
 		if(runUpdate)
 			updateObj = new UpdateClass();
 		if(runSearch)
 			searchObj = new SearchClass();
+		if(runInsert)
+			insertObj = new InsertClass();
+		
 		
 
 		if(runUpdate)
 			new Thread(updateObj).start();
 		if(runSearch)
 			new Thread(searchObj).start();
+		if(runInsert)
+			new Thread(insertObj).start();
 		
-		if(runSearch)
-			searchObj.waitForThreadFinish();
 		if(runUpdate)
 			updateObj.waitForThreadFinish();
+		if(runSearch)
+			searchObj.waitForThreadFinish();
+		if(runInsert)
+			insertObj.waitForThreadFinish();
 		
 		System.exit(0);
 		//stateChange.waitForThreadFinish();
