@@ -27,7 +27,7 @@ public class GetClass extends AbstractRequestSendingClass implements Runnable
 	
 	private void getRateControlledRequestSender() throws Exception
 	{
-		double reqspms = MySQLThroughputBenchmarking.insertRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.getRequestsps/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms
