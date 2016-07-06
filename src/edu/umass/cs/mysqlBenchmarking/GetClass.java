@@ -65,7 +65,7 @@ public class GetClass extends AbstractRequestSendingClass implements Runnable
 		long endTime = System.currentTimeMillis();
 		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
 		double sendingRate = (numSent * 1.0)/(timeInSec);
-		System.out.println("Init eventual sending rate "+sendingRate);
+		System.out.println("Get eventual sending rate "+sendingRate);
 		
 		waitForFinish();
 		double endTimeReplyRecvd = System.currentTimeMillis();
