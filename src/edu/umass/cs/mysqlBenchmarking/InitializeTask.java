@@ -83,7 +83,7 @@ public class InitializeTask implements Runnable
 		} catch (SQLException e) 
 		{
 			e.printStackTrace();
-		} 
+		}
 		finally
 		{
 			try

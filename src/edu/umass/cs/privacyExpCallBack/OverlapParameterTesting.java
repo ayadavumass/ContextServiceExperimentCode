@@ -1,6 +1,5 @@
 package edu.umass.cs.privacyExpCallBack;
 
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,32 +13,31 @@ import edu.umass.cs.contextservice.client.common.AnonymizedIDEntry;
 import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.gnsclient.client.GuidEntry;
 
-public class UserInitializationACLWithCircles extends 
-									AbstractRequestSendingClass
-{
+public class OverlapParameterTesting
+{	
+	
 	// different random generator for each variable, as using one for 
 	// all of them doesn't give uniform properties.
-		
+			
 	private final Random initRand;
 	//private final KeyPairGenerator kpg;
 	private final Random aclRand;
 	private final Random circleRand;
-	
-	public UserInitializationACLWithCircles() throws Exception
+		
+	public OverlapParameterTesting() throws Exception
 	{
-		super( SearchAndUpdateDriver.INSERT_LOSS_TOLERANCE );
 		initRand = new Random(SearchAndUpdateDriver.myID*100);
 		aclRand  = new Random((SearchAndUpdateDriver.myID+1)*102);
 		
 		
 		circleRand = new Random((SearchAndUpdateDriver.myID+1)*105);
-//		kpg = KeyPairGenerator.getInstance
-//					( ContextServiceConfig.AssymmetricEncAlgorithm );
+//			kpg = KeyPairGenerator.getInstance
+//						( ContextServiceConfig.AssymmetricEncAlgorithm );
 		
 		// just generate all user entries.
 		generateUserEntries();
 	}
-	
+		
 	private void generateUserEntries() throws Exception
 	{
 		System.out.println("generateUserEntries started "
@@ -160,16 +158,16 @@ public class UserInitializationACLWithCircles extends
 			{
 				System.out.println( "Number of anonymized IDs created "+
 						anonymizedIDList.size() );
-//				for(int k=0; k<anonymizedIDList.size(); k++)
-//				{
-//					System.out.println("UserNum"+i+" "+
-//									anonymizedIDList.get(k).toString());
-//				}
+//					for(int k=0; k<anonymizedIDList.size(); k++)
+//					{
+//						System.out.println("UserNum"+i+" "+
+//										anonymizedIDList.get(k).toString());
+//					}
 			}
 			currUserEntry.setAnonymizedIDList(anonymizedIDList);
 		}
 	}
-	
+		
 	private HashMap<Integer, Boolean> pickDistinctCircles( int totalCircles, 
 													int numCirclesToPick )
 	{
@@ -192,8 +190,8 @@ public class UserInitializationACLWithCircles extends
 		}
 		return pickedCircleMap;
 	}
-	
-	
+		
+		
 	private void generateACLWithFixedCircles( HashMap<String, List<ACLEntry>> aclMap, 
 			HashMap<Integer, List<ACLEntry>> circlesMap, int numberCirlcesInACL )
 	{
@@ -222,8 +220,8 @@ public class UserInitializationACLWithCircles extends
 			aclMap.put(attrName, attrACL);
 		}
 	}
-	
-	
+		
+		
 	private void generateACLUnifomrlyWithCircles( HashMap<String, List<ACLEntry>> aclMap, 
 			HashMap<Integer, List<ACLEntry>> circlesMap )
 	{
@@ -264,44 +262,44 @@ public class UserInitializationACLWithCircles extends
 			aclMap.put(attrName, attrACL);
 		}
 	}
-	
-	
-	private void sendAInitMessage(int guidNum) throws Exception
-	{
-		UserEntry userEntry 
-					= SearchAndUpdateDriver.usersVector.get(guidNum);
 		
-		JSONObject attrValJSON = new JSONObject();
 		
-		double attrDiff = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
+//	private void sendAInitMessage(int guidNum) throws Exception
+//	{
+//		UserEntry userEntry 
+//					= SearchAndUpdateDriver.usersVector.get(guidNum);
+//		
+//		JSONObject attrValJSON = new JSONObject();
+//		
+//		double attrDiff = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
+//		
+//		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
+//		{
+//			String attrName = SearchAndUpdateDriver.attrPrefix+i;
+//			double attrVal  = SearchAndUpdateDriver.ATTR_MIN 
+//					+ attrDiff * initRand.nextDouble();
+//			attrValJSON.put(attrName, attrVal);
+//		}
+//		
+//		GuidEntry myGUIDInfo = userEntry.getGuidEntry();
+//		String guidString = userEntry.getGuidEntry().getGuid();
+//		
+//		ExperimentUpdateReply updateRep 
+//					= new ExperimentUpdateReply(guidNum, guidString);
+//	
+//		
+//		SearchAndUpdateDriver.csClient.sendUpdateSecureWithCallback
+//						( guidString, myGUIDInfo, attrValJSON, -1, 
+//								userEntry.getACLMap(), 
+//								userEntry.getAnonymizedIDList(),
+//								updateRep, this.getCallBack() );
+//		
+//		//String userGUID = userEntry.getGuidEntry().getGuid();	
+////			UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
+////			SearchAndUpdateDriver.taskES.execute(updTask);
+//	}
 		
-		for( int i=0; i<SearchAndUpdateDriver.numAttrs; i++ )
-		{
-			String attrName = SearchAndUpdateDriver.attrPrefix+i;
-			double attrVal  = SearchAndUpdateDriver.ATTR_MIN 
-					+ attrDiff * initRand.nextDouble();
-			attrValJSON.put(attrName, attrVal);
-		}
 		
-		GuidEntry myGUIDInfo = userEntry.getGuidEntry();
-		String guidString = userEntry.getGuidEntry().getGuid();
-		
-		ExperimentUpdateReply updateRep 
-					= new ExperimentUpdateReply(guidNum, guidString);
-	
-		
-		SearchAndUpdateDriver.csClient.sendUpdateSecureWithCallback
-						( guidString, myGUIDInfo, attrValJSON, -1, 
-								userEntry.getACLMap(), 
-								userEntry.getAnonymizedIDList(),
-								updateRep, this.getCallBack() );
-		
-		//String userGUID = userEntry.getGuidEntry().getGuid();	
-//		UpdateTask updTask = new UpdateTask(attrValJSON, userEntry, this);
-//		SearchAndUpdateDriver.taskES.execute(updTask);
-	}
-	
-	
 	private void sendAInitMessageBlocking(int guidNum) throws Exception
 	{
 		UserEntry userEntry 
@@ -333,93 +331,88 @@ public class UserInitializationACLWithCircles extends
 		
 		System.out.println("sendAInitMessageBlocking guidNum "+guidNum
 				+" time "+(end-start));
-	}
-	
-	
-	public void backToBackRequestSender() throws Exception
-	{
-		double totalNumUsersSent = 0;
+	}	
 		
-		while(  totalNumUsersSent < SearchAndUpdateDriver.numUsers  )
-		{
-			sendAInitMessageBlocking((int)totalNumUsersSent);
-			totalNumUsersSent++;
-			numSent++;
-			assert(numSent == totalNumUsersSent);
-			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
-			{
-				break;
-			}		
-		}
-	}
-	
-	public void initializaRateControlledRequestSender() throws Exception
-	{	
-		this.startExpTime();
+//	public void backToBackRequestSender() throws Exception
+//	{
+//		double totalNumUsersSent = 0;
+//		
+//		while(  totalNumUsersSent < SearchAndUpdateDriver.numUsers  )
+//		{
+//			sendAInitMessageBlocking((int)totalNumUsersSent);
+//			totalNumUsersSent++;
+//			numSent++;
+//			assert(numSent == totalNumUsersSent);
+//			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+//			{
+//				break;
+//			}		
+//		}
+//	}
+//		
+//	public void initializaRateControlledRequestSender() throws Exception
+//	{	
+//		this.startExpTime();
+//		
+//		double reqsps = SearchAndUpdateDriver.initRate;
+//		
+//		double totalNumUsersSent = 0;
+//		
+//		while(  totalNumUsersSent < SearchAndUpdateDriver.numUsers  )
+//		{
+//			for(int i=0; i<reqsps; i++ )
+//			{
+//				sendAInitMessage((int)totalNumUsersSent);
+//				totalNumUsersSent++;
+//				numSent++;
+//				assert(numSent == totalNumUsersSent);
+//				if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+//				{
+//					break;
+//				}
+//			}
+//			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
+//			{
+//				break;
+//			}
+//			Thread.sleep(1000);
+//		}
+//		
+//		long endTime = System.currentTimeMillis();
+//		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
+//		double sendingRate = (numSent * 1.0)/(timeInSec);
+//		System.out.println("UserInit eventual sending rate "+sendingRate);
+//		
+//		waitForFinish();
+//		
+//		double endTimeReplyRecvd = System.currentTimeMillis();
+//		double sysThrput = (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+//		
+//		System.out.println("UserInit result:Goodput "+sysThrput);
+//	}
+//			
+//	@Override
+//	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+//	{
+//		synchronized(waitLock)
+//		{
+//			numRecvd++;
+//			System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
+//			//if(currNumReplyRecvd == currNumReqSent)
+//			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
+//			{
+//				waitLock.notify();
+//			}
+//		}
+//	}
+//	
+//	@Override
+//	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
+//	{
+//	}
 		
-		double reqsps = SearchAndUpdateDriver.initRate;
-		
-		double totalNumUsersSent = 0;
-		
-		while(  totalNumUsersSent < SearchAndUpdateDriver.numUsers  )
-		{
-			for(int i=0; i<reqsps; i++ )
-			{
-				sendAInitMessage((int)totalNumUsersSent);
-				totalNumUsersSent++;
-				numSent++;
-				assert(numSent == totalNumUsersSent);
-				if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
-				{
-					break;
-				}
-			}
-			if(totalNumUsersSent >= SearchAndUpdateDriver.numUsers)
-			{
-				break;
-			}
-			Thread.sleep(1000);
-		}
-		
-		long endTime = System.currentTimeMillis();
-		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
-		double sendingRate = (numSent * 1.0)/(timeInSec);
-		System.out.println("UserInit eventual sending rate "+sendingRate);
-		
-		waitForFinish();
-		
-		double endTimeReplyRecvd = System.currentTimeMillis();
-		double sysThrput = (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
-		
-		System.out.println("UserInit result:Goodput "+sysThrput);
-	}
-		
-	@Override
-	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
-	{
-		synchronized(waitLock)
-		{
-			numRecvd++;
-			System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
-			//if(currNumReplyRecvd == currNumReqSent)
-			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
-			{
-				waitLock.notify();
-			}
-		}
-	}
-	
-	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
-	{
-	}
-	
-	
 	public static void main(String[] args)
 	{
-		
-		
-		
 	}
 }

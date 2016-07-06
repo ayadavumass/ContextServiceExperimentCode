@@ -27,31 +27,33 @@ public class MySQLThroughputBenchmarking
 	// 1% loss tolerance
 	public static final double SEARCH_LOSS_TOLERANCE			= 0.5;
 	
-	public static String guidPrefix								= "guidPrefix";
+	public static final String guidPrefix						= "guidPrefix";
 	
 	public static final String tableName 						= "testTable";
 	
 	public static final int ATTR_MAX							= 1500;
 	public static final int ATTR_MIN							= 1;
 	
+	public static final int numAttrsInQuery						= 4;
+	
 	
 	public static DataSource dsInst;
 	//private Random valueRand;
 	public static double searchRequestsps;
 	public static double updateRequestsps;
+	public static double insertRequestsps;
+	public static double getRequestsps;
+	
 	public static int numGuids;
 	public static int numAttrs;
 	
 	
-	public static boolean runUpdate ;
-	public static boolean runSearch ;
+	public static boolean runUpdate;
+	public static boolean runSearch;
 	public static boolean runInsert;
+	public static boolean runGet;
 	
 	public static int PoolSize;
-	
-	public static int insertRequestsps;
-	
-	public static final int numAttrsInQuery						= 4;
 	
 	public static ExecutorService	 taskES						= null;
 	
@@ -158,17 +160,20 @@ public class MySQLThroughputBenchmarking
        return returnGUID.substring(0, 40);
 	}
 	
-	public static void main(String[] args)
+	public static void main( String[] args )
 	{
 		numGuids = Integer.parseInt(args[0]);
 		numAttrs = Integer.parseInt(args[1]);
 		updateRequestsps = Double.parseDouble(args[2]);
 		searchRequestsps = Double.parseDouble(args[3]);
-		insertRequestsps = Integer.parseInt(args[4]);
-		runUpdate = Boolean.parseBoolean(args[5]);
-		runSearch = Boolean.parseBoolean(args[6]);
-		runInsert = Boolean.parseBoolean(args[7]);
-		PoolSize  = Integer.parseInt(args[8]);
+		insertRequestsps = Double.parseDouble(args[4]);
+		getRequestsps = Double.parseDouble(args[5]);
+		
+		runUpdate = Boolean.parseBoolean(args[6]);
+		runSearch = Boolean.parseBoolean(args[7]);
+		runInsert = Boolean.parseBoolean(args[8]);
+		runGet    = Boolean.parseBoolean(args[9]);
+		PoolSize  = Integer.parseInt(args[10]);
 		
 		
 		MySQLThroughputBenchmarking mysqlBech 
@@ -189,9 +194,12 @@ public class MySQLThroughputBenchmarking
 		{
 			e.printStackTrace();
 		}
+		
+		
 		UpdateClass updateObj = null;
 		SearchClass searchObj = null;
 		InsertClass insertObj = null;
+		GetClass getObj 	  = null;
 		
 		if(runUpdate)
 			updateObj = new UpdateClass();
@@ -199,15 +207,18 @@ public class MySQLThroughputBenchmarking
 			searchObj = new SearchClass();
 		if(runInsert)
 			insertObj = new InsertClass();
+		if(runGet)
+			getObj    = new GetClass();
 		
 		
-
 		if(runUpdate)
 			new Thread(updateObj).start();
 		if(runSearch)
 			new Thread(searchObj).start();
 		if(runInsert)
 			new Thread(insertObj).start();
+		if(runGet)
+			new Thread(getObj).start();
 		
 		if(runUpdate)
 			updateObj.waitForThreadFinish();
@@ -215,6 +226,8 @@ public class MySQLThroughputBenchmarking
 			searchObj.waitForThreadFinish();
 		if(runInsert)
 			insertObj.waitForThreadFinish();
+		if(runGet)
+			getObj.waitForThreadFinish();
 		
 		System.exit(0);
 		//stateChange.waitForThreadFinish();
