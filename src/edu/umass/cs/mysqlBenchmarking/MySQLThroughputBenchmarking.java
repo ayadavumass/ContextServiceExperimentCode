@@ -90,16 +90,23 @@ public class MySQLThroughputBenchmarking
 	
 	private void createTable()
 	{
-		Connection myConn = null;
-		Statement stmt = null;
-		
+		Connection myConn 	= null;
+		Statement stmt 		= null;
 		try
 		{	
 			myConn = dsInst.getConnection();
 			stmt = myConn.createStatement();
 			
 			String newTableCommand = "delete table "+tableName;
-			stmt.executeUpdate(newTableCommand);
+			
+			try
+			{
+				stmt.executeUpdate(newTableCommand);
+			}
+			catch(Exception ex)
+			{
+				System.out.println("Table delete exception");
+			}
 			
 			// char 45 for GUID because, GUID is 40 char in length, 5 just additional
 			newTableCommand = "create table "+tableName+" ( nodeGUID Binary(20) PRIMARY KEY ";
