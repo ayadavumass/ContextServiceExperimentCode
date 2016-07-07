@@ -1,8 +1,6 @@
 package edu.umass.cs.mysqlBenchmarking;
 
-
 import java.util.Random;
-
 
 /**
  * Updates locations of all users after every 
@@ -10,7 +8,7 @@ import java.util.Random;
  * @author adipc
  */
 public class SearchClass extends AbstractRequestSendingClass implements Runnable
-{		
+{
 	private final Random queryRand;
 	
 	public SearchClass()
@@ -236,7 +234,6 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
-		
 	}
 	
 	@Override

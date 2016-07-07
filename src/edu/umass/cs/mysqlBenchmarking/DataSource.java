@@ -24,12 +24,12 @@ public class DataSource
     	//int portNum = 3306;
     	dirName = "mysqlDir-serv0";
     	
-    	dropDB();
-    	createDB();
+    	//dropDB();
+    	//createDB();
     	
         cpds = new ComboPooledDataSource();
         cpds.setDriverClass("com.mysql.jdbc.Driver"); //loads the jdbc driver
-        cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/testDB?socket=/home/"+dirName+"/thesock");
+        cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0?socket=/home/"+dirName+"/thesock");
         //cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0");
         cpds.setUser("root");
         cpds.setPassword("aditya");
@@ -39,7 +39,7 @@ public class DataSource
         //cpds.setAcquireIncrement(5);
         // 151 is default but on d710 machines it is set to 214
         cpds.setMaxPoolSize(MySQLThroughputBenchmarking.PoolSize);
-        //cpds.setMaxStatements(180);
+        //cpds.setMaxStatements(180);   
     }
 
     public static DataSource getInstance() throws IOException, SQLException, PropertyVetoException 

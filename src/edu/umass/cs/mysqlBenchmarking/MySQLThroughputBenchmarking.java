@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 
 public class MySQLThroughputBenchmarking
 {
+	public static final int NUM_SUBSPACES						= 4;
+	
 	// 100 seconds, experiment runs for 100 seconds
 	public static final int EXPERIMENT_TIME						= 100000;
 	
@@ -36,22 +38,23 @@ public class MySQLThroughputBenchmarking
 	
 	public static final int numAttrsInQuery						= 4;
 	
-	
 	public static DataSource dsInst;
 	//private Random valueRand;
 	public static double searchRequestsps;
 	public static double updateRequestsps;
 	public static double insertRequestsps;
 	public static double getRequestsps;
+	public static double indexReadRequestsps;
+	
 	
 	public static int numGuids;
 	public static int numAttrs;
-	
 	
 	public static boolean runUpdate;
 	public static boolean runSearch;
 	public static boolean runInsert;
 	public static boolean runGet;
+	public static boolean runIndexRead; 
 	
 	public static int PoolSize;
 	
@@ -73,7 +76,7 @@ public class MySQLThroughputBenchmarking
 //					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
 //					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
 //			stmt.executeUpdate(newTableCommand);
-		} catch (IOException e) 
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		} catch (SQLException e)
@@ -95,8 +98,11 @@ public class MySQLThroughputBenchmarking
 			myConn = dsInst.getConnection();
 			stmt = myConn.createStatement();
 			
+			String newTableCommand = "delete table "+tableName;
+			stmt.executeUpdate(newTableCommand);
+			
 			// char 45 for GUID because, GUID is 40 char in length, 5 just additional
-			String newTableCommand = "create table "+tableName+" ( nodeGUID Binary(20) PRIMARY KEY ";
+			newTableCommand = "create table "+tableName+" ( nodeGUID Binary(20) PRIMARY KEY ";
 					//+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
 					//+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
 			
@@ -114,10 +120,12 @@ public class MySQLThroughputBenchmarking
 //					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
 //					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
 			stmt.executeUpdate(newTableCommand);
-		} catch ( SQLException e )
+		} 
+		catch ( SQLException e )
 		{
 			e.printStackTrace();
-		} finally
+		}
+		finally
 		{
 			try
 			{
@@ -126,8 +134,7 @@ public class MySQLThroughputBenchmarking
 				
 				if(myConn != null)
 					myConn.close();
-				
-			} 
+			}
 			catch (SQLException e) 
 			{
 				e.printStackTrace();
@@ -137,27 +144,28 @@ public class MySQLThroughputBenchmarking
 	
 	public static String getSHA1(String stringToHash)
 	{
-	   MessageDigest md = null;
-	   try
-	   {
-		   md = MessageDigest.getInstance("SHA-256");
-	   } catch (NoSuchAlgorithmException e)
-	   {
-		   e.printStackTrace();
-	   }
+		MessageDigest md = null;
+		try
+		{
+			md = MessageDigest.getInstance("SHA-256");
+		} 
+		catch (NoSuchAlgorithmException e)
+		{
+			e.printStackTrace();
+		}
+		
+		md.update(stringToHash.getBytes());
+		
+		byte byteData[] = md.digest();
        
-	   md.update(stringToHash.getBytes());
-	   
-       byte byteData[] = md.digest();
- 
-       //convert the byte to hex format method 1
-       StringBuffer sb = new StringBuffer();
-       for (int i = 0; i < byteData.length; i++) 
-       {
-       		sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-       }
-       String returnGUID = sb.toString();
-       return returnGUID.substring(0, 40);
+		//convert the byte to hex format method 1
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < byteData.length; i++) 
+        {
+        	sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        String returnGUID = sb.toString();
+        return returnGUID.substring(0, 40);
 	}
 	
 	public static void main( String[] args )
@@ -167,13 +175,15 @@ public class MySQLThroughputBenchmarking
 		updateRequestsps = Double.parseDouble(args[2]);
 		searchRequestsps = Double.parseDouble(args[3]);
 		insertRequestsps = Double.parseDouble(args[4]);
-		getRequestsps = Double.parseDouble(args[5]);
+		getRequestsps 	 = Double.parseDouble(args[5]);
+		indexReadRequestsps = Double.parseDouble(args[6]);
 		
-		runUpdate = Boolean.parseBoolean(args[6]);
-		runSearch = Boolean.parseBoolean(args[7]);
-		runInsert = Boolean.parseBoolean(args[8]);
-		runGet    = Boolean.parseBoolean(args[9]);
-		PoolSize  = Integer.parseInt(args[10]);
+		runUpdate = Boolean.parseBoolean(args[7]);
+		runSearch = Boolean.parseBoolean(args[8]);
+		runInsert = Boolean.parseBoolean(args[9]);
+		runGet    = Boolean.parseBoolean(args[10]);
+		runIndexRead = Boolean.parseBoolean(args[11]);
+		PoolSize  = Integer.parseInt(args[12]);
 		
 		
 		MySQLThroughputBenchmarking mysqlBech 
@@ -196,10 +206,11 @@ public class MySQLThroughputBenchmarking
 		}
 		
 		
-		UpdateClass updateObj = null;
-		SearchClass searchObj = null;
-		InsertClass insertObj = null;
-		GetClass getObj 	  = null;
+		UpdateClass updateObj 				= null;
+		SearchClass searchObj 				= null;
+		InsertClass insertObj 				= null;
+		GetClass getObj 	  				= null;
+		IndexReadSearchClass indexSearchObj = null;
 		
 		if(runUpdate)
 			updateObj = new UpdateClass();
@@ -209,6 +220,8 @@ public class MySQLThroughputBenchmarking
 			insertObj = new InsertClass();
 		if(runGet)
 			getObj    = new GetClass();
+		if(runIndexRead)
+			indexSearchObj = new IndexReadSearchClass();
 		
 		
 		if(runUpdate)
@@ -219,6 +232,9 @@ public class MySQLThroughputBenchmarking
 			new Thread(insertObj).start();
 		if(runGet)
 			new Thread(getObj).start();
+		if(runIndexRead)
+			new Thread(indexSearchObj).start();
+		
 		
 		if(runUpdate)
 			updateObj.waitForThreadFinish();
@@ -228,6 +244,8 @@ public class MySQLThroughputBenchmarking
 			insertObj.waitForThreadFinish();
 		if(runGet)
 			getObj.waitForThreadFinish();
+		if(runIndexRead)
+			indexSearchObj.waitForThreadFinish();
 		
 		System.exit(0);
 		//stateChange.waitForThreadFinish();
