@@ -61,7 +61,7 @@ public class IndexReadSearchTask implements Runnable
 			
 			try
 			{
-				assert(numResults >= 1);
+				assert(numResults >= 0);
 			} catch(Error er)
 			{
 				System.out.println("searchQuery" + searchQuery);
