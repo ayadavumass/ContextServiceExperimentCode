@@ -59,7 +59,14 @@ public class IndexReadSearchTask implements Runnable
 			}
 			rs.close();
 			
-			assert(numResults >= 1);
+			try
+			{
+				assert(numResults >= 1);
+			} catch(Error er)
+			{
+				System.out.println("searchQuery" + searchQuery);
+				er.printStackTrace();
+			}
 		} catch(SQLException sqlex)
 		{
 			sqlex.printStackTrace();
