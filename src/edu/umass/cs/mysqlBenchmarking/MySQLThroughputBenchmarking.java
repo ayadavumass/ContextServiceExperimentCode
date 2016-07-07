@@ -97,7 +97,7 @@ public class MySQLThroughputBenchmarking
 			myConn = dsInst.getConnection();
 			stmt = myConn.createStatement();
 			
-			String newTableCommand = "delete table "+tableName;
+			String newTableCommand = "drop table "+tableName;
 			
 			try
 			{
