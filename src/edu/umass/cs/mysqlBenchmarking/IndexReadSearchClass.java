@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 public class IndexReadSearchClass extends AbstractRequestSendingClass implements Runnable
@@ -249,37 +247,29 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 	
 	private void sendQueryMessageWithSmallRanges()
 	{
-		List<String> attrList = new LinkedList<String>();
+		int numAttrsMatching 
+			= 1+queryRand.nextInt(MySQLThroughputBenchmarking.numAttrsInQuery);
 		
-		int randAttrNum = -1;
+		int numAttrsPerSubspace 
+			= MySQLThroughputBenchmarking.numAttrs/MySQLThroughputBenchmarking.NUM_SUBSPACES;
 		
-		for( int i=0; i<MySQLThroughputBenchmarking.numAttrsInQuery; i++ )
+		if(numAttrsMatching > numAttrsPerSubspace)
 		{
-			// if num attrs and num in query are same then send query on all attrs
-			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
-			{
-				randAttrNum++;
-			}
-			else
-			{
-				randAttrNum = queryRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
-			}
-			
-			String attrName = "attr"+randAttrNum;
-			attrList.add(attrName);
+			numAttrsMatching = numAttrsPerSubspace;
 		}
 		
-		OverlapClass maxOverlapClass = getMaxOverlappingSubspaceNum(attrList);
+		int subspaceNum = 0;
 		
-		
-		String tableName = "subspaceId"+maxOverlapClass.subspaceNum+"RepNum0PartitionInfo";
+		String tableName = "subspaceId"+subspaceNum+"RepNum0PartitionInfo";
 		String selectTableSQL = "SELECT hashCode, respNodeID from "+tableName+" WHERE ";
 		
+		HashMap<String, Boolean> subspaceAttrMap = subspaceMap.get(subspaceNum);
+		Iterator<String> subspaceAttrIter = subspaceAttrMap.keySet().iterator();
 		
-		for( int i = 0; i < maxOverlapClass.overlapAttrs.size(); i++ )
+		int currNumAttrs = 0;
+		while( subspaceAttrIter.hasNext() )
 		{
-			//ProcessingQueryComponent qcomponent = matchingQueryComponents.get(i);
-			String attrName = maxOverlapClass.overlapAttrs.get(i);
+			String attrName = subspaceAttrIter.next();
 			
 			String lowerAttr = "lower"+attrName;
 			String upperAttr = "upper"+attrName;
@@ -342,67 +332,64 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 //						+ "( "+lowerAttr+" <= "+queryMax +" AND "+upperAttr+" > "+queryMax+" ) OR "
 //						+ "( "+lowerAttr+" >= "+queryMin +" AND "+upperAttr+" <= "+queryMax+" ) "+" )  )";
 //			}
-			
-			if( i != (maxOverlapClass.overlapAttrs.size() - 1) )
+			currNumAttrs++;
+			if( currNumAttrs != numAttrsMatching )
 			{
 				selectTableSQL = selectTableSQL + " AND ";
 			}
+			
+			if( currNumAttrs == numAttrsMatching )
+				break;
 		}
 		
-//		ExperimentSearchReply searchRep 
-//				= new ExperimentSearchReply( reqIdNum );
-//		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
-//			(searchQuery, 300000, searchRep, this.getCallBack());
 		IndexReadSearchTask searchTask = new IndexReadSearchTask( selectTableSQL, this );
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
-//		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
-//		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
 	
-	private OverlapClass getMaxOverlappingSubspaceNum(List<String> attrList)
-	{
-		int maxOverlap = -1;
-		OverlapClass maxOverlapClass = null;
-		
-		Iterator<Integer> subspaceIter = subspaceMap.keySet().iterator();
-		
-		while( subspaceIter.hasNext() )
-		{
-			int subspaceNum = subspaceIter.next();
-			HashMap<String, Boolean> subAttrMap = subspaceMap.get(subspaceNum);
-			int currAttrOverlap = 0;
-			
-			List<String> currOverlapAttr = new LinkedList<String>();
-			
-			for( int i=0; i < attrList.size(); i++ )
-			{
-				if( subAttrMap.containsKey(attrList.get(i)) )
-				{
-					currAttrOverlap++;
-					currOverlapAttr.add( attrList.get(i) );
-				}
-			}
-			
-			if( maxOverlap < currAttrOverlap )
-			{
-				maxOverlap = currAttrOverlap;
-				OverlapClass overlapClass = new OverlapClass();
-				overlapClass.subspaceNum = subspaceNum;
-				overlapClass.overlapAttrs = currOverlapAttr;
-				maxOverlapClass = overlapClass;
-			}
-		}
-		assert(maxOverlapClass != null);
-		return maxOverlapClass;
-	}
-	
-	
-	private class OverlapClass
-	{
-		int subspaceNum;
-		List<String> overlapAttrs;
-	}
+//	private OverlapClass getMaxOverlappingSubspaceNum(List<String> attrList)
+//	{
+//		int maxOverlap = -1;
+//		OverlapClass maxOverlapClass = null;
+//		
+//		Iterator<Integer> subspaceIter = subspaceMap.keySet().iterator();
+//		
+//		while( subspaceIter.hasNext() )
+//		{
+//			int subspaceNum = subspaceIter.next();
+//			HashMap<String, Boolean> subAttrMap = subspaceMap.get(subspaceNum);
+//			int currAttrOverlap = 0;
+//			
+//			List<String> currOverlapAttr = new LinkedList<String>();
+//			
+//			for( int i=0; i < attrList.size(); i++ )
+//			{
+//				if( subAttrMap.containsKey(attrList.get(i)) )
+//				{
+//					currAttrOverlap++;
+//					currOverlapAttr.add( attrList.get(i) );
+//				}
+//			}
+//			
+//			if( maxOverlap < currAttrOverlap )
+//			{
+//				maxOverlap = currAttrOverlap;
+//				OverlapClass overlapClass = new OverlapClass();
+//				overlapClass.subspaceNum = subspaceNum;
+//				overlapClass.overlapAttrs = currOverlapAttr;
+//				maxOverlapClass = overlapClass;
+//			}
+//		}
+//		assert(maxOverlapClass != null);
+//		return maxOverlapClass;
+//	}
+//	
+//	
+//	private class OverlapClass
+//	{
+//		int subspaceNum;
+//		List<String> overlapAttrs;
+//	}
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
