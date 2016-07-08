@@ -2,7 +2,7 @@ package edu.umass.cs.mysqlBenchmarking;
 
 import java.util.Random;
 
-public class GetClass extends AbstractRequestSendingClass implements Runnable
+public class GetClass extends AbstractRequestSendingClass
 {
 	private Random getRand;
 	public GetClass()
@@ -27,7 +27,7 @@ public class GetClass extends AbstractRequestSendingClass implements Runnable
 	
 	private void getRateControlledRequestSender() throws Exception
 	{
-		double reqspms = MySQLThroughputBenchmarking.getRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms

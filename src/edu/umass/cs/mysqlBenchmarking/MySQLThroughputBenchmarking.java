@@ -12,6 +12,15 @@ import java.util.concurrent.Executors;
 
 public class MySQLThroughputBenchmarking
 {
+	public static final int RUN_UPDATE							= 1;
+	public static final int RUN_SEARCH							= 2;
+	public static final int RUN_INSERT							= 3;
+	public static final int RUN_GET								= 4;
+	public static final int RUN_INDEX_READ_UPDATE				= 5;
+	public static final int RUN_INDEX_READ_SEARCH				= 6;
+	public static final int RUN_DELETE							= 7;
+	
+	
 	public static final int NUM_SUBSPACES						= 4;
 	
 	// 100 seconds, experiment runs for 100 seconds
@@ -40,22 +49,12 @@ public class MySQLThroughputBenchmarking
 	
 	public static DataSource dsInst;
 	//private Random valueRand;
-	public static double searchRequestsps;
-	public static double updateRequestsps;
-	public static double insertRequestsps;
-	public static double getRequestsps;
-	public static double indexReadSearchRequestsps;
-	public static double indexReadUpdateRequestsps;
 	
 	public static int numGuids;
 	public static int numAttrs;
 	
-	public static boolean runUpdate;
-	public static boolean runSearch;
-	public static boolean runInsert;
-	public static boolean runGet;
-	public static boolean runIndexReadSearch;
-	public static boolean runIndexReadUpdate;
+	public static int requestType;
+	public static double requestsps;
 	
 	public static int PoolSize;
 	
@@ -178,22 +177,12 @@ public class MySQLThroughputBenchmarking
 	
 	public static void main( String[] args )
 	{
-		numGuids = Integer.parseInt(args[0]);
-		numAttrs = Integer.parseInt(args[1]);
-		updateRequestsps = Double.parseDouble(args[2]);
-		searchRequestsps = Double.parseDouble(args[3]);
-		insertRequestsps = Double.parseDouble(args[4]);
-		getRequestsps 	 = Double.parseDouble(args[5]);
-		indexReadUpdateRequestsps = Double.parseDouble(args[6]);
-		indexReadSearchRequestsps = Double.parseDouble(args[7]);
-		
-		runUpdate = Boolean.parseBoolean(args[8]);
-		runSearch = Boolean.parseBoolean(args[9]);
-		runInsert = Boolean.parseBoolean(args[10]);
-		runGet    = Boolean.parseBoolean(args[11]);
-		runIndexReadUpdate = Boolean.parseBoolean(args[12]);
-		runIndexReadSearch = Boolean.parseBoolean(args[13]);
-		PoolSize  = Integer.parseInt(args[14]);
+		numGuids 		 = Integer.parseInt(args[0]);
+		numAttrs 		 = Integer.parseInt(args[1]);
+						 
+		requestType      = Integer.parseInt(args[2]);
+		requestsps       = Integer.parseInt(args[3]);
+		PoolSize  		 = Integer.parseInt(args[4]);
 		
 		
 		MySQLThroughputBenchmarking mysqlBech 
@@ -215,55 +204,59 @@ public class MySQLThroughputBenchmarking
 			e.printStackTrace();
 		}
 		
-		UpdateClass updateObj 				= null;
-		SearchClass searchObj 				= null;
-		InsertClass insertObj 				= null;
-		GetClass getObj 	  				= null;
-		IndexReadUpdateClass indexUpdateObj = null;
-		IndexReadSearchClass indexSearchObj = null;
+//		public static final int RUN_UPDATE							= 1;
+//		public static final int RUN_SEARCH							= 2;
+//		public static final int RUN_INSERT							= 3;
+//		public static final int RUN_GET								= 4;
+//		public static final int RUN_INDEX_READ_UPDATE				= 5;
+//		public static final int RUN_INDEX_READ_SEARCH				= 6;
+//		public static final int RUN_DELETE							= 7;
 		
 		
-		if(runUpdate)
-			updateObj = new UpdateClass();
-		if(runSearch)
-			searchObj = new SearchClass();
-		if(runInsert)
-			insertObj = new InsertClass();
-		if(runGet)
-			getObj    = new GetClass();
-		if(runIndexReadUpdate)
-			indexUpdateObj = new IndexReadUpdateClass();
-		if(runIndexReadSearch)
-			indexSearchObj = new IndexReadSearchClass();
+		AbstractRequestSendingClass requestTypeObj = null;
+		switch(requestType)
+		{
+			case RUN_UPDATE:
+			{
+				requestTypeObj = new UpdateClass();
+				break;
+			}
+			case RUN_SEARCH:
+			{
+				requestTypeObj = new SearchClass();
+				break;
+			}
+			case RUN_INSERT:
+			{
+				requestTypeObj = new InsertClass();
+				break;
+			}
+			case RUN_GET:
+			{
+				requestTypeObj = new GetClass();
+				break;
+			}
+			case RUN_INDEX_READ_UPDATE:
+			{
+				requestTypeObj = new IndexReadUpdateClass();
+				break;
+			}
+			case RUN_INDEX_READ_SEARCH:
+			{
+				requestTypeObj = new IndexReadSearchClass();
+				break;
+			}
+			case RUN_DELETE:
+			{
+				requestTypeObj = new DeleteClass();
+				break;
+			}
+			default:
+				assert(false);
+		}
+		new Thread(requestTypeObj).start();
 		
-		
-		if(runUpdate)
-			new Thread(updateObj).start();
-		if(runSearch)
-			new Thread(searchObj).start();
-		if(runInsert)
-			new Thread(insertObj).start();
-		if(runGet)
-			new Thread(getObj).start();
-		if(runIndexReadUpdate)
-			new Thread(indexUpdateObj).start();
-		if(runIndexReadSearch)
-			new Thread(indexSearchObj).start();
-		
-		
-		if(runUpdate)
-			updateObj.waitForThreadFinish();
-		if(runSearch)
-			searchObj.waitForThreadFinish();
-		if(runInsert)
-			insertObj.waitForThreadFinish();
-		if(runGet)
-			getObj.waitForThreadFinish();
-		
-		if(runIndexReadUpdate)
-			indexUpdateObj.waitForThreadFinish();
-		if( runIndexReadSearch )
-			indexSearchObj.waitForThreadFinish();
+		requestTypeObj.waitForThreadFinish();
 		
 		System.exit(0);
 		//stateChange.waitForThreadFinish();

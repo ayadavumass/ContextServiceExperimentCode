@@ -10,7 +10,7 @@ import org.json.JSONObject;
  * granularityOfGeolocationUpdate
  * @author adipc
  */
-public class UpdateClass extends AbstractRequestSendingClass implements Runnable
+public class UpdateClass extends AbstractRequestSendingClass
 {
 	private Random updateRand;
 	public UpdateClass()
@@ -34,7 +34,7 @@ public class UpdateClass extends AbstractRequestSendingClass implements Runnable
 	
 	private void updRateControlledRequestSender() throws Exception
 	{
-		double reqspms = MySQLThroughputBenchmarking.updateRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms

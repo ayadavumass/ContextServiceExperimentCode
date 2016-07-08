@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
-public class IndexReadSearchClass extends AbstractRequestSendingClass implements Runnable
+public class IndexReadSearchClass extends AbstractRequestSendingClass
 {
 	private final Random queryRand;
 	
@@ -110,7 +110,7 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{
 		// as it is per ms
-		double reqspms = MySQLThroughputBenchmarking.indexReadSearchRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime  = 0;
 		
 		// sleep for 100ms

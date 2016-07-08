@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 
-public class IndexReadUpdateClass extends AbstractRequestSendingClass implements Runnable
+public class IndexReadUpdateClass extends AbstractRequestSendingClass
 {
 	private final Random updateRand;
 	
@@ -110,7 +110,7 @@ public class IndexReadUpdateClass extends AbstractRequestSendingClass implements
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{
 		// as it is per ms
-		double reqspms = MySQLThroughputBenchmarking.indexReadUpdateRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime  = 0;
 		
 		// sleep for 100ms

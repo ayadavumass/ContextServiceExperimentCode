@@ -4,7 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public abstract class AbstractRequestSendingClass 
+public abstract class AbstractRequestSendingClass implements Runnable
 {
 	protected long expStartTime;
 	protected final Timer waitTimer;

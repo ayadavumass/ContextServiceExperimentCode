@@ -5,10 +5,11 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class InitializeClass extends AbstractRequestSendingClass
+public class DeleteClass extends AbstractRequestSendingClass
 {
 	private Random updateRand;
-	public InitializeClass()
+	
+	public DeleteClass()
 	{
 		super(MySQLThroughputBenchmarking.INSERT_LOSS_TOLERANCE);
 		updateRand = new Random();
@@ -17,17 +18,69 @@ public class InitializeClass extends AbstractRequestSendingClass
 	@Override
 	public void run()
 	{
-		try 
+		try
 		{
 			this.startExpTime();
-			updRateControlledRequestSender();
-		} catch (Exception e) 
+			deleteRateControlledRequestSender();
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 	
-	private void updRateControlledRequestSender() throws Exception
+//	private void deleteRateControlledRequestSender() throws Exception
+//	{
+//		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
+//		long currTime  = 0;
+//		
+//		// sleep for 100ms
+//		double numberShouldBeSentPerSleep = reqspms*100.0;
+//		
+//		double currUserGuidNum   = 0;
+//		
+//		//while( ( currUserGuidNum < MySQLThroughputBenchmarking.numGuids ) )
+//		while( ( (System.currentTimeMillis() - expStartTime)
+//				< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
+//		{
+//			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+//			{
+//				doUpdate((int)currUserGuidNum);
+//				currUserGuidNum++;
+//				//numSent++;
+//			}
+//			
+//			currTime = System.currentTimeMillis();
+//			
+//			double timeElapsed = ((currTime- expStartTime)*1.0);
+//			double numberShouldBeSentByNow = timeElapsed*reqspms;
+//			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
+//			if(needsToBeSentBeforeSleep > 0)
+//			{
+//				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
+//			}
+//			
+//			for(int i=0;i<needsToBeSentBeforeSleep;i++)
+//			{
+//				doUpdate((int)currUserGuidNum);
+//				currUserGuidNum++;
+//				//numSent++;
+//			}			
+//			Thread.sleep(100);
+//		}
+//		
+//		long endTime = System.currentTimeMillis();
+//		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
+//		double sendingRate = (numSent * 1.0)/(timeInSec);
+//		System.out.println("Insert eventual sending rate "+sendingRate);
+//		
+//		waitForFinish();
+//		double endTimeReplyRecvd = System.currentTimeMillis();
+//		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+//		
+//		System.out.println("Insert result:Goodput "+sysThrput);
+//	}
+	
+	private void deleteRateControlledRequestSender() throws Exception
 	{
 		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime = 0;
@@ -42,7 +95,7 @@ public class InitializeClass extends AbstractRequestSendingClass
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
-				doUpdate((int)currUserGuidNum);
+				doDelete((int)currUserGuidNum);
 				currUserGuidNum++;
 				if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
 					break;
@@ -62,7 +115,7 @@ public class InitializeClass extends AbstractRequestSendingClass
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
-				doUpdate((int)currUserGuidNum);
+				doDelete((int)currUserGuidNum);
 				currUserGuidNum++;
 				if(currUserGuidNum >= MySQLThroughputBenchmarking.numGuids)
 					break;
@@ -76,38 +129,23 @@ public class InitializeClass extends AbstractRequestSendingClass
 		long endTime = System.currentTimeMillis();
 		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
 		double sendingRate = (numSent * 1.0)/(timeInSec);
-		System.out.println("Init eventual sending rate "+sendingRate);
+		System.out.println("Delete eventual sending rate "+sendingRate);
 		
 		waitForFinish();
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
-		System.out.println("Init result:Goodput "+sysThrput);
+		System.out.println("Delete result:Goodput "+sysThrput);
 	}
 	
-	
-	private void doUpdate(int currUserGuidNum)
+	private void doDelete(int currUserGuidNum)
 	{
 		numSent++;
 		String guid = MySQLThroughputBenchmarking.getSHA1
 							(MySQLThroughputBenchmarking.guidPrefix+currUserGuidNum);
 		
-		JSONObject attrValJSON = new JSONObject();
-		
-		for(int i=0; i<MySQLThroughputBenchmarking.numAttrs; i++)
-		{
-			try 
-			{
-				attrValJSON.put("attr"+i, 1500 * updateRand.nextDouble());
-			} 
-			catch (JSONException e) 
-			{
-				e.printStackTrace();
-			}
-		}
-
-		InitializeTask updTask = new InitializeTask( guid, attrValJSON, this);
-		MySQLThroughputBenchmarking.taskES.execute(updTask);
+		DeleteTask delTask = new DeleteTask( guid, this);
+		MySQLThroughputBenchmarking.taskES.execute(delTask);
 	}
 
 	@Override
@@ -116,7 +154,7 @@ public class InitializeClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Init reply recvd "+userGUID+" time taken "+timeTaken+
+			System.out.println("Delete reply recvd "+userGUID+" time taken "+timeTaken+
 					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))

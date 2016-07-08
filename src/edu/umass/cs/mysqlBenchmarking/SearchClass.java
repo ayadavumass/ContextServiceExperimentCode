@@ -7,7 +7,7 @@ import java.util.Random;
  * granularityOfGeolocationUpdate
  * @author adipc
  */
-public class SearchClass extends AbstractRequestSendingClass implements Runnable
+public class SearchClass extends AbstractRequestSendingClass
 {
 	private final Random queryRand;
 	
@@ -36,7 +36,7 @@ public class SearchClass extends AbstractRequestSendingClass implements Runnable
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{	
 		// as it is per ms
-		double reqspms = MySQLThroughputBenchmarking.searchRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms

@@ -5,7 +5,7 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class InsertClass extends AbstractRequestSendingClass implements Runnable
+public class InsertClass extends AbstractRequestSendingClass
 {
 	private Random updateRand;
 	
@@ -30,7 +30,7 @@ public class InsertClass extends AbstractRequestSendingClass implements Runnable
 	
 	private void updRateControlledRequestSender() throws Exception
 	{
-		double reqspms = MySQLThroughputBenchmarking.insertRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime  = 0;
 		
 		// sleep for 100ms
