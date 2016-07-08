@@ -37,17 +37,21 @@ public class InsertClass extends AbstractRequestSendingClass
 		double numberShouldBeSentPerSleep = reqspms*100.0;
 		
 		double currUserGuidNum   = 1000000;
-		
-		//while( ( currUserGuidNum < MySQLThroughputBenchmarking.numGuids ) )
-		while( ( (System.currentTimeMillis() - expStartTime)
-				< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
+		int numGuidsInserted = 0;
+		while( ( numGuidsInserted < MySQLThroughputBenchmarking.numGuidsToInsert ) )
+//		while( ( (System.currentTimeMillis() - expStartTime)
+//				< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
+				numGuidsInserted++;
+				if(numGuidsInserted >= MySQLThroughputBenchmarking.numGuidsToInsert)
+					break;
 				//numSent++;
 			}
+			
 			
 			currTime = System.currentTimeMillis();
 			
@@ -63,6 +67,9 @@ public class InsertClass extends AbstractRequestSendingClass
 			{
 				doUpdate((int)currUserGuidNum);
 				currUserGuidNum++;
+				numGuidsInserted++;
+				if(numGuidsInserted >= MySQLThroughputBenchmarking.numGuidsToInsert)
+					break;
 				//numSent++;
 			}			
 			Thread.sleep(100);

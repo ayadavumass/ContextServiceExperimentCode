@@ -56,6 +56,8 @@ public class MySQLThroughputBenchmarking
 	public static int requestType;
 	public static double requestsps;
 	
+	public static int numGuidsToInsert;
+	
 	public static int PoolSize;
 	
 	public static ExecutorService	 taskES						= null;
@@ -228,6 +230,7 @@ public class MySQLThroughputBenchmarking
 			}
 			case RUN_INSERT:
 			{
+				numGuidsToInsert = Integer.parseInt(args[5]);
 				requestTypeObj = new InsertClass();
 				break;
 			}
