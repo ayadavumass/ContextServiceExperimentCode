@@ -112,7 +112,7 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{
 		// as it is per ms
-		double reqspms = MySQLThroughputBenchmarking.indexReadRequestsps/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.indexReadSearchRequestsps/1000.0;
 		long currTime  = 0;
 		
 		// sleep for 100ms
@@ -169,20 +169,20 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 		long endTime = System.currentTimeMillis();
 		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
 		double sendingRate = (numSent * 1.0)/(timeInSec);
-		System.out.println("IndexRead eventual sending rate "+sendingRate);
+		System.out.println("IndexReadSearch eventual sending rate "+sendingRate);
 		
 		waitForFinish();
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
-		System.out.println("IndexRead result:Goodput "+sysThrput);
+		System.out.println("IndexReadSearch result:Goodput "+sysThrput);
 	}
 	
-	private void sendQueryMessage(String mysqlQuery)
-	{
-		SearchTask searchTask = new SearchTask( mysqlQuery, this );
-		MySQLThroughputBenchmarking.taskES.execute(searchTask);
-	}
+//	private void sendQueryMessage(String mysqlQuery)
+//	{
+//		SearchTask searchTask = new SearchTask( mysqlQuery, this );
+//		MySQLThroughputBenchmarking.taskES.execute(searchTask);
+//	}
 	
 	private void sendQueryMessage()
 	{
@@ -360,7 +360,6 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 	}
 	
 	
-	
 	private OverlapClass getMaxOverlappingSubspaceNum(List<String> attrList)
 	{
 		int maxOverlap = -1;
@@ -416,7 +415,7 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Indexead reply recvd size "+resultSize+" time taken "+timeTaken+
+			System.out.println("IndexReadSearch reply recvd size "+resultSize+" time taken "+timeTaken+
 					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
@@ -487,5 +486,4 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass implements
 //			}
 //		}
 //	}
-	
 }

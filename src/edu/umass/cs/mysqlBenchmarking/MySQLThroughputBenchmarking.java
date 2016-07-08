@@ -44,8 +44,8 @@ public class MySQLThroughputBenchmarking
 	public static double updateRequestsps;
 	public static double insertRequestsps;
 	public static double getRequestsps;
-	public static double indexReadRequestsps;
-	
+	public static double indexReadSearchRequestsps;
+	public static double indexReadUpdateRequestsps;
 	
 	public static int numGuids;
 	public static int numAttrs;
@@ -54,7 +54,8 @@ public class MySQLThroughputBenchmarking
 	public static boolean runSearch;
 	public static boolean runInsert;
 	public static boolean runGet;
-	public static boolean runIndexRead; 
+	public static boolean runIndexReadSearch;
+	public static boolean runIndexReadUpdate;
 	
 	public static int PoolSize;
 	
@@ -93,7 +94,7 @@ public class MySQLThroughputBenchmarking
 		Connection myConn 	= null;
 		Statement stmt 		= null;
 		try
-		{	
+		{
 			myConn = dsInst.getConnection();
 			stmt = myConn.createStatement();
 			
@@ -183,14 +184,16 @@ public class MySQLThroughputBenchmarking
 		searchRequestsps = Double.parseDouble(args[3]);
 		insertRequestsps = Double.parseDouble(args[4]);
 		getRequestsps 	 = Double.parseDouble(args[5]);
-		indexReadRequestsps = Double.parseDouble(args[6]);
+		indexReadUpdateRequestsps = Double.parseDouble(args[6]);
+		indexReadSearchRequestsps = Double.parseDouble(args[7]);
 		
-		runUpdate = Boolean.parseBoolean(args[7]);
-		runSearch = Boolean.parseBoolean(args[8]);
-		runInsert = Boolean.parseBoolean(args[9]);
-		runGet    = Boolean.parseBoolean(args[10]);
-		runIndexRead = Boolean.parseBoolean(args[11]);
-		PoolSize  = Integer.parseInt(args[12]);
+		runUpdate = Boolean.parseBoolean(args[8]);
+		runSearch = Boolean.parseBoolean(args[9]);
+		runInsert = Boolean.parseBoolean(args[10]);
+		runGet    = Boolean.parseBoolean(args[11]);
+		runIndexReadUpdate = Boolean.parseBoolean(args[12]);
+		runIndexReadSearch = Boolean.parseBoolean(args[13]);
+		PoolSize  = Integer.parseInt(args[14]);
 		
 		
 		MySQLThroughputBenchmarking mysqlBech 
@@ -212,12 +215,13 @@ public class MySQLThroughputBenchmarking
 			e.printStackTrace();
 		}
 		
-		
 		UpdateClass updateObj 				= null;
 		SearchClass searchObj 				= null;
 		InsertClass insertObj 				= null;
 		GetClass getObj 	  				= null;
+		IndexReadUpdateClass indexUpdateObj = null;
 		IndexReadSearchClass indexSearchObj = null;
+		
 		
 		if(runUpdate)
 			updateObj = new UpdateClass();
@@ -227,7 +231,9 @@ public class MySQLThroughputBenchmarking
 			insertObj = new InsertClass();
 		if(runGet)
 			getObj    = new GetClass();
-		if(runIndexRead)
+		if(runIndexReadUpdate)
+			indexUpdateObj = new IndexReadUpdateClass();
+		if(runIndexReadSearch)
 			indexSearchObj = new IndexReadSearchClass();
 		
 		
@@ -239,7 +245,9 @@ public class MySQLThroughputBenchmarking
 			new Thread(insertObj).start();
 		if(runGet)
 			new Thread(getObj).start();
-		if(runIndexRead)
+		if(runIndexReadUpdate)
+			new Thread(indexUpdateObj).start();
+		if(runIndexReadSearch)
 			new Thread(indexSearchObj).start();
 		
 		
@@ -251,7 +259,10 @@ public class MySQLThroughputBenchmarking
 			insertObj.waitForThreadFinish();
 		if(runGet)
 			getObj.waitForThreadFinish();
-		if(runIndexRead)
+		
+		if(runIndexReadUpdate)
+			indexUpdateObj.waitForThreadFinish();
+		if( runIndexReadSearch )
 			indexSearchObj.waitForThreadFinish();
 		
 		System.exit(0);
