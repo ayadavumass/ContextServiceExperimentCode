@@ -159,7 +159,7 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
-		System.out.println("IndexReadSearch result:Goodput "+sysThrput);
+		System.out.println("NIOThrouhgput result:Goodput "+sysThrput);
 	}
 	
 	private void waitForFinish()
