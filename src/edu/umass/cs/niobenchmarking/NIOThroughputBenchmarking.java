@@ -42,6 +42,7 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 	private final Timer waitTimer;
 	private final long expStartTime;
 	private static double reqsps;
+	private static int payloadLen;
 	
 	public NIOThroughputBenchmarking( String sourceIPAddress, int sourcePort, 
 			 String destIPAddress, int destPort) throws IOException
@@ -197,7 +198,12 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 	private void sendNoopMessage()
 	{
 		try {
-			NoopMessage<Integer> noopMesg = new NoopMessage<Integer>(0, sourceIP, sourcePort);
+			String str = "";
+			for(int i=0;i<payloadLen; i++)
+			{
+				str = str + 'a';
+			}
+			NoopMessage<Integer> noopMesg = new NoopMessage<Integer>(0, sourceIP, sourcePort, str);
 			messenger.sendToAddress(new InetSocketAddress(destIpAddress, destPort), 
 					noopMesg.toJSONObject());
 		} catch (IOException | JSONException e) {
@@ -234,7 +240,7 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 		String destIP = args[3];
 		int destPort = Integer.parseInt(args[4]);
 		int type = Integer.parseInt(args[5]);
-		
+		payloadLen = Integer.parseInt(args[6]);
 		
 		NIOThroughputBenchmarking nioTester 
 				= new NIOThroughputBenchmarking(sourceIP, sourcePort, destIP, destPort);
