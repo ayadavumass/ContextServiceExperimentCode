@@ -34,7 +34,7 @@ public class SearchClass extends AbstractRequestSendingClass
 	//String query 
 	// = "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE GeojsonOverlap(geoLocationCurrentLat, geoLocationCurrentLong, "+geoJSONObject.toString()+")";
 	private void searchQueryRateControlledRequestSender() throws Exception
-	{	
+	{
 		// as it is per ms
 		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime = 0;
@@ -59,7 +59,8 @@ public class SearchClass extends AbstractRequestSendingClass
 //				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
 //				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
 //				sendQueryMessage(selectTableSQL);
-				sendQueryMessageWithSmallRanges();
+				//sendQueryMessageWithSmallRanges();
+				sendQueryMessage();
 				numSent++;
 			}
 			currTime = System.currentTimeMillis();
@@ -84,7 +85,8 @@ public class SearchClass extends AbstractRequestSendingClass
 //				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
 //				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
 //				sendQueryMessage(selectTableSQL);
-				sendQueryMessageWithSmallRanges();
+				//sendQueryMessageWithSmallRanges();
+				sendQueryMessage();
 				numSent++;
 			}
 			Thread.sleep(100);
@@ -102,11 +104,11 @@ public class SearchClass extends AbstractRequestSendingClass
 		System.out.println("Search result:Goodput "+sysThrput);
 	}
 	
-	private void sendQueryMessage(String mysqlQuery)
-	{
-		SearchTask searchTask = new SearchTask( mysqlQuery, this );
-		MySQLThroughputBenchmarking.taskES.execute(searchTask);
-	}
+//	private void sendQueryMessage(String mysqlQuery)
+//	{
+//		SearchTask searchTask = new SearchTask( mysqlQuery, this );
+//		MySQLThroughputBenchmarking.taskES.execute(searchTask);
+//	}
 	
 	private void sendQueryMessage()
 	{
