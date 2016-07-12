@@ -405,8 +405,8 @@ public class BothSearchAndUpdate extends
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("LocUpd reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+//			System.out.println("LocUpd reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
@@ -422,8 +422,8 @@ public class BothSearchAndUpdate extends
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Search reply recvd size "+resultSize+" time taken "
-					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
+//			System.out.println("Search reply recvd size "+resultSize+" time taken "
+//					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
