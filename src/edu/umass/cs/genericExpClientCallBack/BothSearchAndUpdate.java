@@ -335,11 +335,11 @@ public class BothSearchAndUpdate extends
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 			// making it curcular
-			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
-			{
-				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
-				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
-			}
+//			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
+//			{
+//				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
+//				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+//			}
 			// last so no AND
 			if(i == (SearchAndUpdateDriver.numAttrsInQuery-1))
 			{
