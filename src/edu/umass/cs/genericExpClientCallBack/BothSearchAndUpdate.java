@@ -15,6 +15,8 @@ public class BothSearchAndUpdate extends
 	
 	private double currUserGuidNum   		= 0;
 	
+	private long sumResultSize				= 0;
+	
 	// we don't want to issue new search queries for the trigger exp.
 	// so that the number of search queries in the experiment remains same.
 	// so when number of search queries reaches threshold then we reset it to 
@@ -94,7 +96,8 @@ public class BothSearchAndUpdate extends
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
-		System.out.println("Both result:Goodput "+sysThrput);
+		System.out.println("Both result:Goodput "+sysThrput+" average resultsize "
+										+(sumResultSize/numRecvd));
 	}
 	
 	/**
@@ -417,11 +420,12 @@ public class BothSearchAndUpdate extends
 	
 	
 	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
 	{
 		synchronized(waitLock)
 		{
 			numRecvd++;
+			sumResultSize = sumResultSize + resultSize;
 //			System.out.println("Search reply recvd size "+resultSize+" time taken "
 //					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
