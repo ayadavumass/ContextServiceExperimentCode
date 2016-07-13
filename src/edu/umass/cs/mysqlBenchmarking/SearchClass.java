@@ -31,8 +31,10 @@ public class SearchClass extends AbstractRequestSendingClass
 		}
 	}
 	
-	//String query 
-	// = "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE GeojsonOverlap(geoLocationCurrentLat, geoLocationCurrentLong, "+geoJSONObject.toString()+")";
+	// String query 
+	// = "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE 
+	// GeojsonOverlap(geoLocationCurrentLat, geoLocationCurrentLong, 
+	// "+geoJSONObject.toString()+")";
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{
 		// as it is per ms
@@ -59,8 +61,8 @@ public class SearchClass extends AbstractRequestSendingClass
 //				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
 //				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
 //				sendQueryMessage(selectTableSQL);
-				//sendQueryMessageWithSmallRanges();
-				sendQueryMessage();
+				sendQueryMessageWithSmallRanges();
+				//sendQueryMessage();
 				numSent++;
 			}
 			currTime = System.currentTimeMillis();
@@ -85,8 +87,8 @@ public class SearchClass extends AbstractRequestSendingClass
 //				+ "( value1 >= "+beg1 +" AND value1 < "+end1+" AND "
 //				+ " value2 >= "+beg2 +" AND value2 < "+end2+" )";
 //				sendQueryMessage(selectTableSQL);
-				//sendQueryMessageWithSmallRanges();
-				sendQueryMessage();
+				sendQueryMessageWithSmallRanges();
+				//sendQueryMessage();
 				numSent++;
 			}
 			Thread.sleep(100);
@@ -220,8 +222,7 @@ public class SearchClass extends AbstractRequestSendingClass
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 					+" <= "+attrMax+" AND ";
 			}
-		}
-		
+		}	
 //		ExperimentSearchReply searchRep 
 //				= new ExperimentSearchReply( reqIdNum );
 //		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
