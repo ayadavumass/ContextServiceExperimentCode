@@ -184,7 +184,8 @@ public class SearchClass extends AbstractRequestSendingClass
 		for( int i=0; i<MySQLThroughputBenchmarking.numAttrsInQuery; i++)
 		{
 			// if num attrs and num in query are same then send query on all attrs
-			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
+			if(MySQLThroughputBenchmarking.numAttrs 
+						== MySQLThroughputBenchmarking.numAttrsInQuery)
 			{
 				randAttrNum++;
 			}
@@ -206,23 +207,76 @@ public class SearchClass extends AbstractRequestSendingClass
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 			// making it curcular
-//			if( attrMax > MySQLThroughputBenchmarking.ATTR_MAX )
-//			{
-//				double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
-//				attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
-//			}
-			// last so no AND
-			if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+			if( attrMax > MySQLThroughputBenchmarking.ATTR_MAX )
 			{
-				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-						+" <= "+attrMax;
+				double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
+				attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
+			}
+			
+			if( attrMin <= attrMax )
+			{
+				// last so no AND
+//				if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+//				{
+//					searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+//							+" <= "+attrMax;
+//				}
+//				else
+//				{
+//					searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+//						+" <= "+attrMax+" AND ";
+//				}
+				
+				String queryMin  = attrMin+"";
+				String queryMax  = attrMax+"";
+				
+				if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+				{
+					// it is assumed that the strings in query(pqc.getLowerBound() or pqc.getUpperBound()) 
+					// will have single or double quotes in them so we don't need to them separately in mysql query
+					searchQuery = searchQuery + " ( "+attrName +" >= "+queryMin +" AND " 
+							+attrName +" <= "+queryMax+" ) )";
+				}
+				else
+				{
+					searchQuery = searchQuery + " ( "+attrName +" >= "+queryMin +" AND " 
+							+attrName +" <= "+queryMax+" ) AND ";
+				}
 			}
 			else
 			{
-				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-					+" <= "+attrMax+" AND ";
+				if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+				{
+					String queryMin  = MySQLThroughputBenchmarking.ATTR_MIN+"";
+					String queryMax  = attrMax+"";
+					
+					searchQuery = searchQuery + " ( "
+							+" ( "+attrName +" >= "+queryMin +" AND " 
+							+attrName +" <= "+queryMax+" ) OR ";
+					
+					queryMin  = attrMin+"";
+					queryMax  = MySQLThroughputBenchmarking.ATTR_MAX+"";
+					
+					searchQuery = searchQuery +" ( "+attrName +" >= "+queryMin +" AND " 
+							+attrName +" <= "+queryMax+" ) ) )";
+				}
+				else
+				{
+					String queryMin  = MySQLThroughputBenchmarking.ATTR_MIN+"";
+					String queryMax  = attrMax+"";
+					
+					searchQuery = searchQuery + " ( "
+							+" ( "+attrName +" >= "+queryMin +" AND " 
+							+attrName +" <= "+queryMax+" ) OR ";
+							
+					queryMin  = attrMin+"";
+					queryMax  = MySQLThroughputBenchmarking.ATTR_MAX+"";
+					
+					searchQuery = searchQuery +" ( "+attrName +" >= "+queryMin +" AND " 
+							+attrName +" <= "+queryMax+" ) ) AND ";
+				}
 			}
-		}	
+		}
 //		ExperimentSearchReply searchRep 
 //				= new ExperimentSearchReply( reqIdNum );
 //		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack

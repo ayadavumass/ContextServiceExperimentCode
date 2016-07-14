@@ -286,8 +286,13 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 		
 			double attrMax = attrMin + predLength;
 			
-//			if(AttributeTypes.compareTwoValues(qcomponent.getLowerBound(),
-//					qcomponent.getUpperBound(), dataType))
+			if( attrMax > MySQLThroughputBenchmarking.ATTR_MAX )
+			{
+				double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
+				attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
+			}
+			
+			if( attrMin <= attrMax )
 			{
 				String queryMin  =  attrMin + "";
 				String queryMax  =  attrMax + "";
@@ -312,26 +317,26 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 						+ "( "+lowerAttr+" <= "+queryMax +" AND "+upperAttr+" > "+queryMax+" ) OR "
 						+ "( "+lowerAttr+" >= "+queryMin +" AND "+upperAttr+" <= "+queryMax+" ) "+" ) ";
 			}
-//			else // when lower value in query predicate is greater than upper value, meaning circular query, 
-//				// it is done mostly for generating uniform workload for experiments
-//			{
-//				// first case from lower to max value
-//				String queryMin  =  AttributeTypes.convertStringToDataTypeForMySQL(qcomponent.getLowerBound(), dataType) + "";
-//				String queryMax  =  AttributeTypes.convertStringToDataTypeForMySQL(attrMetaInfo.getMaxValue(), dataType) + "";
-//				
-//				selectTableSQL = selectTableSQL +"( ( "
-//						+ "( "+lowerAttr+" <= "+queryMin +" AND "+upperAttr+" > "+queryMin+" ) OR "
-//						+ "( "+lowerAttr+" <= "+queryMax +" AND "+upperAttr+" > "+queryMax+" ) OR "
-//						+ "( "+lowerAttr+" >= "+queryMin +" AND "+upperAttr+" <= "+queryMax+" ) "+" ) OR ";
-//				
-//				// second case from minvalue to upper val
-//				queryMin  =  AttributeTypes.convertStringToDataTypeForMySQL(attrMetaInfo.getMinValue(), dataType) + "";
-//				queryMax  =  AttributeTypes.convertStringToDataTypeForMySQL(qcomponent.getUpperBound(), dataType) + "";
-//				selectTableSQL = selectTableSQL +"( "
-//						+ "( "+lowerAttr+" <= "+queryMin +" AND "+upperAttr+" > "+queryMin+" ) OR "
-//						+ "( "+lowerAttr+" <= "+queryMax +" AND "+upperAttr+" > "+queryMax+" ) OR "
-//						+ "( "+lowerAttr+" >= "+queryMin +" AND "+upperAttr+" <= "+queryMax+" ) "+" )  )";
-//			}
+			else // when lower value in query predicate is greater than upper value, meaning circular query, 
+				// it is done mostly for generating uniform workload for experiments
+			{
+				// first case from lower to max value
+				String queryMin  =  attrMin + "";
+				String queryMax  =  MySQLThroughputBenchmarking.ATTR_MAX + "";
+				
+				selectTableSQL = selectTableSQL +"( ( "
+						+ "( "+lowerAttr+" <= "+queryMin +" AND "+upperAttr+" > "+queryMin+" ) OR "
+						+ "( "+lowerAttr+" <= "+queryMax +" AND "+upperAttr+" > "+queryMax+" ) OR "
+						+ "( "+lowerAttr+" >= "+queryMin +" AND "+upperAttr+" <= "+queryMax+" ) "+" ) OR ";
+				
+				// second case from minvalue to upper val
+				queryMin  =  MySQLThroughputBenchmarking.ATTR_MIN + "";
+				queryMax  =  attrMax + "";
+				selectTableSQL = selectTableSQL +"( "
+						+ "( "+lowerAttr+" <= "+queryMin +" AND "+upperAttr+" > "+queryMin+" ) OR "
+						+ "( "+lowerAttr+" <= "+queryMax +" AND "+upperAttr+" > "+queryMax+" ) OR "
+						+ "( "+lowerAttr+" >= "+queryMin +" AND "+upperAttr+" <= "+queryMax+" ) "+" )  )";
+			}
 			currNumAttrs++;
 			if( currNumAttrs != numAttrsMatching )
 			{
