@@ -178,7 +178,7 @@ public class SearchClass extends AbstractRequestSendingClass
 	private void sendQueryMessageWithSmallRanges()
 	{
 		String searchQuery
-			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ";
+			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ( ";
 		
 		int randAttrNum = -1;
 		for( int i=0; i<MySQLThroughputBenchmarking.numAttrsInQuery; i++)
