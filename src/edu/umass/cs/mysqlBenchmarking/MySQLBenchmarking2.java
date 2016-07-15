@@ -22,7 +22,7 @@ public class MySQLBenchmarking2
 	public static void main(String[] args) 
 			throws IOException, SQLException, PropertyVetoException
 	{
-		dsInst = new DataSource();
+		dsInst = new DataSource(0);
 		
 		// check time for update
 		benchmarkAttrUpdateTime();

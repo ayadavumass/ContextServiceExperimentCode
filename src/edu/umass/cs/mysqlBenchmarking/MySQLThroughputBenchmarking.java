@@ -50,6 +50,8 @@ public class MySQLThroughputBenchmarking
 	public static DataSource dsInst;
 	//private Random valueRand;
 	
+	public static int nodeId;
+	
 	public static int numGuids;
 	public static int numAttrs;
 	
@@ -68,7 +70,7 @@ public class MySQLThroughputBenchmarking
 		{
 			taskES = Executors.newFixedThreadPool(PoolSize);
 			//valueRand = new Random();
-			dsInst = new DataSource();
+			dsInst = new DataSource(nodeId);
 			createTable();
 			
 //			myConn = dsInst.getConnection();
@@ -179,12 +181,13 @@ public class MySQLThroughputBenchmarking
 	
 	public static void main( String[] args )
 	{
-		numGuids 		 = Integer.parseInt(args[0]);
-		numAttrs 		 = Integer.parseInt(args[1]);
+		nodeId 			 = Integer.parseInt(args[0]);
+		numGuids 		 = Integer.parseInt(args[1]);
+		numAttrs 		 = Integer.parseInt(args[2]);
 						 
-		requestType      = Integer.parseInt(args[2]);
-		requestsps       = Integer.parseInt(args[3]);
-		PoolSize  		 = Integer.parseInt(args[4]);
+		requestType      = Integer.parseInt(args[3]);
+		requestsps       = Integer.parseInt(args[4]);
+		PoolSize  		 = Integer.parseInt(args[5]);
 		
 		
 		MySQLThroughputBenchmarking mysqlBech 
@@ -230,7 +233,7 @@ public class MySQLThroughputBenchmarking
 			}
 			case RUN_INSERT:
 			{
-				numGuidsToInsert = Integer.parseInt(args[5]);
+				numGuidsToInsert = Integer.parseInt(args[6]);
 				requestTypeObj = new InsertClass();
 				break;
 			}

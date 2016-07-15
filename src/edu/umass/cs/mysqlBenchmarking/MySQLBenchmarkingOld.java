@@ -54,7 +54,7 @@ public class MySQLBenchmarkingOld
 			taskES = Executors.newFixedThreadPool(100);
 			
 			//valueRand = new Random();
-			dsInst = new DataSource();
+			dsInst = new DataSource(0);
 			
 			myConn = dsInst.getConnection();
 			
