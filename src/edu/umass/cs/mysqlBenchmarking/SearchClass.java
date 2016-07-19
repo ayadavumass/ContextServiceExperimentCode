@@ -201,7 +201,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			
 			// querying 10 % of domain
 			double predLength 
-				= (0.1*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN)) ;
+				= (0.5*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN)) ;
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
