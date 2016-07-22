@@ -72,7 +72,8 @@ public class UpdateClassBackToBack extends AbstractRequestSendingClass
 		updateJSON.put(attrName, value);
 		
 		UpdateTask updTask = new UpdateTask( guid, updateJSON, this);
-		MySQLThroughputBenchmarking.taskES.execute(updTask);
+		updTask.run();
+		//MySQLThroughputBenchmarking.taskES.execute(updTask);
 	}
 	
 	@Override
