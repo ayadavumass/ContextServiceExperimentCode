@@ -43,6 +43,12 @@ public class GetClassBackToBack extends AbstractRequestSendingClass
 		double timePerReq = ((end-start)*1.0)/numOfBackToBackReqToSend;
 		
 		System.out.println("Time for back-to-back get request rate "+timePerReq);
+		
+		threadFinished = true;
+		synchronized( threadFinishLock )
+		{
+			threadFinishLock.notify();
+		}
 	}
 	
 	private void doGet(int currUserGuidNum)
