@@ -20,6 +20,7 @@ public class MySQLThroughputBenchmarking
 	public static final int RUN_INDEX_READ_SEARCH				= 6;
 	public static final int RUN_DELETE							= 7;
 	public static final int RUN_GET_BACK_TO_BACK				= 8;
+	public static final int RUN_UPDATE_BACK_TO_BACK				= 9;
 	
 	
 	public static final int NUM_SUBSPACES						= 4;
@@ -263,11 +264,16 @@ public class MySQLThroughputBenchmarking
 				requestTypeObj = new GetClassBackToBack();
 				break;
 			}
+			case RUN_UPDATE_BACK_TO_BACK:
+			{
+				requestTypeObj = new UpdateClassBackToBack();
+				break;
+			}
 			default:
 				assert(false);
 		}
-		new Thread(requestTypeObj).start();
 		
+		new Thread(requestTypeObj).start();
 		requestTypeObj.waitForThreadFinish();
 		
 		System.exit(0);
@@ -312,7 +318,7 @@ public class MySQLThroughputBenchmarking
 			e.printStackTrace();
 		} finally
 		{
-			try 
+			try
 			{
 				if(statement != null)
 					statement.close();
