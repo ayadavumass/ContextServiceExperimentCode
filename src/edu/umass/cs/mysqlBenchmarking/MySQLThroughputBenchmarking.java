@@ -19,6 +19,7 @@ public class MySQLThroughputBenchmarking
 	public static final int RUN_INDEX_READ_UPDATE				= 5;
 	public static final int RUN_INDEX_READ_SEARCH				= 6;
 	public static final int RUN_DELETE							= 7;
+	public static final int RUN_GET_BACK_TO_BACK				= 8;
 	
 	
 	public static final int NUM_SUBSPACES						= 4;
@@ -184,7 +185,7 @@ public class MySQLThroughputBenchmarking
 		nodeId 			 = Integer.parseInt(args[0]);
 		numGuids 		 = Integer.parseInt(args[1]);
 		numAttrs 		 = Integer.parseInt(args[2]);
-						 
+		
 		requestType      = Integer.parseInt(args[3]);
 		requestsps       = Integer.parseInt(args[4]);
 		PoolSize  		 = Integer.parseInt(args[5]);
@@ -255,6 +256,11 @@ public class MySQLThroughputBenchmarking
 			case RUN_DELETE:
 			{
 				requestTypeObj = new DeleteClass();
+				break;
+			}
+			case RUN_GET_BACK_TO_BACK:
+			{
+				requestTypeObj = new GetClassBackToBack();
 				break;
 			}
 			default:
