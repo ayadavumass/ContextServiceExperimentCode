@@ -221,7 +221,7 @@ public class MySQLThroughputBenchmarking
 		
 		
 		AbstractRequestSendingClass requestTypeObj = null;
-		switch(requestType)
+		switch( requestType )
 		{
 			case RUN_UPDATE:
 			{
