@@ -37,7 +37,6 @@ import org.json.JSONArray;
  * Note: This example assumes that the verification step (e.g., via email) to
  * verify an account GUID's human-readable name has been disabled on the server
  * using the -disableEmailVerification option.
- * 
  * @author aditya
  */
 public class SelectCallBenchmarking
@@ -170,7 +169,7 @@ public class SelectCallBenchmarking
 		{
 			String searchQuery = "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE"
 					+" latitude >= "+LATITUDE_MIN+" AND latitude <= "+LATITUDE_MAX
-					+ " longitude >= "+LONGITUDE_MIN+" AND longitude <= "+LONGITUDE_MAX;
+					+ " AND longitude >= "+LONGITUDE_MIN+" AND longitude <= "+LONGITUDE_MAX;
 			
 			JSONArray resultArray = new JSONArray();
 			long expiryTime = 300000;
@@ -249,7 +248,7 @@ public class SelectCallBenchmarking
 			
 			String searchQuery = "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE"
 					+" latitude >= "+minLat+" AND latitude <= "+maxLat
-					+ " longitude >= "+minLong+" AND longitude <= "+maxLong;
+					+ " AND longitude >= "+minLong+" AND longitude <= "+maxLong;
 			
 			JSONArray resultArray = new JSONArray();
 			long expiryTime = 300000;
@@ -281,7 +280,6 @@ public class SelectCallBenchmarking
 		
 		md.update(stringToHash.getBytes());
 		byte byteData[] = md.digest();
-		
 		
 		//convert the byte to hex format method 1
 		StringBuffer sb = new StringBuffer();
