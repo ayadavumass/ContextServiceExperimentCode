@@ -201,7 +201,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			
 			// querying 10 % of domain
 			double predLength 
-				= (0.5*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN)) ;
+				= (0.1*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN)) ;
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
@@ -287,7 +287,8 @@ public class SearchClass extends AbstractRequestSendingClass
 //		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
 //		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
-
+	
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
@@ -299,8 +300,8 @@ public class SearchClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			//System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
+			//		" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
