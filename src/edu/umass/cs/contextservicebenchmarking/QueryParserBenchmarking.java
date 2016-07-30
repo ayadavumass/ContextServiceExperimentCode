@@ -21,7 +21,7 @@ public class QueryParserBenchmarking
 	
 	public static void main(String[] args)
 	{
-		ContextServiceConfig.configFileDirectory = "/home/adipc/GNS/ContextServiceExperiments";
+		ContextServiceConfig.configFileDirectory = args[0];
 		AttributeTypes.initialize();
 		long start = System.currentTimeMillis();
 		for(int i = 0; i < 1000; i++)
