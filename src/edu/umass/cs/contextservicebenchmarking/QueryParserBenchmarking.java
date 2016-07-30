@@ -2,6 +2,8 @@ package edu.umass.cs.contextservicebenchmarking;
 
 import java.util.Random;
 
+import edu.umass.cs.contextservice.attributeInfo.AttributeTypes;
+import edu.umass.cs.contextservice.config.ContextServiceConfig;
 import edu.umass.cs.contextservice.queryparsing.QueryInfo;
 import edu.umass.cs.contextservice.utils.Utils;
 
@@ -19,6 +21,8 @@ public class QueryParserBenchmarking
 	
 	public static void main(String[] args)
 	{
+		ContextServiceConfig.configFileDirectory = "/home/adipc/GNS/ContextServiceExperiments";
+		AttributeTypes.initialize();
 		long start = System.currentTimeMillis();
 		for(int i = 0; i < 1000; i++)
 		{
