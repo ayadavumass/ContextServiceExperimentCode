@@ -8,8 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.umass.cs.mysqlBenchmarking.MySQLThroughputBenchmarking;
-
 public class BothSearchAndUpdate extends 
 					AbstractRequestSendingClass implements Runnable
 {
@@ -313,8 +311,8 @@ public class BothSearchAndUpdate extends
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
 		
 		HashMap<String, Boolean> distinctAttrMap 
-			= pickDistinctAttrs( MySQLThroughputBenchmarking.numAttrsInQuery, 
-			MySQLThroughputBenchmarking.numAttrs, searchQueryRand );
+			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
+					SearchAndUpdateDriver.numAttrs, searchQueryRand );
 		
 		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
 		
@@ -364,7 +362,7 @@ public class BothSearchAndUpdate extends
 		int currAttrNum = 0;
 		while(hashMap.size() != numAttrsToPick)
 		{
-			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
+			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
 			{
 				String attrName = "attr"+currAttrNum;
 				hashMap.put(attrName, true);
@@ -372,7 +370,7 @@ public class BothSearchAndUpdate extends
 			}
 			else
 			{
-				currAttrNum = randGen.nextInt(MySQLThroughputBenchmarking.numAttrs);
+				currAttrNum = randGen.nextInt(SearchAndUpdateDriver.numAttrs);
 				String attrName = "attr"+currAttrNum;
 				hashMap.put(attrName, true);
 			}
