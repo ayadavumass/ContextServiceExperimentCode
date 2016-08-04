@@ -19,6 +19,8 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 	
 	private double sumResultSize = 0.0;
 	
+	private double sumAttrMatch = 0.0;
+	
 	public IndexReadSearchClass()
 	{
 		super(MySQLThroughputBenchmarking.SEARCH_LOSS_TOLERANCE);
@@ -253,6 +255,7 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 		String selectTableSQL = "SELECT hashCode, respNodeID from "+tableName+" WHERE ";
 		
 		List<String> matchingAttrs = oClass.overlapAttrs;
+		this.sumAttrMatch = sumAttrMatch + matchingAttrs.size();
 		
 		for( int i=0; i<matchingAttrs.size(); i++ )
 		{
@@ -333,6 +336,11 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 		
 		IndexReadSearchTask searchTask = new IndexReadSearchTask( selectTableSQL, this );
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
+	}
+	
+	public double getAvgAttrMatch()
+	{
+		return this.sumAttrMatch/numRecvd;
 	}
 	
 	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 

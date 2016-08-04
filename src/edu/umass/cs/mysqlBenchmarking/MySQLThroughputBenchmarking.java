@@ -267,7 +267,8 @@ public class MySQLThroughputBenchmarking
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();
 				System.out.println("Average result size "
-						 +(((IndexReadSearchClass)requestTypeObj).getAvgResultSize()));
+						 +(((IndexReadSearchClass)requestTypeObj).getAvgResultSize())
+						 + " avg attr match "+((IndexReadSearchClass)requestTypeObj).getAvgAttrMatch() );
 				
 				break;
 			}
