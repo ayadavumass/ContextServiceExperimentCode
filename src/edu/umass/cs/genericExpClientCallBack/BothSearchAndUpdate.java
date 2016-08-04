@@ -378,8 +378,7 @@ public class BothSearchAndUpdate extends
 		return hashMap;
 	}
 	
-	
-	private void sendALocMessage(int currUserGuidNum, long reqIdNum)
+	private void sendALocMessage( int currUserGuidNum, long reqIdNum )
 	{
 		String userGUID = "";
 		if( SearchAndUpdateDriver.useGNS )

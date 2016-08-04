@@ -199,17 +199,6 @@ public class SearchClass extends AbstractRequestSendingClass
 		
 			if( attrMin <= attrMax )
 			{
-				// last so no AND
-	//			if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
-	//			{
-	//				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-	//						+" <= "+attrMax;
-	//			}
-	//			else
-	//			{
-	//				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-	//					+" <= "+attrMax+" AND ";
-	//			}
 				
 				String queryMin  = attrMin+"";
 				String queryMax  = attrMax+"";
@@ -293,7 +282,6 @@ public class SearchClass extends AbstractRequestSendingClass
 	{
 		return sumResultSize/numRecvd;
 	}
-	
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
