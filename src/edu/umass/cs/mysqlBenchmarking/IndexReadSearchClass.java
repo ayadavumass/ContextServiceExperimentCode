@@ -15,6 +15,8 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 	
 	private final HashMap<Integer, HashMap<String, Boolean>> subspaceMap;
 	
+	private double sumResultSize = 0.0;
+	
 	public IndexReadSearchClass()
 	{
 		super(MySQLThroughputBenchmarking.SEARCH_LOSS_TOLERANCE);
@@ -396,6 +398,12 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 //		List<String> overlapAttrs;
 //	}
 	
+	public double getAvgResultSize()
+	{
+		return sumResultSize/numRecvd;
+	}
+	
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
@@ -407,6 +415,7 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
+			sumResultSize = sumResultSize + resultSize;
 //			System.out.println("IndexReadSearch reply recvd size "+resultSize+" time taken "+timeTaken+
 //					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)

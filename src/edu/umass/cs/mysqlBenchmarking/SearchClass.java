@@ -10,7 +10,7 @@ import java.util.Random;
 public class SearchClass extends AbstractRequestSendingClass
 {
 	private final Random queryRand;
-	
+	private double sumResultSize = 0.0;
 	public SearchClass()
 	{
 		super(MySQLThroughputBenchmarking.SEARCH_LOSS_TOLERANCE);
@@ -288,6 +288,11 @@ public class SearchClass extends AbstractRequestSendingClass
 //		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
+	public double getAvgResultSize()
+	{
+		return sumResultSize/numRecvd;
+	}
+	
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
@@ -303,6 +308,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			//System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
 			//		" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
+			sumResultSize = sumResultSize + resultSize;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
 				waitLock.notify();

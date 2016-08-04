@@ -226,55 +226,75 @@ public class MySQLThroughputBenchmarking
 			case RUN_UPDATE:
 			{
 				requestTypeObj = new UpdateClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				break;
 			}
 			case RUN_SEARCH:
 			{
 				requestTypeObj = new SearchClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
+				System.out.println("Average result size "
+				 +(((SearchClass)requestTypeObj).getAvgResultSize()));
 				break;
 			}
 			case RUN_INSERT:
 			{
 				numGuidsToInsert = Integer.parseInt(args[6]);
 				requestTypeObj = new InsertClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				break;
 			}
 			case RUN_GET:
 			{
 				requestTypeObj = new GetClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				break;
 			}
 			case RUN_INDEX_READ_UPDATE:
 			{
 				requestTypeObj = new IndexReadUpdateClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				break;
 			}
 			case RUN_INDEX_READ_SEARCH:
 			{
 				requestTypeObj = new IndexReadSearchClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
+				System.out.println("Average result size "
+						 +(((IndexReadSearchClass)requestTypeObj).getAvgResultSize()));
+				
 				break;
 			}
 			case RUN_DELETE:
 			{
 				requestTypeObj = new DeleteClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				break;
 			}
 			case RUN_GET_BACK_TO_BACK:
 			{
 				requestTypeObj = new GetClassBackToBack();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				break;
 			}
 			case RUN_UPDATE_BACK_TO_BACK:
 			{
 				requestTypeObj = new UpdateClassBackToBack();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				break;
 			}
 			default:
 				assert(false);
 		}
-		
-		new Thread(requestTypeObj).start();
-		requestTypeObj.waitForThreadFinish();
 		
 		System.exit(0);
 		//stateChange.waitForThreadFinish();
