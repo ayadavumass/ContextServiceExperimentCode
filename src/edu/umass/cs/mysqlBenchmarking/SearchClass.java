@@ -1,5 +1,7 @@
 package edu.umass.cs.mysqlBenchmarking;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -120,24 +122,18 @@ public class SearchClass extends AbstractRequestSendingClass
 //			+ " AND "
 //			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
 		
-		int randAttrNum = -1;
-		for( int i=0; i<MySQLThroughputBenchmarking.numAttrsInQuery; i++)
+		HashMap<String, Boolean> distinctAttrMap 
+			= pickDistinctAttrs( MySQLThroughputBenchmarking.numAttrsInQuery, 
+					MySQLThroughputBenchmarking.numAttrs, queryRand );
+		
+		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
+		while( attrIter.hasNext() )
 		{
-			// if num attrs and num in query are same then send query on all attrs
-			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
-			{
-				randAttrNum++;
-			}
-			else
-			{
-				randAttrNum = queryRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
-			}				
+			String attrName = attrIter.next();
 			
-			String attrName = "attr"+randAttrNum;
 			double attrMin 
-				= 1
-				+queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN);
-			
+				= 1 +queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN);
+		
 			double predLength 
 				= (queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN));
 			
@@ -145,14 +141,14 @@ public class SearchClass extends AbstractRequestSendingClass
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 			// making it curcular
-//			if( attrMax > MySQLThroughputBenchmarking.ATTR_MAX )
-//			{
-////				double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
-////				attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
-//			}
+	//		if( attrMax > MySQLThroughputBenchmarking.ATTR_MAX )
+	//		{
+	////			double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
+	////			attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
+	//		}
 			
 			// last so no AND
-			if(i == (MySQLThroughputBenchmarking.numAttrsInQuery-1))
+			if( !attrIter.hasNext() )
 			{
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 						+" <= "+attrMax;
@@ -163,16 +159,9 @@ public class SearchClass extends AbstractRequestSendingClass
 					+" <= "+attrMax+" AND ";
 			}
 		}
-//		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
-//		SearchAndUpdateDriver.taskES.execute(searchTask);
 		
 		SearchTask searchTask = new SearchTask( searchQuery, this );
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
-		
-//		ExperimentSearchReply searchRep 
-//					= new ExperimentSearchReply( reqIdNum );
-//		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
-//					(searchQuery, 300000, searchRep, this.getCallBack());
 	}
 	
 	private void sendQueryMessageWithSmallRanges()
@@ -180,29 +169,24 @@ public class SearchClass extends AbstractRequestSendingClass
 		String searchQuery
 			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ( ";
 		
-		int randAttrNum = -1;
-		for( int i=0; i<MySQLThroughputBenchmarking.numAttrsInQuery; i++)
+		HashMap<String, Boolean> distinctAttrMap 
+			= pickDistinctAttrs( MySQLThroughputBenchmarking.numAttrsInQuery, 
+				MySQLThroughputBenchmarking.numAttrs, queryRand );
+		
+		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
+		while( attrIter.hasNext() )
 		{
-			// if num attrs and num in query are same then send query on all attrs
-			if(MySQLThroughputBenchmarking.numAttrs 
-						== MySQLThroughputBenchmarking.numAttrsInQuery)
-			{
-				randAttrNum++;
-			}
-			else
-			{
-				randAttrNum = queryRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
-			}
+			String attrName = attrIter.next();
 			
-			String attrName = "attr"+randAttrNum;
 			double attrMin 
 				= MySQLThroughputBenchmarking.ATTR_MIN
-				+queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN);
+				+queryRand.nextDouble()*(MySQLThroughputBenchmarking.ATTR_MAX - 
+						MySQLThroughputBenchmarking.ATTR_MIN);
 			
 			// querying 10 % of domain
 			double predLength 
 				= (0.1*(MySQLThroughputBenchmarking.ATTR_MAX - MySQLThroughputBenchmarking.ATTR_MIN)) ;
-			
+		
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
@@ -212,25 +196,25 @@ public class SearchClass extends AbstractRequestSendingClass
 				double diff = attrMax - MySQLThroughputBenchmarking.ATTR_MAX;
 				attrMax = MySQLThroughputBenchmarking.ATTR_MIN + diff;
 			}
-			
+		
 			if( attrMin <= attrMax )
 			{
 				// last so no AND
-//				if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
-//				{
-//					searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-//							+" <= "+attrMax;
-//				}
-//				else
-//				{
-//					searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-//						+" <= "+attrMax+" AND ";
-//				}
+	//			if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+	//			{
+	//				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+	//						+" <= "+attrMax;
+	//			}
+	//			else
+	//			{
+	//				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+	//					+" <= "+attrMax+" AND ";
+	//			}
 				
 				String queryMin  = attrMin+"";
 				String queryMax  = attrMax+"";
 				
-				if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+				if( !attrIter.hasNext() )
 				{
 					// it is assumed that the strings in query(pqc.getLowerBound() or pqc.getUpperBound()) 
 					// will have single or double quotes in them so we don't need to them separately in mysql query
@@ -245,7 +229,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			}
 			else
 			{
-				if( i == (MySQLThroughputBenchmarking.numAttrsInQuery-1) )
+				if( !attrIter.hasNext() )
 				{
 					String queryMin  = MySQLThroughputBenchmarking.ATTR_MIN+"";
 					String queryMax  = attrMax+"";
@@ -276,16 +260,33 @@ public class SearchClass extends AbstractRequestSendingClass
 							+attrName +" <= "+queryMax+" ) ) AND ";
 				}
 			}
-		}
-//		ExperimentSearchReply searchRep 
-//				= new ExperimentSearchReply( reqIdNum );
-//		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
-//			(searchQuery, 300000, searchRep, this.getCallBack());
-		
+		}	
 		SearchTask searchTask = new SearchTask( searchQuery, this );
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
-//		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
-//		SearchAndUpdateDriver.taskES.execute(searchTask);
+	}
+	
+	
+	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
+			int totalAttrs, Random randGen )
+	{
+		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
+		int currAttrNum = 0;
+		while(hashMap.size() != numAttrsToPick)
+		{
+			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
+			{
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);				
+				currAttrNum++;
+			}
+			else
+			{
+				currAttrNum = queryRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);
+			}
+		}
+		return hashMap;
 	}
 	
 	public double getAvgResultSize()
