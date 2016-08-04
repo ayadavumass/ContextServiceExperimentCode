@@ -407,8 +407,8 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("IndexReadSearch reply recvd size "+resultSize+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+//			System.out.println("IndexReadSearch reply recvd size "+resultSize+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{

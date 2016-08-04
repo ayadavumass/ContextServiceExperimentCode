@@ -295,7 +295,7 @@ public class SearchClass extends AbstractRequestSendingClass
 	}
 	
 	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
 	{
 		synchronized(waitLock)
 		{
