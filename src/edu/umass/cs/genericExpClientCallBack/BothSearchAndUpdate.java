@@ -1,10 +1,14 @@
 package edu.umass.cs.genericExpClientCallBack;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import edu.umass.cs.mysqlBenchmarking.MySQLThroughputBenchmarking;
 
 public class BothSearchAndUpdate extends 
 					AbstractRequestSendingClass implements Runnable
@@ -308,29 +312,22 @@ public class BothSearchAndUpdate extends
 		String searchQuery
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
 		
-		int randAttrNum = -1;
-		for( int i=0; i<SearchAndUpdateDriver.numAttrsInQuery; i++)
+		HashMap<String, Boolean> distinctAttrMap 
+			= pickDistinctAttrs( MySQLThroughputBenchmarking.numAttrsInQuery, 
+			MySQLThroughputBenchmarking.numAttrs, searchQueryRand );
+		
+		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
+		
+		while( attrIter.hasNext() )
 		{
-			// if num attrs and num in query are same then send query on all attrs
-			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
-			{
-				randAttrNum++;
-			}
-			else
-			{
-				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
-			}
-						
-			
-			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
-			double attrMin 
-				= SearchAndUpdateDriver.ATTR_MIN
-				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
-			
+			String attrName = attrIter.next();
+			double attrMin = SearchAndUpdateDriver.ATTR_MIN
+					+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
+		
 			// querying 10 % of domain
 			double predLength 
 				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
-			
+		
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
@@ -341,7 +338,7 @@ public class BothSearchAndUpdate extends
 				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
 			}
 			// last so no AND
-			if(i == (SearchAndUpdateDriver.numAttrsInQuery-1))
+			if( !attrIter.hasNext() )
 			{
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 						+" <= "+attrMax;
@@ -355,12 +352,32 @@ public class BothSearchAndUpdate extends
 		
 		ExperimentSearchReply searchRep 
 				= new ExperimentSearchReply( reqIdNum );
-
-		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
-			(searchQuery, 300000, searchRep, this.getCallBack());
 		
-//		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
-//		SearchAndUpdateDriver.taskES.execute(searchTask);
+		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
+			( searchQuery, 300000, searchRep, this.getCallBack() );
+	}
+	
+	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
+			int totalAttrs, Random randGen )
+	{
+		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
+		int currAttrNum = 0;
+		while(hashMap.size() != numAttrsToPick)
+		{
+			if(MySQLThroughputBenchmarking.numAttrs == MySQLThroughputBenchmarking.numAttrsInQuery)
+			{
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);
+				currAttrNum++;
+			}
+			else
+			{
+				currAttrNum = randGen.nextInt(MySQLThroughputBenchmarking.numAttrs);
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);
+			}
+		}
+		return hashMap;
 	}
 	
 	

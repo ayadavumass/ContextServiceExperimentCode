@@ -281,7 +281,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			}
 			else
 			{
-				currAttrNum = queryRand.nextInt(MySQLThroughputBenchmarking.numAttrs);
+				currAttrNum = randGen.nextInt(MySQLThroughputBenchmarking.numAttrs);
 				String attrName = "attr"+currAttrNum;
 				hashMap.put(attrName, true);
 			}
