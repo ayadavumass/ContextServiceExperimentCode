@@ -271,7 +271,8 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 		
 			// querying 10 % of domain
 			double predLength 
-				= (0.1*(MySQLThroughputBenchmarking.ATTR_MAX 
+				= (MySQLThroughputBenchmarking.predicateLength*
+						(MySQLThroughputBenchmarking.ATTR_MAX 
 						- MySQLThroughputBenchmarking.ATTR_MIN)) ;
 		
 			double attrMax = attrMin + predLength;

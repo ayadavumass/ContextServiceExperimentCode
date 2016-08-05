@@ -326,12 +326,12 @@ public class MySQLThroughputBenchmarking
 	{
 		Connection myConn = dsInst.getConnection();
 		Statement statement = null;
-
+		
 		String tableName = "testTable";
 		String insertTableSQL = "INSERT INTO "+tableName 
 				+" (value1, value2, nodeGUID, versionNum) " + "VALUES"
 				+ "("+value1+","+value2+",'"+nodeGUID+"',"+versionNum +")";
-
+		
 		try 
 		{
 			statement = (Statement) myConn.createStatement();
