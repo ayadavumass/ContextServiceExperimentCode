@@ -29,7 +29,7 @@ public class InitializeClass extends AbstractRequestSendingClass
 	
 	private void updRateControlledRequestSender() throws Exception
 	{
-		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
+		double reqspms = 100.0/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms
