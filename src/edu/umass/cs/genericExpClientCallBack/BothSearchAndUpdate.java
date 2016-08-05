@@ -19,6 +19,10 @@ public class BothSearchAndUpdate extends
 	
 	private long sumResultSize				= 0;
 	
+	private long sumSearchLatency			= 0;
+	private long sumUpdateLatency			= 0;
+	
+	
 	// we don't want to issue new search queries for the trigger exp.
 	// so that the number of search queries in the experiment remains same.
 	// so when number of search queries reaches threshold then we reset it to 
@@ -418,8 +422,18 @@ public class BothSearchAndUpdate extends
 //		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
+	public double getAverageUpdateLatency()
+	{
+		return sumUpdateLatency/numRecvd;
+	}
+	
+	public double getAverageSearchLatency()
+	{
+		return sumSearchLatency/numRecvd;
+	}
+	
 	@Override
-	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+	public void incrementUpdateNumRecvd(String userGUID, long timeTaken)
 	{
 		synchronized(waitLock)
 		{
@@ -427,6 +441,7 @@ public class BothSearchAndUpdate extends
 //			System.out.println("LocUpd reply recvd "+userGUID+" time taken "+timeTaken+
 //					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
+			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
 				waitLock.notify();
@@ -445,6 +460,7 @@ public class BothSearchAndUpdate extends
 //			System.out.println("Search reply recvd size "+resultSize+" time taken "
 //					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
+			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
 				waitLock.notify();

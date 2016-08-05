@@ -208,6 +208,10 @@ public class SearchAndUpdateDriver
 			else if(searchEnable && updateEnable)
 			{
 				bothSearchAndUpdate.waitForThreadFinish();
+				double avgUpdateLatency = bothSearchAndUpdate.getAverageUpdateLatency();
+				double avgSearchLatency = bothSearchAndUpdate.getAverageSearchLatency();
+				System.out.println("avgUpdateLatency "+avgUpdateLatency
+						+" avgSearchLatency "+avgSearchLatency);
 			}
 		}
 		else
