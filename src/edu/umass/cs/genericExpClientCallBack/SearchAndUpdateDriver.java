@@ -234,14 +234,14 @@ public class SearchAndUpdateDriver
 	
 	public static String getSHA1(String stringToHash)
 	{
-		MessageDigest md=null;
+		MessageDigest md = null;
 		try
 		{
-		   md = MessageDigest.getInstance("SHA-256");
-	   } catch (NoSuchAlgorithmException e)
-	   {
-		   e.printStackTrace();
-	   }
+			md = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e)
+		{
+			e.printStackTrace();
+		}
        
 	   md.update(stringToHash.getBytes());
  

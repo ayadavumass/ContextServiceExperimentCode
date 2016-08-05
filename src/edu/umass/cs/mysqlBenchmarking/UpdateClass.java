@@ -13,6 +13,8 @@ import org.json.JSONObject;
 public class UpdateClass extends AbstractRequestSendingClass
 {
 	private Random updateRand;
+	
+	private double sumUpdTime = 0;
 	public UpdateClass()
 	{
 		super(MySQLThroughputBenchmarking.UPD_LOSS_TOLERANCE);
@@ -107,14 +109,20 @@ public class UpdateClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Update reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			sumUpdTime = sumUpdTime+timeTaken;
+//			System.out.println("Update reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
 				waitLock.notify();
 			}
 		}
+	}
+	
+	public double getAvgUpdateTime()
+	{
+		return sumUpdTime/numRecvd;
 	}
 
 	@Override

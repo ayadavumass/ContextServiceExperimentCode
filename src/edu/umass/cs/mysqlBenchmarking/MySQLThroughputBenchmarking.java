@@ -194,7 +194,6 @@ public class MySQLThroughputBenchmarking
 		PoolSize  		 = Integer.parseInt(args[5]);
 		predicateLength  = Double.parseDouble(args[6]);
 		
-		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
 		
@@ -231,6 +230,8 @@ public class MySQLThroughputBenchmarking
 				requestTypeObj = new UpdateClass();
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();
+				double avgUpdTime = ((UpdateClass)requestTypeObj).getAvgUpdateTime();
+				System.out.println("Avg update time "+avgUpdTime);
 				break;
 			}
 			case RUN_SEARCH:
