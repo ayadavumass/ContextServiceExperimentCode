@@ -13,6 +13,8 @@ public class SearchClass extends AbstractRequestSendingClass
 {
 	private final Random queryRand;
 	private double sumResultSize = 0.0;
+	private double sumTime = 0.0;
+	
 	public SearchClass()
 	{
 		super(MySQLThroughputBenchmarking.SEARCH_LOSS_TOLERANCE);
@@ -285,6 +287,11 @@ public class SearchClass extends AbstractRequestSendingClass
 		return sumResultSize/numRecvd;
 	}
 	
+	public double getAvgTime()
+	{
+		return this.sumTime/numRecvd;
+	}
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
@@ -300,6 +307,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			//		" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			sumResultSize = sumResultSize + resultSize;
+			sumTime = sumTime + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
 				waitLock.notify();

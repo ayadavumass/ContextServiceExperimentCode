@@ -239,8 +239,10 @@ public class MySQLThroughputBenchmarking
 				requestTypeObj = new SearchClass();
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();
+				double avgReplySize = ((SearchClass)requestTypeObj).getAvgResultSize();
+				double avgReplyTime = ((SearchClass)requestTypeObj).getAvgTime();
 				System.out.println("Average result size "
-				 +(((SearchClass)requestTypeObj).getAvgResultSize()));
+				 +avgReplySize + " avg time "+avgReplyTime);
 				break;
 			}
 			case RUN_INSERT:
