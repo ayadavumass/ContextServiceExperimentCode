@@ -324,7 +324,8 @@ public class BothSearchAndUpdate extends
 		
 			// querying 10 % of domain
 			double predLength 
-				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+				= (SearchAndUpdateDriver.predicateLength
+						*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
 		
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
@@ -354,6 +355,7 @@ public class BothSearchAndUpdate extends
 		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
 			( searchQuery, 300000, searchRep, this.getCallBack() );
 	}
+	
 	
 	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
 			int totalAttrs, Random randGen )

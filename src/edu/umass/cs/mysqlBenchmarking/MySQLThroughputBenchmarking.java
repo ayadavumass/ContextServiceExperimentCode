@@ -64,6 +64,8 @@ public class MySQLThroughputBenchmarking
 	
 	public static int PoolSize;
 	
+	public static double predicateLength;
+	
 	public static ExecutorService	 taskES						= null;
 	
 	public MySQLThroughputBenchmarking()
@@ -190,6 +192,7 @@ public class MySQLThroughputBenchmarking
 		requestType      = Integer.parseInt(args[3]);
 		requestsps       = Integer.parseInt(args[4]);
 		PoolSize  		 = Integer.parseInt(args[5]);
+		predicateLength  = Double.parseDouble(args[6]);
 		
 		
 		MySQLThroughputBenchmarking mysqlBech 
@@ -241,7 +244,7 @@ public class MySQLThroughputBenchmarking
 			}
 			case RUN_INSERT:
 			{
-				numGuidsToInsert = Integer.parseInt(args[6]);
+				numGuidsToInsert = Integer.parseInt(args[7]);
 				requestTypeObj = new InsertClass();
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();

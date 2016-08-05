@@ -91,6 +91,8 @@ public class SearchAndUpdateDriver
 	
 	public static int transformType								= -1;
 	
+	public static double predicateLength						= 0.5;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -119,6 +121,7 @@ public class SearchAndUpdateDriver
 			singleRequest     = Boolean.parseBoolean(args[18]);
 			//transformType     = Integer.parseInt(args[19]);
 			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
+			predicateLength   = Double.parseDouble(args[19]);
 		}
 		else
 		{
