@@ -15,6 +15,7 @@ public class UpdateClass extends AbstractRequestSendingClass
 	private Random updateRand;
 	
 	private double sumUpdTime = 0;
+	
 	public UpdateClass()
 	{
 		super(MySQLThroughputBenchmarking.UPD_LOSS_TOLERANCE);

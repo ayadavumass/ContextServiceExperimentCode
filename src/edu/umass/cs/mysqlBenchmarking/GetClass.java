@@ -5,6 +5,8 @@ import java.util.Random;
 public class GetClass extends AbstractRequestSendingClass
 {
 	private Random getRand;
+	private double sumGetTime;
+	
 	public GetClass()
 	{
 		super(MySQLThroughputBenchmarking.INSERT_LOSS_TOLERANCE);
@@ -84,6 +86,10 @@ public class GetClass extends AbstractRequestSendingClass
 		MySQLThroughputBenchmarking.taskES.execute(getTask);
 	}
 	
+	public double getAvgGetTime()
+	{
+		return this.sumGetTime/numRecvd;
+	}
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
@@ -91,8 +97,9 @@ public class GetClass extends AbstractRequestSendingClass
 		synchronized( waitLock )
 		{
 			numRecvd++;
-			System.out.println("Get reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+//			System.out.println("Get reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
+			this.sumGetTime = this.sumGetTime + timeTaken;
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{

@@ -13,7 +13,7 @@ import java.util.Random;
 public class IndexReadUpdateClass extends AbstractRequestSendingClass
 {
 	private final Random updateRand;
-	
+	public double sumTime = 0.0;
 	private final HashMap<Integer, HashMap<String, Boolean>> subspaceMap;
 	
 	public IndexReadUpdateClass()
@@ -238,18 +238,25 @@ public class IndexReadUpdateClass extends AbstractRequestSendingClass
 	}
 	
 	@Override
-	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+	public void incrementUpdateNumRecvd(String userGUID, long timeTaken)
 	{
 	}
 	
+	public double getAvgTime()
+	{
+		return this.sumTime/numRecvd;
+	}
+	
 	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
 	{
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("IndexReadUpdate reply recvd size "+resultSize+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			this.sumTime = this.sumTime + timeTaken;
+//			System.out.println("IndexReadUpdate reply recvd size "+resultSize
+//					+" time taken "+timeTaken
+//					+" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{

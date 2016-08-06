@@ -98,7 +98,7 @@ public class SearchAndUpdateDriver
 	{
 		ContextServiceLogger.getLogger().setLevel(Level.INFO);
 		
-		if(args.length >= 18)
+		if( args.length >= 18 )
 		{
 			numUsers 		  = Double.parseDouble(args[0]);
 			gnsHost  		  = args[1];

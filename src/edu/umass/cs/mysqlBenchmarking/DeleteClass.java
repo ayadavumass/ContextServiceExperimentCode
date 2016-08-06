@@ -9,6 +9,8 @@ public class DeleteClass extends AbstractRequestSendingClass
 {
 	private Random updateRand;
 	
+	private double sumDelTime;
+	
 	public DeleteClass()
 	{
 		super(MySQLThroughputBenchmarking.INSERT_LOSS_TOLERANCE);
@@ -147,15 +149,22 @@ public class DeleteClass extends AbstractRequestSendingClass
 		DeleteTask delTask = new DeleteTask( guid, this);
 		MySQLThroughputBenchmarking.taskES.execute(delTask);
 	}
-
+	
+	public double getAvgDelTime()
+	{
+		return this.sumDelTime/numRecvd;
+	}
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Delete reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			this.sumDelTime = sumDelTime+timeTaken;
+			
+//			System.out.println("Delete reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{

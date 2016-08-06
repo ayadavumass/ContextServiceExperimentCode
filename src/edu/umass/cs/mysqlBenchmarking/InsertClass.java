@@ -8,6 +8,7 @@ import org.json.JSONObject;
 public class InsertClass extends AbstractRequestSendingClass
 {
 	private Random updateRand;
+	private double sumUpdTime = 0;
 	
 	public InsertClass()
 	{
@@ -110,6 +111,11 @@ public class InsertClass extends AbstractRequestSendingClass
 		InsertTask updTask = new InsertTask( guid, attrValJSON, this);
 		MySQLThroughputBenchmarking.taskES.execute(updTask);
 	}
+	
+	public double getAvgInsertTime()
+	{
+		return this.sumUpdTime/numRecvd;
+	}
 
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
@@ -117,8 +123,9 @@ public class InsertClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Insert reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			sumUpdTime = sumUpdTime + timeTaken;
+//			System.out.println("Insert reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
@@ -128,7 +135,7 @@ public class InsertClass extends AbstractRequestSendingClass
 	}
 	
 	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
 	{
 	}
 }
