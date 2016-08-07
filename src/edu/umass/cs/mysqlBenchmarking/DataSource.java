@@ -36,13 +36,14 @@ public class DataSource
         //cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0");
         cpds.setUser("root");
         cpds.setPassword("aditya");
-
+        
         // the settings below are optional -- c3p0 can work with defaults
         //cpds.setMinPoolSize(5);
         //cpds.setAcquireIncrement(5);
         // 151 is default but on d710 machines it is set to 214
         cpds.setMaxPoolSize(MySQLThroughputBenchmarking.PoolSize);
-        //cpds.setMaxStatements(180);   
+        cpds.setAutoCommitOnClose(false);
+        //cpds.setMaxStatements(180);
     }
 
 //    public static DataSource getInstance() throws IOException, SQLException, PropertyVetoException 
