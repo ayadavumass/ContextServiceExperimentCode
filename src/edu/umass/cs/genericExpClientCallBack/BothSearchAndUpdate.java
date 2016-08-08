@@ -107,8 +107,14 @@ public class BothSearchAndUpdate extends
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
+		double avgResultSize = 0;
+		if( this.numSearchesRecvd > 0 )
+		{
+			avgResultSize = (sumResultSize/this.numSearchesRecvd);
+		}
+		
 		System.out.println("Both result:Goodput "+sysThrput+" average resultsize "
-										+(sumResultSize/this.numSearchesRecvd));
+										+avgResultSize);
 	}
 	
 	/**
@@ -429,12 +435,12 @@ public class BothSearchAndUpdate extends
 	
 	public double getAverageUpdateLatency()
 	{
-		return sumUpdateLatency/this.numUpdatesRecvd;
+		return (this.numUpdatesRecvd>0)?sumUpdateLatency/this.numUpdatesRecvd:0;
 	}
 	
 	public double getAverageSearchLatency()
 	{
-		return sumSearchLatency/this.numSearchesRecvd;
+		return (this.numSearchesRecvd>0)?sumSearchLatency/this.numSearchesRecvd:0;
 	}
 	
 	public long getNumUpdatesRecvd()
