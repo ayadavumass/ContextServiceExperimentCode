@@ -22,6 +22,11 @@ public class BothSearchAndUpdate extends
 	private long sumSearchLatency			= 0;
 	private long sumUpdateLatency			= 0;
 	
+	private long numSearchesRecvd			= 0;
+	private long numUpdatesRecvd			= 0;
+	
+	
+	
 	
 	// we don't want to issue new search queries for the trigger exp.
 	// so that the number of search queries in the experiment remains same.
@@ -424,13 +429,25 @@ public class BothSearchAndUpdate extends
 	
 	public double getAverageUpdateLatency()
 	{
-		return sumUpdateLatency/numRecvd;
+		return sumUpdateLatency/this.numUpdatesRecvd;
 	}
 	
 	public double getAverageSearchLatency()
 	{
-		return sumSearchLatency/numRecvd;
+		return sumSearchLatency/this.numSearchesRecvd;
 	}
+	
+	public long getNumUpdatesRecvd()
+	{	
+		return this.numUpdatesRecvd;
+	}
+	
+	
+	public long getNumSearchesRecvd()
+	{
+		return this.numSearchesRecvd;
+	}
+	
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken)
@@ -438,6 +455,7 @@ public class BothSearchAndUpdate extends
 		synchronized(waitLock)
 		{
 			numRecvd++;
+			this.numUpdatesRecvd++;
 //			System.out.println("LocUpd reply recvd "+userGUID+" time taken "+timeTaken+
 //					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
@@ -456,6 +474,7 @@ public class BothSearchAndUpdate extends
 		synchronized(waitLock)
 		{
 			numRecvd++;
+			this.numSearchesRecvd++;
 			sumResultSize = sumResultSize + resultSize;
 //			System.out.println("Search reply recvd size "+resultSize+" time taken "
 //					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);

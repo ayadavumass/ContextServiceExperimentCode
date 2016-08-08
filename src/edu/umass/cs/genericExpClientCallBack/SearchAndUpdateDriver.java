@@ -210,8 +210,12 @@ public class SearchAndUpdateDriver
 				bothSearchAndUpdate.waitForThreadFinish();
 				double avgUpdateLatency = bothSearchAndUpdate.getAverageUpdateLatency();
 				double avgSearchLatency = bothSearchAndUpdate.getAverageSearchLatency();
+				long numUpdates = bothSearchAndUpdate.getNumUpdatesRecvd();
+				long numSearches = bothSearchAndUpdate.getNumSearchesRecvd();
 				System.out.println("avgUpdateLatency "+avgUpdateLatency
-						+" avgSearchLatency "+avgSearchLatency);
+						+" avgSearchLatency "+avgSearchLatency
+						+" numUpdates "+numUpdates
+						+" numSearches "+numSearches);
 			}
 		}
 		else
