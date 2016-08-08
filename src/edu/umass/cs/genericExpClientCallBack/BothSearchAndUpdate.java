@@ -108,7 +108,7 @@ public class BothSearchAndUpdate extends
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
 		System.out.println("Both result:Goodput "+sysThrput+" average resultsize "
-										+(sumResultSize/numRecvd));
+										+(sumResultSize/this.numSearchesRecvd));
 	}
 	
 	/**
