@@ -231,6 +231,9 @@ public class SearchAndUpdateDriver
 			{
 				bothSearchAndUpdate.waitForThreadFinish();
 				((BothSearchAndUpdate)bothSearchAndUpdate).printStats();
+				
+				System.out.println("Avg anonymized ID updated "
+									+csClient.getAvgAnonymizedIDUpdated());
 			}
 		}
 		else
