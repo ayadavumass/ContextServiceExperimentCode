@@ -230,6 +230,7 @@ public class SearchAndUpdateDriver
 			else if(searchEnable && updateEnable)
 			{
 				bothSearchAndUpdate.waitForThreadFinish();
+				((BothSearchAndUpdate)bothSearchAndUpdate).printStats();
 			}
 		}
 		else
@@ -250,13 +251,15 @@ public class SearchAndUpdateDriver
 		System.exit(0);
 	}
 	
+	
 	public static String getSHA1(String stringToHash)
 	{
 		MessageDigest md=null;
 		try
 		{
 			md = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e)
+		}
+		catch ( NoSuchAlgorithmException e )
 		{
 			e.printStackTrace();
 		}

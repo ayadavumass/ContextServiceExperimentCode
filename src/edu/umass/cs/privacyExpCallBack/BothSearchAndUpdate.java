@@ -17,6 +17,14 @@ public class BothSearchAndUpdate extends
 	
 	private double currUserGuidNum   	= 0;
 	
+	private double sumResultSize		= 0.0;
+	private double sumSearchTimeTaken	= 0.0;
+	private double sumUpdateTimeTaken	= 0.0;
+	private long numSearchesRecvd		= 1;
+	private long numUpdatesRecvd		= 1;
+	
+	
+	
 	// we don't want to issue new search queries for the trigger exp.
 	// so that the number of search queries in the experiment remains same.
 	// so when number of search queries reaches threshold then we reset it to 
@@ -103,7 +111,8 @@ public class BothSearchAndUpdate extends
 	}
 	
 	/**
-	 * This is mainly used to measure very low load latency
+	 * This is mainly used to measure 
+	 * very low load latency
 	 */
 	private void singleRequestSender()
 	{
@@ -393,7 +402,6 @@ public class BothSearchAndUpdate extends
 //		SearchAndUpdateDriver.taskES.execute(searchTask);
 	}
 	
-	
 	private void sendALocMessage( int currUserGuidNum, long currReqId )
 	{
 		UserEntry currUserEntry 
@@ -433,16 +441,28 @@ public class BothSearchAndUpdate extends
 //		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
+	public void printStats()
+	{
+		String str = "Num search replies "+ this.numSearchesRecvd 
+				+" Num update replies "+ this.numUpdatesRecvd
+				+" Avg search size "+ (this.sumResultSize/this.numSearchesRecvd)
+				+" Avg search time "+ (this.sumSearchTimeTaken/this.numSearchesRecvd)
+				+" Avg update time "+ (this.sumUpdateTimeTaken/this.numUpdatesRecvd);
+		System.out.println("Stats "+str);
+	}
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("LocUpd reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			this.sumUpdateTimeTaken = this.sumUpdateTimeTaken + timeTaken;
+			numUpdatesRecvd++;
+//			System.out.println("LocUpd reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
-			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
+			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
 				waitLock.notify();
 			}
@@ -450,13 +470,16 @@ public class BothSearchAndUpdate extends
 	}
 	
 	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	public void incrementSearchNumRecvd( int resultSize, long timeTaken )
 	{
-		synchronized(waitLock)
+		synchronized( waitLock )
 		{
 			numRecvd++;
-			System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			this.sumResultSize = this.sumResultSize + resultSize;
+			this.sumSearchTimeTaken = this.sumSearchTimeTaken + timeTaken;
+			numSearchesRecvd++;
+//			System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
