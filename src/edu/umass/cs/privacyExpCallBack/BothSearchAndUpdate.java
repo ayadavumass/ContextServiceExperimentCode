@@ -1,5 +1,7 @@
 package edu.umass.cs.privacyExpCallBack;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.json.JSONArray;
@@ -335,6 +337,93 @@ public class BothSearchAndUpdate extends
 	
 	private void sendQueryMessageWithSmallRanges(long currReqId)
 	{
+		String searchQuery
+			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
+		
+		HashMap<String, Boolean> distinctAttrMap 
+			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
+					SearchAndUpdateDriver.numAttrs, searchQueryRand );
+		
+		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
+		
+		while( attrIter.hasNext() )
+		{
+			String attrName = attrIter.next();
+			double attrMin = SearchAndUpdateDriver.ATTR_MIN
+					+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
+		
+			// querying 10 % of domain
+			double predLength 
+				= (SearchAndUpdateDriver.predicateLength
+						*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+		
+			double attrMax = attrMin + predLength;
+			//		double latitudeMax = latitudeMin 
+			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
+			// making it curcular
+			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
+			{
+				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
+				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+			}
+			// last so no AND
+			if( !attrIter.hasNext() )
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+						+" <= "+attrMax;
+			}
+			else
+			{
+				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+					+" <= "+attrMax+" AND ";
+			}
+		}
+//		ExperimentSearchReply searchRep 
+//				= new ExperimentSearchReply( reqIdNum );
+//		
+//		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
+//			( searchQuery, 300000, searchRep, this.getCallBack() );
+		
+		int randIndex 
+					= searchQueryRand.nextInt( SearchAndUpdateDriver.usersVector.size() );
+		
+		UserEntry queryingUserEntry 
+					= SearchAndUpdateDriver.usersVector.get(randIndex);
+	
+		GuidEntry queryingGuidEntry = queryingUserEntry.getGuidEntry();
+	
+		ExperimentSearchReply searchRep 
+			= new ExperimentSearchReply( currReqId );
+
+		SearchAndUpdateDriver.csClient.sendSearchQuerySecureWithCallBack
+			(searchQuery, 300000, queryingGuidEntry, searchRep, this.getCallBack());
+	}
+	
+	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
+			int totalAttrs, Random randGen )
+	{
+		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
+		int currAttrNum = 0;
+		while(hashMap.size() != numAttrsToPick)
+		{
+			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
+			{
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);
+				currAttrNum++;
+			}
+			else
+			{
+				currAttrNum = randGen.nextInt(SearchAndUpdateDriver.numAttrs);
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);
+			}
+		}
+		return hashMap;
+	}
+	
+	/*private void sendQueryMessageWithSmallRanges(long currReqId)
+	{
 		String searchQuery 
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
 //			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
@@ -361,7 +450,7 @@ public class BothSearchAndUpdate extends
 				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
 			
 			double predLength 
-				= (0.1*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
+				= (0.5*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
 			
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
@@ -400,7 +489,7 @@ public class BothSearchAndUpdate extends
 
 //		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), queryingGuidEntry, this );
 //		SearchAndUpdateDriver.taskES.execute(searchTask);
-	}
+	}*/
 	
 	private void sendALocMessage( int currUserGuidNum, long currReqId )
 	{

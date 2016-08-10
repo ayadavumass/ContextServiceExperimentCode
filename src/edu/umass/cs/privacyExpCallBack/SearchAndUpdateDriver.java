@@ -109,6 +109,8 @@ public class SearchAndUpdateDriver
 	
 	public static int numCirclesInACL							= 2;
 	
+	public static double predicateLength 						= 0.5;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -140,6 +142,7 @@ public class SearchAndUpdateDriver
 			totalACLMems	   = Integer.parseInt(args[21]);
 			overlapProbability = Double.parseDouble(args[22]);
 			numCirclesInACL    = Integer.parseInt(args[23]);
+			predicateLength    = Double.parseDouble(args[24]);
 		}
 		else
 		{
