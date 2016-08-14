@@ -216,6 +216,7 @@ public class SearchAndUpdateDriver
 						+" avgSearchLatency "+avgSearchLatency
 						+" numUpdates "+numUpdates
 						+" numSearches "+numSearches);
+				csClient.printTriggerStats();
 			}
 		}
 		else
@@ -235,6 +236,7 @@ public class SearchAndUpdateDriver
 		}
 		System.exit(0);
 	}
+	
 	
 	public static String getSHA1(String stringToHash)
 	{
