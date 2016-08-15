@@ -368,7 +368,7 @@ public class BothSearchAndUpdate extends
 				= new ExperimentSearchReply( reqIdNum );
 		
 		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
-			( searchQuery, 300000, searchRep, this.getCallBack() );
+			( searchQuery, SearchAndUpdateDriver.queryExpiryTime, searchRep, this.getCallBack() );
 	}
 	
 	

@@ -17,7 +17,7 @@ import edu.umass.cs.gnsclient.client.GuidEntry;
 public class SearchAndUpdateDriver
 {
 	// 100 seconds, experiment runs for 100 seconds
-	public static 	 int EXPERIMENT_TIME						= 100000;
+	public static 	 long EXPERIMENT_TIME						= 100000;
 	
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
@@ -93,6 +93,9 @@ public class SearchAndUpdateDriver
 	
 	public static double predicateLength						= 0.5;
 	
+	// in msec
+	public static long queryExpiryTime							= 30000;
+	
 	
 	public static void main( String[] args ) throws Exception
 	{
@@ -122,6 +125,8 @@ public class SearchAndUpdateDriver
 			//transformType     = Integer.parseInt(args[19]);
 			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
 			predicateLength   = Double.parseDouble(args[19]);
+			queryExpiryTime   = Long.parseLong(args[20]);
+			EXPERIMENT_TIME   = Long.parseLong(args[21]);
 		}
 		else
 		{
@@ -233,6 +238,17 @@ public class SearchAndUpdateDriver
 			new Thread(bothSearchAndUpdate).start();
 			
 			bothSearchAndUpdate.waitForThreadFinish();
+			
+			double avgUpdateLatency = bothSearchAndUpdate.getAverageUpdateLatency();
+			double avgSearchLatency = bothSearchAndUpdate.getAverageSearchLatency();
+			long numUpdates = bothSearchAndUpdate.getNumUpdatesRecvd();
+			long numSearches = bothSearchAndUpdate.getNumSearchesRecvd();
+			System.out.println("avgUpdateLatency "+avgUpdateLatency
+					+" avgSearchLatency "+avgSearchLatency
+					+" numUpdates "+numUpdates
+					+" numSearches "+numSearches);
+			csClient.printTriggerStats();
+			
 		}
 		System.exit(0);
 	}
