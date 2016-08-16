@@ -227,7 +227,7 @@ public class SearchAndUpdateDriver
 		else
 		{
 			// just running so that system has queries average number of queries before
-			SearchAndUpdateDriver.EXPERIMENT_TIME = 30000;
+			SearchAndUpdateDriver.EXPERIMENT_TIME = 60000;
 			searchQClass = new UniformQueryClass();
 			searchQClass.run();
 			
