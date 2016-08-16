@@ -1,12 +1,16 @@
 package edu.umass.cs.genericExpClientCallBack;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
-
-import org.json.JSONArray;
 
 public class UniformQueryClass extends AbstractRequestSendingClass implements Runnable
 {
 	private final Random searchQueryRand;
+	
+	private long sumResultSize				= 0;
+	private long sumSearchLatency			= 0;
+	private long numSearchesRecvd			= 0;
 	
 	public UniformQueryClass()
 	{
@@ -30,23 +34,24 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{
 		// as it is per ms
-		double reqspms = SearchAndUpdateDriver.searchQueryRate/1000.0;
+		double reqsps = SearchAndUpdateDriver.searchQueryRate;
 		long currTime = 0;
 		
 		// sleep for 100ms
-		double numberShouldBeSentPerSleep = reqspms*100.0;
+		double numberShouldBeSentPerSleep = reqsps;
 		
-		while( ( (System.currentTimeMillis() - expStartTime) < SearchAndUpdateDriver.EXPERIMENT_TIME ) )
+		while( ( (System.currentTimeMillis() - expStartTime) 
+				< SearchAndUpdateDriver.EXPERIMENT_TIME ) )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
-				sendQueryMessage();
+				sendQueryMessage(numSent);
 				numSent++;
 			}
 			currTime = System.currentTimeMillis();
 			
 			double timeElapsed = ((currTime- expStartTime)*1.0);
-			double numberShouldBeSentByNow = timeElapsed*reqspms;
+			double numberShouldBeSentByNow = timeElapsed*reqsps/1000.0;
 			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
 			if(needsToBeSentBeforeSleep > 0)
 			{
@@ -55,10 +60,10 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
-				sendQueryMessage();
+				sendQueryMessage(numSent);
 				numSent++;
 			}
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		}
 		
 		long endTime = System.currentTimeMillis();
@@ -71,36 +76,41 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
 		System.out.println("Search result:Goodput "+sysThrput);
+		
+		double avgResultSize = 0;
+		if( this.numSearchesRecvd > 0 )
+		{
+			avgResultSize = (sumResultSize/this.numSearchesRecvd);
+		}
+		
+		System.out.println("Both result:Goodput "+sysThrput+" average resultsize "
+										+avgResultSize);
 	}
 	
-	private void sendQueryMessage()
+	
+	private void sendQueryMessage(long reqIdNum)
 	{
 		String searchQuery
 			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
-//			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
-//			+ " AND "
-//			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
-		int randAttrNum = -1;
-		for( int i=0;i<SearchAndUpdateDriver.numAttrsInQuery;i++)
+		
+		HashMap<String, Boolean> distinctAttrMap 
+			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
+				SearchAndUpdateDriver.numAttrs, searchQueryRand );
+		
+		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
+	
+		while( attrIter.hasNext() )
 		{
-			// if num attrs and num in query are same then send query on all attrs
-			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
-			{
-				randAttrNum++;
-			}
-			else
-			{
-				randAttrNum = searchQueryRand.nextInt(SearchAndUpdateDriver.numAttrs);
-			}
-			
-			String attrName = SearchAndUpdateDriver.attrPrefix+randAttrNum;
-			double attrMin 
-				= SearchAndUpdateDriver.ATTR_MIN
-				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
-			
+			String attrName = attrIter.next();
+			double attrMin = SearchAndUpdateDriver.ATTR_MIN
+					+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX 
+							- SearchAndUpdateDriver.ATTR_MIN);
+		
+			// querying 10 % of domain
 			double predLength 
-				= (searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
-			
+				= (SearchAndUpdateDriver.predicateLength
+						*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+		
 			double attrMax = attrMin + predLength;
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
@@ -111,7 +121,7 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
 			}
 			// last so no AND
-			if(i == (SearchAndUpdateDriver.numAttrsInQuery-1))
+			if( !attrIter.hasNext() )
 			{
 				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
 						+" <= "+attrMax;
@@ -122,9 +132,49 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 					+" <= "+attrMax+" AND ";
 			}
 		}
-		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
-		SearchAndUpdateDriver.taskES.execute(searchTask);
+		
+		ExperimentSearchReply searchRep 
+			= new ExperimentSearchReply( reqIdNum );
+		
+		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
+			( searchQuery, SearchAndUpdateDriver.queryExpiryTime, searchRep, this.getCallBack() );
 	}
+	
+	
+	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
+			int totalAttrs, Random randGen )
+	{
+		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
+		int currAttrNum = 0;
+		while(hashMap.size() != numAttrsToPick)
+		{
+			if(SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery)
+			{
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);
+				currAttrNum++;
+			}
+			else
+			{
+				currAttrNum = randGen.nextInt(SearchAndUpdateDriver.numAttrs);
+				String attrName = "attr"+currAttrNum;
+				hashMap.put(attrName, true);
+			}
+		}
+		return hashMap;
+	}
+	
+	public double getAverageSearchLatency()
+	{
+		return (this.numSearchesRecvd>0)?sumSearchLatency/this.numSearchesRecvd:0;
+	}
+	
+	
+	public long getNumSearchesRecvd()
+	{
+		return this.numSearchesRecvd;
+	}
+	
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
@@ -137,8 +187,16 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+//			System.out.println("Search reply recvd size "+resultSize+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
+			
+			this.numSearchesRecvd++;
+			sumResultSize = sumResultSize + resultSize;
+//			System.out.println("Search reply recvd size "+resultSize+" time taken "
+//					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
+			//if(currNumReplyRecvd == currNumReqSent)
+			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
+			
 			//if(currNumReplyRecvd == currNumReqSent)
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
