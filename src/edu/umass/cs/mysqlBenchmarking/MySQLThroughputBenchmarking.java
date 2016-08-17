@@ -259,13 +259,13 @@ public class MySQLThroughputBenchmarking
 					+ " DEFAULT "+ queryMinDefault 
 					+ " , "+upperAttrName+" DOUBLE DEFAULT "
 					+ queryMaxDefault 
-					//+ " , INDEX USING BTREE("+lowerAttrName+" , "+upperAttrName+")";
+					+ " , INDEX USING BTREE("+lowerAttrName+" , "+upperAttrName+")"
 					+ " , INDEX USING HASH("+lowerAttrName+")";
 		}
 		newTableCommand = newTableCommand +" , INDEX USING BTREE( ";
 		for(int i=0; i<numAttrs; i++)
 		{
-			if(i >= 16)
+			if(i >= 8)
 				break;
 			String attrName = "attr"+i;
 			String lowerAttrName = "lower"+attrName;
