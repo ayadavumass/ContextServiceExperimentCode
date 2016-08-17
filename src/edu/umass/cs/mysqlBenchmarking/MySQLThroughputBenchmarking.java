@@ -225,7 +225,8 @@ public class MySQLThroughputBenchmarking
 		newTableCommand = getPartitionInfoStorageString(newTableCommand);
 		
 		newTableCommand = newTableCommand 
-				+" , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime) )";
+				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
+				+ " INDEX USING HASH(groupGUID) )";
 		System.out.println("newTableCommand "+newTableCommand);
 		
 		stmt.executeUpdate(newTableCommand);
@@ -262,7 +263,7 @@ public class MySQLThroughputBenchmarking
 					+ " , INDEX USING BTREE("+lowerAttrName+" , "+upperAttrName+")"
 					+ " , INDEX USING HASH("+lowerAttrName+")";
 		}
-		newTableCommand = newTableCommand +" , INDEX USING BTREE( ";
+		/*newTableCommand = newTableCommand +" , INDEX USING BTREE( ";
 		for(int i=0; i<numAttrs; i++)
 		{
 			if(i >= 8)
@@ -281,8 +282,7 @@ public class MySQLThroughputBenchmarking
 			}
 			
 		}
-		newTableCommand = newTableCommand+ " ) ";
-		
+		newTableCommand = newTableCommand+ " ) ";*/
 		
 		return newTableCommand;
 	}

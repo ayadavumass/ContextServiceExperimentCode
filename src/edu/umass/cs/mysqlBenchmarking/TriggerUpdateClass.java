@@ -150,8 +150,7 @@ public class TriggerUpdateClass extends AbstractRequestSendingClass
 				+ " WHERE "
 				+ " groupGUID IN ( "+queriesWithAttrs+" ) AND "
 			    + " groupGUID IN ( "+oldGroupsQuery+" ) AND "
-			    + " groupGUID NOT IN ( "+ newGroupsQuery+" ) ";
-		
+			    + " groupGUID NOT IN ( "+ newGroupsQuery+" ) ";	
 		return removedGroupQuery;
 	}
 		
@@ -226,7 +225,7 @@ public class TriggerUpdateClass extends AbstractRequestSendingClass
 	}
 	
 	
-	public static String getQueryToGetOldValueGroups(JSONObject oldValJSON) 
+	public static String getQueryToGetOldValueGroups(JSONObject oldValJSON)
 			throws JSONException
 	{
 		String tableName 			= MySQLThroughputBenchmarking.triggerTableName;
