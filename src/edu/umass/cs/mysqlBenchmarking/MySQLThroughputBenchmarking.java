@@ -167,6 +167,8 @@ public class MySQLThroughputBenchmarking
 		catch ( SQLException e )
 		{
 			e.printStackTrace();
+			
+			assert(false);
 		}
 		finally
 		{
@@ -224,7 +226,10 @@ public class MySQLThroughputBenchmarking
 		
 		newTableCommand = newTableCommand 
 				+" , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime) )";
+		System.out.println("newTableCommand "+newTableCommand);
+		
 		stmt.executeUpdate(newTableCommand);
+		
 	}
 	
 	private static String getPartitionInfoStorageString(String newTableCommand)
