@@ -39,7 +39,7 @@ public class DeleteTask implements Runnable
 		{
 			myConn = MySQLThroughputBenchmarking.dsInst.getConnection();
 			
-			String deleteSQL = "DELETE FROM "+MySQLThroughputBenchmarking.tableName 
+			String deleteSQL = "DELETE FROM "+MySQLThroughputBenchmarking.dataTableName 
 					+" WHERE nodeGUID=X'"+guid+"'";
 			
 			statement = (Statement) myConn.createStatement();

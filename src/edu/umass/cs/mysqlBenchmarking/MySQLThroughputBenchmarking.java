@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 public class MySQLThroughputBenchmarking
 {
 	public static final int RUN_UPDATE							= 1;
@@ -21,6 +22,9 @@ public class MySQLThroughputBenchmarking
 	public static final int RUN_DELETE							= 7;
 	public static final int RUN_GET_BACK_TO_BACK				= 8;
 	public static final int RUN_UPDATE_BACK_TO_BACK				= 9;
+	public static final int RUN_TRIGGER_SEARCH					= 10;
+	public static final int RUN_TRIGGER_UPDATE					= 11;
+	
 	
 	
 	public static final int NUM_SUBSPACES						= 4;
@@ -42,7 +46,11 @@ public class MySQLThroughputBenchmarking
 	
 	public static final String guidPrefix						= "guidPrefix";
 	
-	public static final String tableName 						= "testTable";
+	public static final String dataTableName 					= "testTable";
+	
+	public static final String triggerTableName 				= "triggerTable";
+	
+	
 	
 	public static final int ATTR_MAX							= 1500;
 	public static final int ATTR_MIN							= 1;
@@ -65,6 +73,8 @@ public class MySQLThroughputBenchmarking
 	public static int PoolSize;
 	
 	public static double predicateLength;
+	
+	public static long numOfSearchQueries;
 	
 	public static ExecutorService	 taskES						= null;
 	
@@ -96,16 +106,18 @@ public class MySQLThroughputBenchmarking
 		}
 	}
 	
+	
 	private void createTable()
 	{
 		Connection myConn 	= null;
 		Statement stmt 		= null;
+		
 		try
 		{
 			myConn = dsInst.getConnection();
 			stmt = myConn.createStatement();
 			
-			String newTableCommand = "drop table "+tableName;
+			String newTableCommand = "drop table "+dataTableName;
 			
 			try
 			{
@@ -117,7 +129,7 @@ public class MySQLThroughputBenchmarking
 			}
 			
 			// char 45 for GUID because, GUID is 40 char in length, 5 just additional
-			newTableCommand = "create table "+tableName+" ( nodeGUID Binary(20) PRIMARY KEY ";
+			newTableCommand = "create table "+dataTableName+" ( nodeGUID Binary(20) PRIMARY KEY ";
 					//+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
 					//+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
 			
@@ -135,7 +147,20 @@ public class MySQLThroughputBenchmarking
 //					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
 //					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
 			stmt.executeUpdate(newTableCommand);
-		} 
+			
+			newTableCommand = "drop table "+triggerTableName;
+			
+			try
+			{
+				stmt.executeUpdate(newTableCommand);
+			}
+			catch(Exception ex)
+			{
+				System.out.println("Table delete exception");
+			}
+			
+			createTablesForTriggers(stmt);
+		}
 		catch ( SQLException e )
 		{
 			e.printStackTrace();
@@ -150,7 +175,7 @@ public class MySQLThroughputBenchmarking
 				if(myConn != null)
 					myConn.close();
 			}
-			catch (SQLException e) 
+			catch (SQLException e)
 			{
 				e.printStackTrace();
 			}
@@ -183,16 +208,64 @@ public class MySQLThroughputBenchmarking
         return returnGUID.substring(0, 40);
 	}
 	
+	/**
+	 * creates one dimensional subspaces and query storage tables for triggers
+	 * @throws SQLException 
+	 */
+	private static void createTablesForTriggers(Statement stmt) throws SQLException
+	{
+		//String tableName = "subspaceId"+subspaceId+"TriggerDataInfo";
+		String newTableCommand = "create table "+triggerTableName+" ( groupGUID BINARY(20) NOT NULL , "
+				+ "userIP Binary(4) NOT NULL ,  userPort INTEGER NOT NULL , expiryTime BIGINT NOT NULL ";
+		newTableCommand = getPartitionInfoStorageString(newTableCommand);
+		
+		newTableCommand = newTableCommand 
+				+" , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime) )";
+		stmt.executeUpdate(newTableCommand);
+	}
+	
+	private static String getPartitionInfoStorageString(String newTableCommand)
+	{
+		// query and default value mechanics
+		//Attr specified in query but not set in GUID                  Do Not return GUID
+		//Attr specified in query and  set in GUID                     Return GUID if possible
+		
+		//Attr not specified in query but  set in GUID                 Return GUID if possible 
+		//Attr not specified in query and not set in GUID              Return GUID if possible as no privacy leak
+		
+		// creating for all attributes rather 
+		// than just the attributes of the subspace for better mataching
+		for( int i=0; i<numAttrs; i++ )
+		{
+			String attrName = "attr"+i;
+			String lowerAttrName = "lower"+attrName;
+			String upperAttrName = "upper"+attrName;
+			
+			String queryMinDefault = 0+"";
+			String queryMaxDefault = 1500+"";
+			
+			// changed it to min max for lower and upper value instead of default 
+			// because we want a query to match for attributes that are not specified 
+			// in the query, as those basically are don't care.
+			newTableCommand = newTableCommand + " , "+lowerAttrName+" DOUBLE "
+					+ " DEFAULT "+ queryMinDefault 
+					+ " , "+upperAttrName+" DOUBLE DEFAULT "
+					+ queryMaxDefault 
+					+ " , INDEX USING BTREE("+lowerAttrName+" , "+upperAttrName+")";
+		}
+		return newTableCommand;
+	}
+	
 	public static void main( String[] args )
 	{
 		nodeId 			 = Integer.parseInt(args[0]);
 		numGuids 		 = Integer.parseInt(args[1]);
 		numAttrs 		 = Integer.parseInt(args[2]);
 		
-		requestType      = Integer.parseInt(args[3]);
-		requestsps       = Integer.parseInt(args[4]);
-		PoolSize  		 = Integer.parseInt(args[5]);
-		predicateLength  = Double.parseDouble(args[6]);
+		requestType        = Integer.parseInt(args[3]);
+		requestsps         = Integer.parseInt(args[4]);
+		PoolSize  		   = Integer.parseInt(args[5]);
+		predicateLength    = Double.parseDouble(args[6]);
 		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
@@ -208,7 +281,8 @@ public class MySQLThroughputBenchmarking
 		try
 		{
 			Thread.sleep(10000);
-		} catch (InterruptedException e)
+		} 
+		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
@@ -275,7 +349,6 @@ public class MySQLThroughputBenchmarking
 				System.out.println("Average result size "
 						 +(((IndexReadSearchClass)requestTypeObj).getAvgResultSize())
 						 + " avg attr match "+((IndexReadSearchClass)requestTypeObj).getAvgAttrMatch() );
-				
 				break;
 			}
 			case RUN_DELETE:
@@ -297,6 +370,23 @@ public class MySQLThroughputBenchmarking
 				requestTypeObj = new UpdateClassBackToBack();
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();
+				break;
+			}
+			case RUN_TRIGGER_SEARCH:
+			{
+				numOfSearchQueries = Long.parseLong(args[7]);
+				requestTypeObj = new TriggerSearchClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
+				
+				System.out.println("Average time "
+						 +(((TriggerSearchClass)requestTypeObj).getAvgTime()) );
+				
+				break;
+			}
+			case RUN_TRIGGER_UPDATE:
+			{
+				
 				break;
 			}
 			default:

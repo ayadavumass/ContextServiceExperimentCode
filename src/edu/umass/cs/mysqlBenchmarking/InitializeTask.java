@@ -50,8 +50,9 @@ public class InitializeTask implements Runnable
 //					+" (value1, value2, nodeGUID, versionNum) " + "VALUES"
 //					+ "("+value1+","+value2+",'"+guid+"',"+-1 +")";
 			
-			String insertTableSQL = "INSERT INTO "+MySQLThroughputBenchmarking.tableName 
-					+" ( nodeGUID ";
+			String insertTableSQL = "INSERT INTO "
+					+ MySQLThroughputBenchmarking.dataTableName 
+					+ " ( nodeGUID ";
 			
 			Iterator<String> attrIter = attrValJSON.keys();
 			

@@ -59,7 +59,7 @@ public class UpdateTask implements Runnable
 		{
 			Iterator<String> attrIter = updateJSON.keys();
 			
-			String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.tableName+
+			String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.dataTableName+
 					" SET ";
 					//+ "value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
 			boolean first = true;

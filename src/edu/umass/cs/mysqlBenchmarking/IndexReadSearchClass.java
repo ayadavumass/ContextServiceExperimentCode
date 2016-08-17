@@ -191,7 +191,8 @@ public class IndexReadSearchClass extends AbstractRequestSendingClass
 	private void sendQueryMessage()
 	{
 		String searchQuery
-			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.tableName+" WHERE ";
+			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.dataTableName
+				+" WHERE ";
 //			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
 //			+ " AND "
 //			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;

@@ -39,8 +39,9 @@ public class GetTask implements Runnable
 		
 		try
 		{	
-			String selectTableSQL = "SELECT * FROM "+MySQLThroughputBenchmarking.tableName 
-					+" WHERE nodeGUID = X'"+guid+"'";
+			String selectTableSQL = "SELECT * FROM "
+					+ MySQLThroughputBenchmarking.dataTableName 
+					+ " WHERE nodeGUID = X'"+guid+"'";
 			
 			myConn = MySQLThroughputBenchmarking.dsInst.getConnection();
 			statement = (Statement) myConn.createStatement();
