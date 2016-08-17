@@ -54,6 +54,7 @@ public class MySQLThroughputBenchmarking
 	
 	public static final int ATTR_MAX							= 1500;
 	public static final int ATTR_MIN							= 1;
+	public static final int ATTR_DEFAULT						= 0;
 	
 	public static final int numAttrsInQuery						= 4;
 	
@@ -243,8 +244,8 @@ public class MySQLThroughputBenchmarking
 			String lowerAttrName = "lower"+attrName;
 			String upperAttrName = "upper"+attrName;
 			
-			String queryMinDefault = 0+"";
-			String queryMaxDefault = 1500+"";
+			String queryMinDefault = ATTR_DEFAULT+"";
+			String queryMaxDefault = ATTR_MAX+"";
 			
 			// changed it to min max for lower and upper value instead of default 
 			// because we want a query to match for attributes that are not specified 
@@ -253,8 +254,28 @@ public class MySQLThroughputBenchmarking
 					+ " DEFAULT "+ queryMinDefault 
 					+ " , "+upperAttrName+" DOUBLE DEFAULT "
 					+ queryMaxDefault 
-					+ " , INDEX USING BTREE("+lowerAttrName+" , "+upperAttrName+")";
+					//+ " , INDEX USING BTREE("+lowerAttrName+" , "+upperAttrName+")";
+					+ " , INDEX USING HASH("+lowerAttrName+")";
 		}
+		newTableCommand = newTableCommand +" , INDEX USING BTREE( ";
+		for(int i=0; i<numAttrs; i++)
+		{
+			String attrName = "attr"+i;
+			String lowerAttrName = "lower"+attrName;
+			String upperAttrName = "upper"+attrName;
+			
+			if(i == 0)
+			{
+				newTableCommand = newTableCommand+ lowerAttrName+" , "+upperAttrName;
+			}
+			else
+			{
+				newTableCommand = newTableCommand+ " , "+lowerAttrName+" , "+upperAttrName;
+			}
+		}
+		newTableCommand = newTableCommand+ " ) ";
+		
+		
 		return newTableCommand;
 	}
 	
