@@ -429,6 +429,12 @@ public class MySQLThroughputBenchmarking
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();
 				
+				System.out.println("Update average time "
+						 + (((TriggerUpdateClass)requestTypeObj).getAvgUpdateTime())
+						 + " avg removed "
+						 + (((TriggerUpdateClass)requestTypeObj).getAvgRemoved())
+						 + " avg added "
+						 + (((TriggerUpdateClass)requestTypeObj).getAvgAdded()) );
 				break;
 			}
 			default:

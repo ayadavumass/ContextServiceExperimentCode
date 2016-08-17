@@ -41,7 +41,7 @@ public class TriggerUpdateTask implements Runnable
 			long start = System.currentTimeMillis();
 			execureQueries();
 			long end = System.currentTimeMillis();
-			String str = "removedLen "+removedGroups.length()+" - addedLen "+addedGroups.length();
+			String str = removedGroups.length()+"-"+addedGroups.length();
 			requestSendingTask.incrementUpdateNumRecvd(str, end-start);
 		} catch (SQLException e) 
 		{

@@ -14,6 +14,8 @@ public class TriggerUpdateClass extends AbstractRequestSendingClass
 	private Random updateRand;
 	
 	private double sumUpdTime = 0;
+	private double sumRemoved = 0.0;
+	private double sumAdded = 0.0;
 	
 	public TriggerUpdateClass()
 	{
@@ -394,6 +396,9 @@ public class TriggerUpdateClass extends AbstractRequestSendingClass
 		{
 			numRecvd++;
 			sumUpdTime = sumUpdTime+timeTaken;
+			String[] parsed = userGUID.split("-");
+			this.sumRemoved = this.sumRemoved + Double.parseDouble(parsed[0]);
+			this.sumAdded = this.sumAdded + Double.parseDouble(parsed[1]);
 //			System.out.println("Update reply recvd "+userGUID+" time taken "+timeTaken+
 //					" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
@@ -407,6 +412,16 @@ public class TriggerUpdateClass extends AbstractRequestSendingClass
 	public double getAvgUpdateTime()
 	{
 		return sumUpdTime/numRecvd;
+	}
+	
+	public double getAvgRemoved()
+	{
+		return this.sumRemoved/numRecvd;
+	}
+	
+	public double getAvgAdded()
+	{
+		return this.sumAdded/numRecvd;
 	}
 	
 	@Override
