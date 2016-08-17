@@ -265,6 +265,8 @@ public class MySQLThroughputBenchmarking
 		newTableCommand = newTableCommand +" , INDEX USING BTREE( ";
 		for(int i=0; i<numAttrs; i++)
 		{
+			if(i >= 16)
+				break;
 			String attrName = "attr"+i;
 			String lowerAttrName = "lower"+attrName;
 			String upperAttrName = "upper"+attrName;
@@ -277,6 +279,7 @@ public class MySQLThroughputBenchmarking
 			{
 				newTableCommand = newTableCommand+ " , "+lowerAttrName+" , "+upperAttrName;
 			}
+			
 		}
 		newTableCommand = newTableCommand+ " ) ";
 		
