@@ -43,7 +43,7 @@ public class TriggerSearchClass extends AbstractRequestSendingClass
 	private void searchQueryRateControlledRequestSender() throws Exception
 	{
 		// as it is per ms
-		double reqspms = 100.0/1000.0;
+		double reqspms = 300.0/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms
