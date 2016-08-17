@@ -125,7 +125,7 @@ public class UpdateClass extends AbstractRequestSendingClass
 	{
 		return sumUpdTime/numRecvd;
 	}
-
+	
 	@Override
 	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
 	{

@@ -76,6 +76,8 @@ public class MySQLThroughputBenchmarking
 	
 	public static long numOfSearchQueries;
 	
+	public static boolean disableCircularQueryTrigger = true;
+	
 	public static ExecutorService	 taskES						= null;
 	
 	public MySQLThroughputBenchmarking()
@@ -386,6 +388,17 @@ public class MySQLThroughputBenchmarking
 			}
 			case RUN_TRIGGER_UPDATE:
 			{
+				numOfSearchQueries = Long.parseLong(args[7]);
+				requestTypeObj = new TriggerSearchClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
+				
+				System.out.println("Average time "
+						 +(((TriggerSearchClass)requestTypeObj).getAvgTime()) );
+				
+				requestTypeObj = new TriggerUpdateClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
 				
 				break;
 			}
