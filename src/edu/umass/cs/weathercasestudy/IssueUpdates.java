@@ -246,10 +246,6 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			userGUID = UtilFunctions.getGUIDHash(guidPrefix+realId);
 		}
 		
-		//int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
-		//double randVal = SearchAndUpdateDriver.ATTR_MIN 
-		//		+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
-		
 		JSONObject attrValJSON = new JSONObject();
 		try
 		{
@@ -261,10 +257,12 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		}
 		
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply
-													(requestId++, userGUID);
+												(requestId++, userGUID);
 		
-		csClient.sendUpdateWithCallBack(userGUID, null, 
-										attrValJSON, -1, updateRep, this.getCallBack());
+		System.out.println("requestId "+requestId+" realId "+realId+" attrValJSON "+attrValJSON);
+		
+		csClient.sendUpdateWithCallBack( userGUID, null, 
+										attrValJSON, -1, updateRep, this.getCallBack() );
 	}
 	
 	@Override
