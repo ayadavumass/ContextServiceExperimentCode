@@ -34,7 +34,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public static final double minBuffaloLong			= -80.0;
 	public static final double maxBuffaloLong 			= -78.0;
 	
-	public static final double timeContractionFactor 	= 2976.569444444;
+	public static final double timeContractionFactor 	= 17859.416666667;
 	
 	public static final double MIN_UNIX_TIME			= 1385770103;
 	public static final double MAX_UNIX_TIME			= 1391127928;
