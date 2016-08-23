@@ -204,7 +204,11 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			int realId = userIdIter.next();
 			int mobilityId = realIDToMobilityIdMap.get(realId);
 			
+			System.out.println("realId "+realId+" mobilityId "+mobilityId);
+			
 			List<LogEntryClass> logEntryList = userMobilityEntryHashMap.get(mobilityId);
+			
+			System.out.println("logEntryList "+logEntryList.size());
 			
 			int lastIndex = lastEntrySentMap.get(realId);
 			lastIndex++;
