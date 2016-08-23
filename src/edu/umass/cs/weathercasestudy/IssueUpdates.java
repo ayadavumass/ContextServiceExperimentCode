@@ -229,6 +229,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			while( lastIndex < logEntryList.size() )
 			{
 				LogEntryClass logEntry = logEntryList.get(lastIndex);
+				lastIndex++;
 				sendUpdate(realId, logEntry );
 			}
 		}
@@ -259,7 +260,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply
 												(requestId++, userGUID);
 		
-		System.out.println("requestId "+requestId+" realId "+realId+" attrValJSON "+attrValJSON);
+		System.out.println("requestId "+requestId+" realId "
+							+realId+" attrValJSON "+attrValJSON);
 		
 		csClient.sendUpdateWithCallBack( userGUID, null, 
 										attrValJSON, -1, updateRep, this.getCallBack() );
