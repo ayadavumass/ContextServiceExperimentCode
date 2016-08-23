@@ -272,9 +272,11 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	{
 	}
 	
-	public static void main(String[] args) 
+	public static void main(String[] args)
 				throws NoSuchAlgorithmException, IOException, InterruptedException
 	{
+		csHost = args[0];
+		csPort = Integer.parseInt(args[1]);
 		IssueUpdates issUpd = new IssueUpdates();
 		issUpd.readNomadLag();
 		issUpd.assignMobilityUserId();
