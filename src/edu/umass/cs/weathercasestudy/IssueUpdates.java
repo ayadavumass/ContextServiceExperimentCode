@@ -24,7 +24,6 @@ import edu.umass.cs.utils.UtilFunctions;
 public class IssueUpdates extends AbstractRequestSendingClass
 {
 	public static final double UPD_LOSS_TOLERANCE       = 0.0;
-	public static final int NUMUSERS					= 10000;
 	
 	public static final int WAIT_TIME					= 100000;
 	
@@ -69,6 +68,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	
 	private static String csHost;
 	private static int csPort;
+	
+	public static  int NUMUSERS							= 100;
 	
 	
 	public IssueUpdates() throws NoSuchAlgorithmException, IOException
@@ -294,6 +295,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	{
 		csHost = args[0];
 		csPort = Integer.parseInt(args[1]);
+		NUMUSERS = Integer.parseInt(args[2]);
+		
 		IssueUpdates issUpd = new IssueUpdates();
 		issUpd.readNomadLag();
 		issUpd.assignMobilityUserId();
