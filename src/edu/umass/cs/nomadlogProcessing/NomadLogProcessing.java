@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,17 +28,17 @@ public class NomadLogProcessing
 	public static final int WeatherTraceNumMinutes		= 180*60;
 	
 	// entry hashmap
-	private HashMap<Integer, List<LogEntryClass>> userMobilityEntryHashMap;
+	public static HashMap<Integer, List<LogEntryClass>> userMobilityEntryHashMap;
 	
 	// inter mobility time hashmap
-	private HashMap<Integer, List<Double>> userMobilityTimeHashMap;
+	public static HashMap<Integer, List<Double>> userMobilityTimeHashMap;
 	
 	//inter mobility distance hashmap
-	private HashMap<Integer, List<Double>> userMobilityDistanceHashMap;
+	public static HashMap<Integer, List<Double>> userMobilityDistanceHashMap;
 	
-	private HashMap<Integer, List<Double>> windowDistanceHashMap;
+	public static HashMap<Integer, List<Double>> windowDistanceHashMap;
 	
-	private HashMap<Integer, List<Double>> windowTransitionsHashMap;
+	public static HashMap<Integer, List<Double>> windowTransitionsHashMap;
 	
 	public NomadLogProcessing()
 	{
@@ -48,14 +49,35 @@ public class NomadLogProcessing
 		windowTransitionsHashMap    = new HashMap<Integer, List<Double>>();
 	}
 	
-	public void readNomadLag()
+	public void readNomadLag() throws IOException
 	{
+		double minBuffaloLat = 42.0;
+		double maxBuffaloLat = 44.0;
+		
+		double minBuffaloLong = -80.0;
+		double maxBuffaloLong = -78.0;
+		
+		
+		File file = new File("buffaloTrace.txt");
+		
+		// if file doesn't exists, then create it
+		if ( !file.exists() ) 
+		{
+			file.createNewFile();
+		}
+			
+		FileWriter fw 	  = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+		
+		
 		BufferedReader br = null;
 		try
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader("/home/adipc/Documents/nomadlogData/loc_seq"));
+			br = new BufferedReader(new FileReader
+					("/home/adipc/Documents/nomadlogData/loc_seq"));
+			
 			
 			while ((sCurrentLine = br.readLine()) != null) 
 			{
@@ -69,6 +91,19 @@ public class NomadLogProcessing
 				long unixtimestamp = (long)Double.parseDouble(parsed[2]);
 				double latitude = Double.parseDouble(parsed[3]);
 				double longitude = Double.parseDouble(parsed[4]);
+				
+				if( (latitude >= minBuffaloLat) && (latitude <= maxBuffaloLat) 
+						&& (longitude >= minBuffaloLong) && (longitude <= maxBuffaloLong) )
+				{
+					Date date = new Date(unixtimestamp*1000L); // *1000 is to convert seconds to millisecond
+					String str = userId+","+unixtimestamp+","+latitude+","+longitude+","
+																		+date.toGMTString()+"\n";
+					bw.write(str);
+				}
+				else
+				{
+					continue;
+				}
 				
 				LogEntryClass logEntryObj = new LogEntryClass(unixtimestamp, 
 						latitude, longitude);
@@ -99,7 +134,9 @@ public class NomadLogProcessing
 				ex.printStackTrace();
 			}
 		}
-		System.out.println("unique users "+userMobilityEntryHashMap.size());
+		bw.close();
+		System.out.println( "unique users "
+							+userMobilityEntryHashMap.size() );
 	}
 	
 	private void calculateInterMobilityTimeForAUser() throws IOException
@@ -107,7 +144,7 @@ public class NomadLogProcessing
 		File file = new File("interMobilityTimeDist.txt");
 		
 		// if file doesn't exists, then create it
-		if (!file.exists()) 
+		if ( !file.exists() )
 		{
 			file.createNewFile();
 		}
@@ -147,17 +184,19 @@ public class NomadLogProcessing
 						interMobilityTimeList.add(interMobilityTime); 
 				}
 			}
+			
 			Double [] typeArray = new Double[1];
 			typeArray[0] = new Double(0);
-			System.out.println("double val "+typeArray[0]+" interMobilityTimeList size "+interMobilityTimeList.size());
+			System.out.println("double val "+typeArray[0]
+					+" interMobilityTimeList size "+interMobilityTimeList.size() );
 			//interMobilityTimeList.
 			if(interMobilityTimeList.size() > 0)
 			{
 				StatClass statCls = new StatClass(interMobilityTimeList.toArray(typeArray));
 				bw.write("userId "+userId+" mean "+statCls.getMean()+" median "+statCls.getMedian()
-				+" min "+statCls.getMin()+" max "+statCls.getMax()+" 5Perc "+statCls.get5Perc()
-				+" 95Perc "+statCls.get95Perc()+"\n");
-				this.userMobilityTimeHashMap.put(userId, interMobilityTimeList);
+					+" min "+statCls.getMin()+" max "+statCls.getMax()+" 5Perc "+statCls.get5Perc()
+					+" 95Perc "+statCls.get95Perc()+"\n");
+				userMobilityTimeHashMap.put(userId, interMobilityTimeList);
 			}
 		}
 		bw.close();
@@ -327,7 +366,9 @@ public class NomadLogProcessing
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader("/home/adipc/GNS/WeatherCaseStudy/interMobilityDistanceDist.txt"));
+			br = new BufferedReader
+					(new FileReader
+				("/home/adipc/GNS/ContextServiceExperiments/interMobilityDistanceDist.txt"));
 			List<Double> meanCDF   			= new ArrayList<Double>();
 			List<Double> medianCDF 			= new ArrayList<Double>();
 			List<Double> fivePercCDF 		= new ArrayList<Double>();
@@ -404,7 +445,7 @@ public class NomadLogProcessing
 	{
 		File file = new File("windowDistanceForUsers.txt");
 		// if file doesn't exists, then create it
-		if (!file.exists()) 
+		if ( !file.exists() )
 		{
 			file.createNewFile();
 		}
@@ -422,7 +463,6 @@ public class NomadLogProcessing
 			
 		FileWriter fw1 	  = new FileWriter(file1.getAbsoluteFile());
 		BufferedWriter bw1 = new BufferedWriter(fw1);
-		
 		
 		Iterator<Integer> userIdIter = this.userMobilityEntryHashMap.keySet().iterator();
 		
@@ -488,7 +528,7 @@ public class NomadLogProcessing
 			typeArray[0] = new Double(0);
 			System.out.println("WindowDistanceList size "+windowDist.size());
 			
-			if(windowDist.size() > 0)
+			if( windowDist.size() > 0 )
 			{
 				StatClass statCls = new StatClass(windowDist.toArray(typeArray));
 				bw.write("userId "+userId+" mean "+statCls.getMean()+" median "+statCls.getMedian()
@@ -600,8 +640,8 @@ public class NomadLogProcessing
 			String sCurrentLine;
 			
 			br 
-			= new BufferedReader
-			(new FileReader("/home/adipc/GNS/WeatherCaseStudy/windowTransitionsForUsers.txt"));
+				= new BufferedReader
+				(new FileReader("/home/adipc/GNS/WeatherCaseStudy/windowTransitionsForUsers.txt"));
 			List<Double> meanCDF   			= new ArrayList<Double>();
 			List<Double> medianCDF 			= new ArrayList<Double>();
 			List<Double> fivePercCDF 		= new ArrayList<Double>();
@@ -677,9 +717,13 @@ public class NomadLogProcessing
 	public static void main(String[] args) throws IOException
 	{
 		NomadLogProcessing nomadLog = new NomadLogProcessing();
-		//nomadLog.readNomadLag();
+		nomadLog.readNomadLag();
+		System.out.println( "Number of distinct users "
+							+userMobilityEntryHashMap.size() );
+		
+		nomadLog.calculateInterMobilityTimeForAUser();
 		//nomadLog.calculateWindowTrace();
-		nomadLog.calculateWindowTransitionsCDFAcrossUsers();
+		//nomadLog.calculateWindowTransitionsCDFAcrossUsers();
 		//nomadLog.calculateWindowDistanceCDFAcrossUsers();
 		//nomadLog.calculateInterMobilityTimeForAUser();
 		//nomadLog.calculateInterMobilityDistanceForAUser();

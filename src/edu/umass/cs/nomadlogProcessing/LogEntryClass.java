@@ -26,7 +26,7 @@ public class LogEntryClass
 		dateFormat = sdf.format(date);
 	}
 	
-	public long getUnixTimeStamp()
+	public Long getUnixTimeStamp()
 	{
 		return unixTimestamp;
 	}
@@ -45,4 +45,7 @@ public class LogEntryClass
 	{
 		return dateFormat;
 	}
+	
+	
+	
 }

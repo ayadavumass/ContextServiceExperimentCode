@@ -371,7 +371,6 @@ public class BothSearchAndUpdate extends
 			( searchQuery, SearchAndUpdateDriver.queryExpiryTime, searchRep, this.getCallBack() );
 	}
 	
-	
 	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
 			int totalAttrs, Random randGen )
 	{
@@ -394,6 +393,7 @@ public class BothSearchAndUpdate extends
 		}
 		return hashMap;
 	}
+	
 	
 	private void sendALocMessage( int currUserGuidNum, long reqIdNum )
 	{
