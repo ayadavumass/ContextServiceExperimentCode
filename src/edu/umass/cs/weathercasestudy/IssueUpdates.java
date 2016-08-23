@@ -179,8 +179,21 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	{
 		for( int i=0; i<NUMUSERS; i++ )
 		{
-			int randMobId = rand.nextInt( userMobilityEntryHashMap.size() );
-			realIDToMobilityIdMap.put(i, randMobId);
+			int randMobIndex = rand.nextInt( userMobilityEntryHashMap.size() );
+			Iterator<Integer> userIdIter = userMobilityEntryHashMap.keySet().iterator();
+			int curr = 0;
+			Integer mobilityId = -1;
+			while( userIdIter.hasNext() )
+			{
+				mobilityId = userIdIter.next();
+				if( randMobIndex == curr )
+				{
+					break;
+				}
+				curr++;
+			}
+			
+			realIDToMobilityIdMap.put(i, mobilityId);
 			lastEntrySentMap.put(i, -1);
 		}
 	}
