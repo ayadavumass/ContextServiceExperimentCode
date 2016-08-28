@@ -47,8 +47,11 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public static ContextServiceClient<String> csClient;
 	public static boolean useGNS						= false;
 	
+//	public static final String nomadLogDataPath 		
+//									= "/users/ayadavum/nomadLog/loc_seq";
+	
 	public static final String nomadLogDataPath 		
-									= "/users/ayadavum/nomadLog/loc_seq";
+									= "/home/adipc/Documents/nomadlogData/loc_seq";
 	
 	private HashMap<Integer, List<LogEntryClass>> userMobilityEntryHashMap;
 	
@@ -69,6 +72,13 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	private static String csHost;
 	private static int csPort;
 	
+	
+	private double minLatData;
+	private double maxLatData;
+	private double minLongData;
+	private double maxLongData;
+	
+	
 	public static  int NUMUSERS							= 100;
 	
 	
@@ -79,7 +89,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		realIDToMobilityIdMap    = new HashMap<Integer, Integer>();
 		lastEntrySentMap         = new HashMap<Integer, Integer>();
 		
-		csClient  = new ContextServiceClient<String>(csHost, csPort, 
+		if(csHost != null)
+			csClient  = new ContextServiceClient<String>(csHost, csPort, 
 						ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
 		
 		rand = new Random();
@@ -87,6 +98,12 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	
 	private void readNomadLag() throws IOException
 	{
+		minLatData = maxBuffaloLat;
+		maxLatData = minBuffaloLat;
+		minLongData = maxBuffaloLong;
+		maxLongData = minBuffaloLong;
+		
+				
 		File file = new File("buffaloTrace.txt");
 		
 		// if file doesn't exists, then create it
@@ -143,6 +160,27 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				{
 					userEventList.add(logEntryObj);
 				}
+				
+				if(latitude < minLatData)
+				{
+					minLatData = latitude;
+				}
+				
+				if(latitude > maxLatData)
+				{
+					maxLatData = latitude;
+				}
+				
+				if(longitude < minLongData)
+				{
+					minLongData = longitude;
+				}
+				
+				if(longitude > maxLongData )
+				{
+					maxLongData = longitude;
+				}
+				
 			}
 		} catch (IOException e) 
 		{
@@ -290,16 +328,24 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	{
 	}
 	
+	
+//	private double minLatData;
+//	private double maxLatData;
+//	private double minLongData;
+//	private double maxLongData;
+	
 	public static void main(String[] args)
 				throws NoSuchAlgorithmException, IOException, InterruptedException
 	{
-		csHost = args[0];
-		csPort = Integer.parseInt(args[1]);
-		NUMUSERS = Integer.parseInt(args[2]);
+		//csHost = args[0];
+		//csPort = Integer.parseInt(args[1]);
+		//NUMUSERS = Integer.parseInt(args[2]);
 		
 		IssueUpdates issUpd = new IssueUpdates();
 		issUpd.readNomadLag();
-		issUpd.assignMobilityUserId();
-		issUpd.runUpdates();
+		System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
+				+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
+		//issUpd.assignMobilityUserId();
+		//issUpd.runUpdates();
 	}
 }
