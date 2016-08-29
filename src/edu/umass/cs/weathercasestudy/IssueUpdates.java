@@ -56,11 +56,11 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public static ContextServiceClient<String> csClient;
 	public static boolean useGNS						= false;
 	
-//	public static final String nomadLogDataPath 		
-//									= "/users/ayadavum/nomadLog/loc_seq";
-	
 	public static final String nomadLogDataPath 		
-									= "/home/adipc/Documents/nomadlogData/loc_seq";
+									= "/users/ayadavum/nomadLog/loc_seq";
+	
+//	public static final String nomadLogDataPath 		
+//									= "/home/adipc/Documents/nomadlogData/loc_seq";
 	
 	private HashMap<Integer, List<LogEntryClass>> userMobilityEntryHashMap;
 	
