@@ -29,6 +29,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	
 	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
 	
+	// 42.87417896666666 | 43.00299947777777 | -78.87563904444443 | -78.66029963333332 |
+	
 //	public static final double minBuffaloLat 			= 42.0;
 //	public static final double maxBuffaloLat 			= 44.0;
 //	
@@ -36,9 +38,9 @@ public class IssueUpdates extends AbstractRequestSendingClass
 //	public static final double maxBuffaloLong 			= -78.0;
 	
 	public static final double minBuffaloLat 			= 42.87417896666666;
-	public static final double maxBuffaloLat 			= 43.260640499999994;
+	public static final double maxBuffaloLat 			= 43.00299947777777;
 	
-	public static final double minBuffaloLong			= -79.30631786666666;
+	public static final double minBuffaloLong			= -78.87563904444443;
 	public static final double maxBuffaloLong 			= -78.66029963333332;
 	
 	
