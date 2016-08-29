@@ -27,11 +27,20 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	
 	public static final int WAIT_TIME					= 100000;
 	
-	public static final double minBuffaloLat 			= 42.0;
-	public static final double maxBuffaloLat 			= 44.0;
+	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
 	
-	public static final double minBuffaloLong			= -80.0;
-	public static final double maxBuffaloLong 			= -78.0;
+//	public static final double minBuffaloLat 			= 42.0;
+//	public static final double maxBuffaloLat 			= 44.0;
+//	
+//	public static final double minBuffaloLong			= -80.0;
+//	public static final double maxBuffaloLong 			= -78.0;
+	
+	public static final double minBuffaloLat 			= 42.87417896666666;
+	public static final double maxBuffaloLat 			= 43.260640499999994;
+	
+	public static final double minBuffaloLong			= -79.30631786666666;
+	public static final double maxBuffaloLong 			= -78.66029963333332;
+	
 	
 	public static final double timeContractionFactor 	= 17859.416666667;
 	
@@ -328,14 +337,9 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	{
 	}
 	
-	
-//	private double minLatData;
-//	private double maxLatData;
-//	private double minLongData;
-//	private double maxLongData;
-	
 	public static void main(String[] args)
-				throws NoSuchAlgorithmException, IOException, InterruptedException
+				throws NoSuchAlgorithmException, 
+				IOException, InterruptedException
 	{
 		//csHost = args[0];
 		//csPort = Integer.parseInt(args[1]);
@@ -345,7 +349,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		issUpd.readNomadLag();
 		System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
 				+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
-		//issUpd.assignMobilityUserId();
-		//issUpd.runUpdates();
+		issUpd.assignMobilityUserId();
+		issUpd.runUpdates();
 	}
 }
