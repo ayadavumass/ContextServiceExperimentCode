@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * stores each log entry
+ * Stores each log entry
  * @author adipc
  */
 public class LogEntryClass 
@@ -45,7 +45,4 @@ public class LogEntryClass
 	{
 		return dateFormat;
 	}
-	
-	
-	
 }

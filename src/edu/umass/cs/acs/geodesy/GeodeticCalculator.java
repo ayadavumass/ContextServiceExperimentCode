@@ -40,7 +40,7 @@ public class GeodeticCalculator
     public static GlobalCoordinate calculateEndingGlobalCoordinates(GlobalCoordinate start, double startBearing, double distance) {
 	return calculateEndingGlobalCoordinates(Ellipsoid.WGS84, start,startBearing, distance);
     }
-
+    
     public static GeodeticCurve calculateGeodeticCurve(GlobalCoordinate start, GlobalCoordinate end) {
 	return calculateGeodeticCurve(Ellipsoid.WGS84, start, end);
     }

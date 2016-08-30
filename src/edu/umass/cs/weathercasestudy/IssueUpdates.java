@@ -17,8 +17,10 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.umass.cs.acs.geodesy.GeodeticCalculator;
+import edu.umass.cs.acs.geodesy.GeodeticCurve;
+import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
-import edu.umass.cs.nomadlogProcessing.LogEntryClass;
 import edu.umass.cs.utils.UtilFunctions;
 
 public class IssueUpdates extends AbstractRequestSendingClass
@@ -28,20 +30,19 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public static final int WAIT_TIME					= 100000;
 	
 	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
+	// 42.87417896666666 | 43.00299947777777 | -78.87563904444443 | -78.66029963333332 
 	
-	// 42.87417896666666 | 43.00299947777777 | -78.87563904444443 | -78.66029963333332 |
+	public static final double minBuffaloLat 			= 42.0;
+	public static final double maxBuffaloLat 			= 44.0;
 	
-//	public static final double minBuffaloLat 			= 42.0;
-//	public static final double maxBuffaloLat 			= 44.0;
+	public static final double minBuffaloLong			= -80.0;
+	public static final double maxBuffaloLong 			= -78.0;
+	
+//	public static final double minBuffaloLat 			= 42.87417896666666;
+//	public static final double maxBuffaloLat 			= 43.00299947777777;
 //	
-//	public static final double minBuffaloLong			= -80.0;
-//	public static final double maxBuffaloLong 			= -78.0;
-	
-	public static final double minBuffaloLat 			= 42.87417896666666;
-	public static final double maxBuffaloLat 			= 43.00299947777777;
-	
-	public static final double minBuffaloLong			= -78.87563904444443;
-	public static final double maxBuffaloLong 			= -78.66029963333332;
+//	public static final double minBuffaloLong			= -78.87563904444443;
+//	public static final double maxBuffaloLong 			= -78.66029963333332;
 	
 	
 	public static final double timeContractionFactor 	= 17859.416666667;
@@ -62,16 +63,17 @@ public class IssueUpdates extends AbstractRequestSendingClass
 									= "/users/ayadavum/nomadLog/loc_seq";
 	
 //	public static final String nomadLogDataPath 		
-//									= "/home/adipc/Documents/nomadlogData/loc_seq";
+//										= "/home/adipc/Documents/nomadlogData/loc_seq";
 	
-	private HashMap<Integer, List<LogEntryClass>> userMobilityEntryHashMap;
+	private HashMap<Integer, List<TrajectoryEntry>> userMobilityEntryHashMap;
 	
 	
-	private HashMap<Integer, Integer> lastEntrySentMap;
+	private HashMap<Integer, Integer> nextEntryToSendMap;
 	
-	private HashMap<Integer, Integer> realIDToMobilityIdMap;
-	
-	private Random rand;
+	//private HashMap<Integer, Integer> realIDToMobilityIdMap;
+	// trajectories in this are laterally transformed version of 
+	// mobility log trajectories.
+	private HashMap<Integer, List<TrajectoryEntry>> realIDTrajectoryMap;
 	
 	private double simulatedTime;
 	
@@ -89,6 +91,9 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	private double minLongData;
 	private double maxLongData;
 	
+	private Random transformRand;
+	
+	private boolean useLateralTransfrom					= false;
 	
 	public static  int NUMUSERS							= 100;
 	
@@ -96,25 +101,26 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public IssueUpdates() throws NoSuchAlgorithmException, IOException
 	{
 		super( UPD_LOSS_TOLERANCE );
-		userMobilityEntryHashMap = new HashMap<Integer, List<LogEntryClass>>();
-		realIDToMobilityIdMap    = new HashMap<Integer, Integer>();
-		lastEntrySentMap         = new HashMap<Integer, Integer>();
+		userMobilityEntryHashMap = new HashMap<Integer, List<TrajectoryEntry>>();
+		//realIDToMobilityIdMap    = new HashMap<Integer, Integer>();
+		realIDTrajectoryMap		 = new HashMap<Integer, List<TrajectoryEntry>>();
+		nextEntryToSendMap       = new HashMap<Integer, Integer>();
 		
-		if(csHost != null)
+		if( csHost != null )
 			csClient  = new ContextServiceClient<String>(csHost, csPort, 
 						ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
 		
-		rand = new Random();
+		transformRand = new Random();
 	}
 	
 	private void readNomadLag() throws IOException
 	{
+		
 		minLatData = maxBuffaloLat;
 		maxLatData = minBuffaloLat;
 		minLongData = maxBuffaloLong;
 		maxLongData = minBuffaloLong;
 		
-				
 		File file = new File("buffaloTrace.txt");
 		
 		// if file doesn't exists, then create it
@@ -157,13 +163,13 @@ public class IssueUpdates extends AbstractRequestSendingClass
 					continue;
 				}
 				
-				LogEntryClass logEntryObj = new LogEntryClass(unixtimestamp, 
+				TrajectoryEntry logEntryObj = new TrajectoryEntry(unixtimestamp, 
 						latitude, longitude);
 				
-				List<LogEntryClass> userEventList = userMobilityEntryHashMap.get(userId);
+				List<TrajectoryEntry> userEventList = userMobilityEntryHashMap.get(userId);
 				if( userEventList == null )
 				{
-					userEventList = new LinkedList<LogEntryClass>();
+					userEventList = new LinkedList<TrajectoryEntry>();
 					userEventList.add(logEntryObj);
 					userMobilityEntryHashMap.put(userId, userEventList);
 				}
@@ -191,7 +197,6 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				{
 					maxLongData = longitude;
 				}
-				
 			}
 		} catch (IOException e) 
 		{
@@ -217,7 +222,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		{
 			int userId = userIdIter.next();
 			
-			List<LogEntryClass> logEntryList 
+			List<TrajectoryEntry> logEntryList 
 							= userMobilityEntryHashMap.get(userId);
 			
 			logEntryList.sort
@@ -225,28 +230,176 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		}
 	}
 	
-	private void assignMobilityUserId()
-	{
+//	private void assignMobilityUserId()
+//	{
+//		for( int i=0; i<NUMUSERS; i++ )
+//		{
+//			int randMobIndex = rand.nextInt( userMobilityEntryHashMap.size() );
+//			Iterator<Integer> userIdIter = userMobilityEntryHashMap.keySet().iterator();
+//			int curr = 0;
+//			Integer mobilityId = -1;
+//			while( userIdIter.hasNext() )
+//			{
+//				mobilityId = userIdIter.next();
+//				if( randMobIndex == curr )
+//				{
+//					break;
+//				}
+//				curr++;
+//			}
+//			
+//			realIDToMobilityIdMap.put(i, mobilityId);
+//			lastEntrySentMap.put(i, -1);
+//		}
+//	}
+	
+	private void createTransformedTrajectories()
+	{	
+		Iterator<Integer> logIdIter 
+							= userMobilityEntryHashMap.keySet().iterator();
+		
 		for( int i=0; i<NUMUSERS; i++ )
 		{
-			int randMobIndex = rand.nextInt( userMobilityEntryHashMap.size() );
-			Iterator<Integer> userIdIter = userMobilityEntryHashMap.keySet().iterator();
-			int curr = 0;
-			Integer mobilityId = -1;
-			while( userIdIter.hasNext() )
+			// assign original trajectories first
+			// and after that we assign laterally transformed trajectories.
+			if( i < userMobilityEntryHashMap.size() )
 			{
-				mobilityId = userIdIter.next();
-				if( randMobIndex == curr )
+				if( logIdIter.hasNext() )
 				{
-					break;
+					int logId = logIdIter.next();
+					List<TrajectoryEntry> trajEntry 
+										= userMobilityEntryHashMap.get(logId);
+					
+					realIDTrajectoryMap.put(i, trajEntry);
 				}
-				curr++;
+				else
+				{
+					assert(false);
+				}
 			}
-			
-			realIDToMobilityIdMap.put(i, mobilityId);
-			lastEntrySentMap.put(i, -1);
+			else
+			{
+				int randLogIndex = transformRand.nextInt( userMobilityEntryHashMap.size() );
+				Iterator<Integer> userIdIter = userMobilityEntryHashMap.keySet().iterator();
+				int curr = 0;
+				Integer logId = -1;
+				while( userIdIter.hasNext() )
+				{
+					logId = userIdIter.next();
+					if( randLogIndex == curr )
+					{
+						break;
+					}
+					curr++;
+				}
+				
+				List<TrajectoryEntry> transformedTrajList = null;
+				
+				if(this.useLateralTransfrom)
+				{
+					transformedTrajList 
+							= performUserTrajectoryTransformation( logId);
+				}
+				else
+				{
+					transformedTrajList = userMobilityEntryHashMap.get(logId);
+				}
+				
+				realIDTrajectoryMap.put(i, transformedTrajList);
+				
+			}
+			nextEntryToSendMap.put(i, 0);
 		}
 	}
+	
+	
+//	public static final double minBuffaloLat 			= 42.0;
+//	public static final double maxBuffaloLat 			= 44.0;
+//	
+//	public static final double minBuffaloLong			= -80.0;
+//	public static final double maxBuffaloLong 			= -78.0;
+	
+	private List<TrajectoryEntry> performUserTrajectoryTransformation
+										( int nomadLogUserId )
+	{
+		List<TrajectoryEntry> logTrajectory 
+						= userMobilityEntryHashMap.get(nomadLogUserId);
+		
+		List<TrajectoryEntry> realUserTraj = new LinkedList<TrajectoryEntry>();
+		
+		double startAngle = -1;
+		double endAngle = -1;
+		double distanceInMeters = -1;
+		
+		for( int i=0; i<logTrajectory.size(); i++ )
+		{
+			TrajectoryEntry logEntry = logTrajectory.get(i);
+			long unixTime = logEntry.getUnixTimeStamp();
+			double latitude = logEntry.getLatitude();
+			double longitude = logEntry.getLongitude();
+			
+			GlobalCoordinate logCoord 
+								= new GlobalCoordinate(latitude, longitude);
+			GlobalCoordinate transformedCoord = null;
+			if( i == 0 )
+			{
+				double transformedLat = minBuffaloLat 
+						+ transformRand.nextDouble()*(maxBuffaloLat-minBuffaloLat);
+				double transformedLong = minBuffaloLong 
+						+ transformRand.nextDouble()*(maxBuffaloLong-minBuffaloLong);
+				
+				
+				transformedCoord = new GlobalCoordinate(transformedLat, transformedLong);
+				
+				GeodeticCurve gCurve 
+						= GeodeticCalculator.calculateGeodeticCurve(logCoord, transformedCoord);
+				
+				startAngle = gCurve.getAzimuth();
+				endAngle = gCurve.getReverseAzimuth();
+				distanceInMeters = gCurve.getEllipsoidalDistance();
+				
+				TrajectoryEntry trajEntry 
+						= new TrajectoryEntry(unixTime, transformedLat, transformedLong);
+				
+				realUserTraj.add(trajEntry);
+			}
+			else
+			{
+				transformedCoord = GeodeticCalculator.calculateEndingGlobalCoordinates
+											(logCoord, startAngle, distanceInMeters);
+				
+				TrajectoryEntry trajEntry 
+					= new TrajectoryEntry(unixTime, transformedCoord.getLatitude(), 
+							transformedCoord.getLongitude());
+				
+				realUserTraj.add(trajEntry);				
+			}
+			
+			if(transformedCoord.getLatitude() < minLatData)
+			{
+				minLatData = transformedCoord.getLatitude();
+			}
+			
+			if(transformedCoord.getLatitude() > maxLatData)
+			{
+				maxLatData = transformedCoord.getLatitude();
+			}
+			
+			if(transformedCoord.getLongitude() < minLongData)
+			{
+				minLongData = transformedCoord.getLongitude();
+			}
+			
+			if(transformedCoord.getLongitude() > maxLongData )
+			{
+				maxLongData = transformedCoord.getLongitude();
+			}
+		}
+		
+		assert( logTrajectory.size() == realUserTraj.size() );
+		return realUserTraj;
+	}
+	
 	
 	private void runUpdates() throws InterruptedException
 	{
@@ -255,37 +408,42 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		{
 			Thread.sleep(1000);
 			simulatedTime = simulatedTime +timeContractionFactor;
-			sendUpdatesWhoseTimeHasCome();
+			sendUpdatesWhoseTimeHasCome(simulatedTime);
 		}
 	}
 	
-	private void sendUpdatesWhoseTimeHasCome()
+	
+	private void sendUpdatesWhoseTimeHasCome(double simulatedTime)
 	{
-		Iterator<Integer> userIdIter = realIDToMobilityIdMap.keySet().iterator();
+		Iterator<Integer> userIdIter = realIDTrajectoryMap.keySet().iterator();
 		while( userIdIter.hasNext() )
 		{
 			int realId = userIdIter.next();
-			int mobilityId = realIDToMobilityIdMap.get(realId);
+			List<TrajectoryEntry> trajList = realIDTrajectoryMap.get(realId);
 			
-			System.out.println("realId "+realId+" mobilityId "+mobilityId);
+			System.out.println("trajList "+trajList.size());
 			
-			List<LogEntryClass> logEntryList = userMobilityEntryHashMap.get(mobilityId);
+			int nextIndex = nextEntryToSendMap.get(realId);
 			
-			System.out.println("logEntryList "+logEntryList.size());
-			
-			int lastIndex = lastEntrySentMap.get(realId);
-			lastIndex++;
-			
-			while( lastIndex < logEntryList.size() )
+			while( nextIndex < trajList.size() )
 			{
-				LogEntryClass logEntry = logEntryList.get(lastIndex);
-				lastIndex++;
-				sendUpdate(realId, logEntry );
+				TrajectoryEntry trajEntry = trajList.get(nextIndex);
+				nextIndex++;
+				long currUnixTime = trajEntry.getUnixTimeStamp();
+				if( currUnixTime <= simulatedTime )
+				{
+					sendUpdate(realId, trajEntry );
+				}
+				else
+				{
+					break;
+				}
 			}
+			nextEntryToSendMap.put(realId, nextIndex);
 		}
 	}
 	
-	private void sendUpdate(int realId, LogEntryClass logEntry )
+	private void sendUpdate(int realId, TrajectoryEntry trajEntry )
 	{
 		String userGUID = "";
 		if( useGNS )
@@ -300,9 +458,10 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		JSONObject attrValJSON = new JSONObject();
 		try
 		{
-			attrValJSON.put(latitudeAttr, logEntry.getLatitude());
-			attrValJSON.put(longitudeAttr, logEntry.getLongitude());
-		} catch (JSONException e)
+			attrValJSON.put(latitudeAttr, trajEntry.getLatitude());
+			attrValJSON.put(longitudeAttr, trajEntry.getLongitude());
+		} 
+		catch (JSONException e)
 		{
 			e.printStackTrace();
 		}
@@ -347,11 +506,14 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		csPort = Integer.parseInt(args[1]);
 		NUMUSERS = Integer.parseInt(args[2]);
 		
+		//NUMUSERS = 1000;
+		
 		IssueUpdates issUpd = new IssueUpdates();
 		issUpd.readNomadLag();
+		//issUpd.assignMobilityUserId();
+		issUpd.createTransformedTrajectories();
 		System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
 				+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
-		issUpd.assignMobilityUserId();
 		issUpd.runUpdates();
 	}
 }
