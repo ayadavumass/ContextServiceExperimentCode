@@ -7,12 +7,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -297,8 +299,13 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				
 				if(this.useLateralTransfrom)
 				{
-					transformedTrajList 
-							= performUserTrajectoryTransformation( logId);
+					boolean succTransform;
+					do
+					{
+						transformedTrajList = new LinkedList<TrajectoryEntry>();
+						succTransform = performUserTrajectoryTransformation
+								( logId, transformedTrajList);
+					} while(!succTransform);
 				}
 				else
 				{
@@ -319,9 +326,10 @@ public class IssueUpdates extends AbstractRequestSendingClass
 //	public static final double minBuffaloLong			= -80.0;
 //	public static final double maxBuffaloLong 			= -78.0;
 	
-	private List<TrajectoryEntry> performUserTrajectoryTransformation
-										( int nomadLogUserId )
+	private boolean performUserTrajectoryTransformation
+							( int nomadLogUserId, List<TrajectoryEntry> trajList )
 	{
+		boolean succTransform = true;
 		List<TrajectoryEntry> logTrajectory 
 						= userMobilityEntryHashMap.get(nomadLogUserId);
 		
@@ -358,6 +366,12 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				endAngle = gCurve.getReverseAzimuth();
 				distanceInMeters = gCurve.getEllipsoidalDistance();
 				
+				if(!isCoordWithinBounds(transformedCoord.getLatitude(), 
+						transformedCoord.getLongitude()))
+				{
+					succTransform = false;
+				}
+				
 				TrajectoryEntry trajEntry 
 						= new TrajectoryEntry(unixTime, transformedLat, transformedLong);
 				
@@ -368,6 +382,12 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				transformedCoord = GeodeticCalculator.calculateEndingGlobalCoordinates
 											(logCoord, startAngle, distanceInMeters);
 				
+				if(!isCoordWithinBounds(transformedCoord.getLatitude(), 
+						transformedCoord.getLongitude()))
+				{
+					succTransform = false;
+				}
+				
 				TrajectoryEntry trajEntry 
 					= new TrajectoryEntry(unixTime, transformedCoord.getLatitude(), 
 							transformedCoord.getLongitude());
@@ -375,31 +395,23 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				realUserTraj.add(trajEntry);				
 			}
 			
-			if(transformedCoord.getLatitude() < minLatData)
-			{
-				minLatData = transformedCoord.getLatitude();
-			}
-			
-			if(transformedCoord.getLatitude() > maxLatData)
-			{
-				maxLatData = transformedCoord.getLatitude();
-			}
-			
-			if(transformedCoord.getLongitude() < minLongData)
-			{
-				minLongData = transformedCoord.getLongitude();
-			}
-			
-			if(transformedCoord.getLongitude() > maxLongData )
-			{
-				maxLongData = transformedCoord.getLongitude();
-			}
 		}
 		
 		assert( logTrajectory.size() == realUserTraj.size() );
-		return realUserTraj;
+		return succTransform;
 	}
 	
+	private boolean isCoordWithinBounds(double latitude, double longitude)
+	{
+		if( (latitude >= minBuffaloLat) && (latitude <= maxBuffaloLat) 
+				&& (longitude >= minBuffaloLong) && (longitude <= maxBuffaloLong) )
+		{
+			return true;
+		}
+		else
+			return false;
+		
+	}
 	
 	private void runUpdates() throws InterruptedException
 	{
@@ -408,8 +420,15 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		{
 			Thread.sleep(1000);
 			simulatedTime = simulatedTime +timeContractionFactor;
-			System.out.println("Current simulated time "+simulatedTime+" time in GMT "
-					+new Date((long) simulatedTime).toGMTString());
+			
+			Date date = new Date((long)simulatedTime*1000L); // *1000 is to convert seconds to milliseconds
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT-5")); // give a timezone reference for formating (see comment at the bottom
+			String dateFormat = sdf.format(date);
+			
+			
+			System.out.println("Current simulated time "+simulatedTime+" time in GMT-5 "
+					+dateFormat);
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
 		}
 	}
