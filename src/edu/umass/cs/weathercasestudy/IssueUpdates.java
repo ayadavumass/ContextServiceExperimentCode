@@ -408,6 +408,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		{
 			Thread.sleep(1000);
 			simulatedTime = simulatedTime +timeContractionFactor;
+			System.out.println("Current simulated time "+simulatedTime+" time in GMT "
+					+new Date((long) simulatedTime).toGMTString());
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
 		}
 	}
@@ -471,7 +473,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		
 		System.out.println("requestId "+requestId+" realId "
 							+realId+" attrValJSON "+attrValJSON);
-		
+		numSent++;
 		csClient.sendUpdateWithCallBack( userGUID, null, 
 										attrValJSON, -1, updateRep, this.getCallBack() );
 	}
@@ -484,7 +486,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			numRecvd++;
 			numUpdatesRecvd++;
 			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
-					+" numRecvd "+numRecvd);
+					+" numRecvd "+numRecvd+" numSent "+numSent);
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
