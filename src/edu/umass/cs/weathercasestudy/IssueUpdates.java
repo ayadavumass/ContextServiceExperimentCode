@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -459,13 +460,15 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	
 	private void sendUpdatesWhoseTimeHasCome(double simulatedTime)
 	{
+		HashMap<Integer, Queue<UpdateInfo>> currUpdatesMap 
+							= new HashMap<Integer, Queue<UpdateInfo>>();
+		int totalUpdates = 0;
+		
 		Iterator<Integer> userIdIter = realIDTrajectoryMap.keySet().iterator();
 		while( userIdIter.hasNext() )
 		{
 			int realId = userIdIter.next();
 			List<TrajectoryEntry> trajList = realIDTrajectoryMap.get(realId);
-			
-			//System.out.println("trajList "+trajList.size());
 			
 			int nextIndex = nextEntryToSendMap.get(realId);
 			
@@ -476,7 +479,21 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				long currUnixTime = trajEntry.getUnixTimeStamp();
 				if( currUnixTime <= simulatedTime )
 				{
-					sendUpdate(realId, trajEntry );
+					//sendUpdate(realId, trajEntry );
+					totalUpdates++;
+					if( currUpdatesMap.containsKey(realId) )
+					{
+						Queue<UpdateInfo> guidUpdateList = currUpdatesMap.get(realId);
+						UpdateInfo updInfo = new UpdateInfo(realId, trajEntry);
+						guidUpdateList.add(updInfo);
+					}
+					else
+					{
+						Queue<UpdateInfo> guidUpdateList = new LinkedList<UpdateInfo>();
+						UpdateInfo updInfo = new UpdateInfo(realId, trajEntry);
+						guidUpdateList.add(updInfo);
+						currUpdatesMap.put(realId, guidUpdateList);
+					}
 				}
 				else
 				{
@@ -485,7 +502,10 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			}
 			nextEntryToSendMap.put(realId, nextIndex);
 		}
+		
+		sendStaggeredUpdates(currUpdatesMap, totalUpdates);
 	}
+	
 	
 	private void sendUpdate(int realId, TrajectoryEntry trajEntry )
 	{
@@ -504,7 +524,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		{
 			attrValJSON.put(latitudeAttr, trajEntry.getLatitude());
 			attrValJSON.put(longitudeAttr, trajEntry.getLongitude());
-		} 
+		}
 		catch (JSONException e)
 		{
 			e.printStackTrace();
@@ -519,6 +539,92 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		csClient.sendUpdateWithCallBack( userGUID, null, 
 										attrValJSON, -1, updateRep, this.getCallBack() );
 	}
+	
+	
+	private void sendStaggeredUpdates( HashMap<Integer, Queue<UpdateInfo>> currUpdatesMap, 
+			int totalUpdates )
+	{
+		double timeToRunUpdates = 1000.0; // 1000 ms
+		double sleepTime = 100.0;
+		
+		double numIterations = timeToRunUpdates/sleepTime;
+		
+		if( totalUpdates <=  numIterations)
+		{
+			// execute all at once and then wait for timeToRunUpdates
+			while( !sendRoundRobinUpdates( totalUpdates,  currUpdatesMap ) )
+			{
+				try 
+				{
+					Thread.sleep((long) timeToRunUpdates);
+				} catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		else
+		{
+			// execute staggered with sleeping of sleepTime
+			double numUpdPerSleep = (totalUpdates*1.0)/numIterations;
+			
+			while( !sendRoundRobinUpdates( numUpdPerSleep,  currUpdatesMap ) )
+			{
+				try 
+				{
+					Thread.sleep((long) sleepTime);
+				} catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	private boolean sendRoundRobinUpdates( double numUpdPerSleep, 
+			HashMap<Integer, Queue<UpdateInfo>> currUpdatesMap )
+	{
+		boolean empty = true;
+		int totalUpdates = (int)Math.ceil(numUpdPerSleep);
+		int numberSentSoFar = 0;
+		do
+		{
+			empty = true;
+			Iterator<Integer> userIdIter = currUpdatesMap.keySet().iterator();
+			
+			while( userIdIter.hasNext() )
+			{
+				int realId = userIdIter.next();
+				Queue<UpdateInfo> userUpdateList = currUpdatesMap.get(realId);
+				
+				if( userUpdateList.size() > 0 )
+				{
+					UpdateInfo updInfo = userUpdateList.poll();
+					
+					sendUpdate(updInfo.getRealId(), updInfo.getTrajEntry() );
+					numberSentSoFar++;
+					
+					if( numberSentSoFar >= totalUpdates )
+					{
+						break;
+					}			
+				}
+				
+				if( userUpdateList.size() > 0 )
+					empty = false;
+			}
+			
+			if( numberSentSoFar >= totalUpdates )
+			{
+				break;
+			}
+		}
+		while(!empty);
+		return empty;
+	}
+	
 	
 	public void printLogStats()
 	{
