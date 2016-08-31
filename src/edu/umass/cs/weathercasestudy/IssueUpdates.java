@@ -443,7 +443,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			
 			
 			System.out.println("Current simulated time "+simulatedTime+" time in GMT-5 "
-					+dateFormat);
+					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd);
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
 		}
 		long end = System.currentTimeMillis();
