@@ -95,7 +95,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	
 	private Random transformRand;
 	
-	private boolean useLateralTransfrom					= false;
+	private boolean useLateralTransfrom					= true;
+	private boolean useRealTraj							= false;
 	
 	public static  int NUMUSERS							= 100;
 	
@@ -263,8 +264,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		for( int i=0; i<NUMUSERS; i++ )
 		{
 			// assign original trajectories first
-			// and after that we assign laterally transformed trajectories.
-			if( i < userMobilityEntryHashMap.size() )
+//			// and after that we assign laterally transformed trajectories.
+			if( useRealTraj && (i < userMobilityEntryHashMap.size()) )
 			{
 				if( logIdIter.hasNext() )
 				{
@@ -306,6 +307,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 						succTransform = performUserTrajectoryTransformation
 								( logId, transformedTrajList);
 					} while(!succTransform);
+//					System.out.println("Transform list "+this.getTrajListString
+//							(transformedTrajList));
 				}
 				else
 				{
@@ -317,6 +320,19 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			}
 			nextEntryToSendMap.put(i, 0);
 		}
+		
+		assert(realIDTrajectoryMap.size() == NUMUSERS);
+	}
+	
+	private String getTrajListString(List<TrajectoryEntry> trajList)
+	{
+		String str = "";
+		for(int i=0; i<trajList.size(); i++)
+		{
+			str = str+ trajList.get(i).getLatitude()+ " , "
+								+trajList.get(i).getLongitude()+" ; ";
+		}
+		return str;
 	}
 	
 	
@@ -332,8 +348,6 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		boolean succTransform = true;
 		List<TrajectoryEntry> logTrajectory 
 						= userMobilityEntryHashMap.get(nomadLogUserId);
-		
-		List<TrajectoryEntry> realUserTraj = new LinkedList<TrajectoryEntry>();
 		
 		double startAngle = -1;
 		double endAngle = -1;
@@ -375,7 +389,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				TrajectoryEntry trajEntry 
 						= new TrajectoryEntry(unixTime, transformedLat, transformedLong);
 				
-				realUserTraj.add(trajEntry);
+				trajList.add(trajEntry);
 			}
 			else
 			{
@@ -392,12 +406,12 @@ public class IssueUpdates extends AbstractRequestSendingClass
 					= new TrajectoryEntry(unixTime, transformedCoord.getLatitude(), 
 							transformedCoord.getLongitude());
 				
-				realUserTraj.add(trajEntry);				
+				trajList.add(trajEntry);				
 			}
 			
 		}
 		
-		assert( logTrajectory.size() == realUserTraj.size() );
+		assert( logTrajectory.size() == trajList.size() );
 		return succTransform;
 	}
 	
@@ -497,6 +511,163 @@ public class IssueUpdates extends AbstractRequestSendingClass
 										attrValJSON, -1, updateRep, this.getCallBack() );
 	}
 	
+	public void printLogStats()
+	{
+		// 1st partition is : 42 | 42.666666666666664 | -80 | -79.33333333333333
+		// 2nd partition is : 42 | 42.666666666666664 | -79.33333333333333 | -78.66666666666666
+		// 3rd partition is : 42 | 42.666666666666664 | -78.66666666666666 | -78
+		// 4th partition is : 42.666666666666664 |  43.33333333333333 | -80 | -79.33333333333333
+		// 5th partition is : 42.666666666666664 |  43.33333333333333 | -79.33333333333333 | -78.66666666666666
+		// 6th partition is : 42.666666666666664 |  43.33333333333333 | -78.66666666666666 | -78
+		// 7th partition is : 43.33333333333333 |  43.99999999999999 | -80 | -79.33333333333333
+		// 8th partition is : 43.33333333333333 |  43.99999999999999 | -79.33333333333333 | -78.66666666666666
+		// 9th partition is : 43.33333333333333 |  43.99999999999999 | -78.66666666666666 | -78
+		
+		HashMap<Integer, Long> logStatMap = new HashMap<Integer, Long>();
+		Iterator<Integer> logIdIter = userMobilityEntryHashMap.keySet().iterator();
+		
+		while( logIdIter.hasNext() )
+		{
+			int logId = logIdIter.next();
+			List<TrajectoryEntry> logTrajEntry = userMobilityEntryHashMap.get(logId);
+			
+			for(int i=0; i<logTrajEntry.size(); i++)
+			{
+				TrajectoryEntry trajEntry = logTrajEntry.get(i);
+				int partitionNum = getPartitionSatisfiedByEntry( trajEntry );
+				
+				if(partitionNum == -1)
+				{
+					assert(false);
+				}
+				else
+				{
+					if( logStatMap.containsKey(partitionNum) )
+					{
+						long counter = logStatMap.get(partitionNum);
+						counter++;
+						logStatMap.put(partitionNum, counter);
+					}
+					else
+					{
+						//partitionNum
+						logStatMap.put(partitionNum, (long)1);
+					}
+				}
+			}
+		}
+		
+		Iterator<Integer> logStatMapIter = logStatMap.keySet().iterator();
+		
+		while( logStatMapIter.hasNext() )
+		{
+			int partitionNum = logStatMapIter.next();
+			long numEntries = logStatMap.get(partitionNum);
+			System.out.println("Log stat partitionNum "+partitionNum
+					+" numEntries "+numEntries);
+		}
+	}
+	
+	
+	public void printRealUserStats()
+	{
+		HashMap<Integer, Long> realUserStatMap = new HashMap<Integer, Long>();
+		Iterator<Integer> realIdIter = realIDTrajectoryMap.keySet().iterator();
+		System.out.println(" realIDTrajectoryMap size "+ realIDTrajectoryMap.size());
+		
+		while( realIdIter.hasNext() )
+		{
+			int realId = realIdIter.next();
+			//System.out.println("Executing realId "+realId);
+			List<TrajectoryEntry> realTrajList = realIDTrajectoryMap.get(realId);
+			
+			for(int i=0; i<realTrajList.size(); i++)
+			{
+				TrajectoryEntry trajEntry = realTrajList.get(i);
+				int partitionNum = getPartitionSatisfiedByEntry( trajEntry );
+				
+				if(partitionNum == -1)
+				{
+					System.out.println(" trajEntry "+trajEntry.getLatitude()+" "+trajEntry.getLongitude()
+								+" realId "+realId);
+					assert(false);
+				}
+				else
+				{
+					if( realUserStatMap.containsKey(partitionNum) )
+					{
+						long counter = realUserStatMap.get(partitionNum);
+						counter++;
+						realUserStatMap.put(partitionNum, counter);
+					}
+					else
+					{
+						//partitionNum
+						realUserStatMap.put(partitionNum, (long)1);
+					}
+				}
+			}
+		}
+		
+		System.out.println("realUserStatMap size "+realUserStatMap.size());
+		Iterator<Integer> realIdStatMapIter = realUserStatMap.keySet().iterator();
+		
+		while( realIdStatMapIter.hasNext() )
+		{
+			int partitionNum = realIdStatMapIter.next();
+			long numEntries = realUserStatMap.get(partitionNum);
+			System.out.println("RealUser stat partitionNum "+partitionNum
+					+" numEntries "+numEntries);
+		}
+	}
+	
+	private int getPartitionSatisfiedByEntry( TrajectoryEntry trajEntry )
+	{
+		double[] minLatArray = {42.0, 42.0, 42.0, 42.66, 42.66, 42.66, 43.33, 43.33, 43.33};
+		double[] maxLatArray = {42.66, 42.66, 42.66, 43.33, 43.33, 43.33, 43.99, 43.99, 43.99};
+		double[] minLongArray = {-80.0, -79.33, -78.66, -80.0, -79.33, -78.66, -80.0, -79.33, -78.66};
+		double[] maxLongArray = {-79.33, -78.66, -78.0, -79.33, -78.66, -78.0, -79.33, -78.66, -78.0};
+		
+		for(int i=0; i<9; i++)
+		{
+			double minLat = minLatArray[i];
+			double maxLat = maxLatArray[i];
+			double minLong = minLongArray[i];
+			double maxLong = maxLongArray[i];
+			
+			boolean ret = ifPartitionSatisfiesEntry( trajEntry, 
+					minLat, maxLat, minLong, maxLong );
+			if(ret)
+			{
+				return i+1;
+			}
+		}
+		return -1;
+	}
+	
+	private boolean ifPartitionSatisfiesEntry( TrajectoryEntry trajEntry, 
+			double minLat, double maxLat, double minLong, double maxLong )
+	{
+		double currLat  = trajEntry.getLatitude();
+		double currLong = trajEntry.getLongitude();
+		
+		currLat = ((int)(currLat*100.0));
+		currLat = currLat/100.0;
+		
+		currLong = ((int)(currLong*100.0));
+		currLong = currLong/100.0;
+		
+		if( (currLat >= minLat) && (currLat <= maxLat) && 
+				(currLong >= minLong) && (currLong <= maxLong) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken)
 	{
@@ -527,14 +698,18 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		csPort = Integer.parseInt(args[1]);
 		NUMUSERS = Integer.parseInt(args[2]);
 		
-		//NUMUSERS = 1000;
+//		NUMUSERS = 100;
 		
 		IssueUpdates issUpd = new IssueUpdates();
 		issUpd.readNomadLag();
 		//issUpd.assignMobilityUserId();
 		issUpd.createTransformedTrajectories();
+		
 		System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
 				+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
+		issUpd.printLogStats();
+		System.out.println("\n\n");
+		issUpd.printRealUserStats();
 		issUpd.runUpdates();
 	}
 }
