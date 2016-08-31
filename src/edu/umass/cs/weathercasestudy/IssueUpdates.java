@@ -434,18 +434,16 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		simulatedTime = MIN_UNIX_TIME;
 		while( simulatedTime <= MAX_UNIX_TIME )
 		{
-			Thread.sleep(1000);
-			simulatedTime = simulatedTime +timeContractionFactor;
-			
 			Date date = new Date((long)simulatedTime*1000L); // *1000 is to convert seconds to milliseconds
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT-5")); // give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
-			
-			
 			System.out.println("Current simulated time "+simulatedTime+" time in GMT-5 "
 					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd);
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
+			//Thread.sleep(1000);
+			simulatedTime = simulatedTime +timeContractionFactor;
+			
 		}
 		long end = System.currentTimeMillis();
 		double sendingRate = (numSent*1000.0)/(end-start);
@@ -569,8 +567,9 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			// execute staggered with sleeping of sleepTime
 			double numUpdPerSleep = (totalUpdates*1.0)/numIterations;
 			
-			while( !sendRoundRobinUpdates( numUpdPerSleep,  currUpdatesMap ) )
+			for(int i=0; i<numIterations; i++)
 			{
+				sendRoundRobinUpdates( numUpdPerSleep,  currUpdatesMap );
 				try 
 				{
 					Thread.sleep((long) sleepTime);
@@ -578,6 +577,10 @@ public class IssueUpdates extends AbstractRequestSendingClass
 				{
 					e.printStackTrace();
 				}
+			}
+			// send remanining quickly
+			while( !sendRoundRobinUpdates( numUpdPerSleep,  currUpdatesMap ) )
+			{
 			}
 		}
 	}
