@@ -29,7 +29,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 {
 	public static final double UPD_LOSS_TOLERANCE       = 0.0;
 	
-	public static final int WAIT_TIME					= 100000;
+	public static final int WAIT_TIME					= 100000000;
 	
 	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
 	// 42.87417896666666 | 43.00299947777777 | -78.87563904444443 | -78.66029963333332 
@@ -429,6 +429,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	
 	private void runUpdates() throws InterruptedException
 	{
+		long start = System.currentTimeMillis();
 		simulatedTime = MIN_UNIX_TIME;
 		while( simulatedTime <= MAX_UNIX_TIME )
 		{
@@ -445,6 +446,14 @@ public class IssueUpdates extends AbstractRequestSendingClass
 					+dateFormat);
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
 		}
+		long end = System.currentTimeMillis();
+		double sendingRate = (numSent*1000.0)/(end-start);
+		System.out.println("Eventual sending rate "+sendingRate+" reqs/s");
+		this.waitForFinish();
+		long endTime = System.currentTimeMillis();
+		double systemThpt = (numRecvd*1000.0)/(endTime-start);
+		System.out.println("System throughput "+systemThpt+" reqs/s");
+		System.out.println("Avg update latency "+(sumUpdateLatency/numRecvd)+" ms");
 	}
 	
 	
@@ -456,7 +465,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			int realId = userIdIter.next();
 			List<TrajectoryEntry> trajList = realIDTrajectoryMap.get(realId);
 			
-			System.out.println("trajList "+trajList.size());
+			//System.out.println("trajList "+trajList.size());
 			
 			int nextIndex = nextEntryToSendMap.get(realId);
 			
@@ -504,8 +513,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply
 												(requestId++, userGUID);
 		
-		System.out.println("requestId "+requestId+" realId "
-							+realId+" attrValJSON "+attrValJSON);
+//		System.out.println("requestId "+requestId+" realId "
+//							+realId+" attrValJSON "+attrValJSON);
 		numSent++;
 		csClient.sendUpdateWithCallBack( userGUID, null, 
 										attrValJSON, -1, updateRep, this.getCallBack() );
@@ -675,8 +684,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		{
 			numRecvd++;
 			numUpdatesRecvd++;
-			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
-					+" numRecvd "+numRecvd+" numSent "+numSent);
+//			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
+//					+" numRecvd "+numRecvd+" numSent "+numSent);
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
