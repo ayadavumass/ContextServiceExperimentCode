@@ -164,7 +164,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		}
 	}
 	
-	public void main( String[] args ) throws NoSuchAlgorithmException, IOException, InterruptedException
+	public static void main( String[] args ) throws NoSuchAlgorithmException, IOException, InterruptedException
 	{
 		csHost = args[0];
 		csPort = Integer.parseInt(args[1]);
