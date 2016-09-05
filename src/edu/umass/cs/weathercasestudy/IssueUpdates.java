@@ -424,7 +424,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
 			System.out.println("Update current simulated time "+simulatedTime+" time in GMT "
-					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+ "updatesAtSameTime "
+					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+ " updatesAtSameTime "
 					+(sumUpdatesPerUserAtOnce/counter));
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
 			//Thread.sleep(1000);

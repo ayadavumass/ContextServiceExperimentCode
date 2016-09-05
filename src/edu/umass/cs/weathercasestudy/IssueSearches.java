@@ -91,7 +91,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 						// give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
 			System.out.println("Search: Current simulated time "+simulatedTime+" time in GMT-5 "
-					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd);
+					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+" avg reply size "+(sumResultSize/numRecvd));
 			sendSearchesWhoseTimeHasCome(simulatedTime);
 			Thread.sleep(1000);
 			simulatedTime = simulatedTime +timeContractionFactor;
