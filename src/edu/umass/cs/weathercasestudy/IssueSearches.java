@@ -153,7 +153,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 			String searchQuery
 				= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE "+LAT_ATTR_NAME+" >= "+minLat+
 				" AND "+LAT_ATTR_NAME+" <= "+maxLat+" AND "+LONG_ATTR_NAME+" >= "+
-				minLong+" "+LONG_ATTR_NAME+" <= "+maxLong;
+				minLong+" AND "+LONG_ATTR_NAME+" <= "+maxLong;
 			
 			ExperimentSearchReply searchRep 
 							= new ExperimentSearchReply( requestId );
