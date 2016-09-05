@@ -2,7 +2,8 @@ package edu.umass.cs.privacyExp;
 
 import org.json.JSONArray;
 
-import edu.umass.cs.gnsclient.client.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
+
 
 public class SearchTask implements Runnable
 {

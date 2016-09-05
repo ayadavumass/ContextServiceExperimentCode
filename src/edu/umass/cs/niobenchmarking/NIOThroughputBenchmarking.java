@@ -17,6 +17,7 @@ import edu.umass.cs.nio.AbstractJSONPacketDemultiplexer;
 import edu.umass.cs.nio.JSONMessenger;
 import edu.umass.cs.nio.JSONNIOTransport;
 import edu.umass.cs.nio.interfaces.PacketDemultiplexer;
+import edu.umass.cs.nio.nioutils.NIOHeader;
 
 public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject>
 {
@@ -77,7 +78,7 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 	}
 
 	@Override
-	public boolean handleMessage(JSONObject message) 
+	public boolean handleMessage(JSONObject message, NIOHeader nioHeader) 
 	{
 		try
 		{

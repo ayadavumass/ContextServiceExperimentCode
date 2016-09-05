@@ -1,6 +1,6 @@
 package edu.umass.cs.privacyExpCallBack;
 
-import edu.umass.cs.gnsclient.client.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 /**
  * used to store user record

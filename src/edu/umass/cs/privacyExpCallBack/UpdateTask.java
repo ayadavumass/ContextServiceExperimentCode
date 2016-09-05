@@ -3,7 +3,8 @@ package edu.umass.cs.privacyExpCallBack;
 
 import org.json.JSONObject;
 
-import edu.umass.cs.gnsclient.client.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
+
 
 /**
  * Class implements the task used for 

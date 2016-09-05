@@ -7,7 +7,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import edu.umass.cs.contextservice.utils.Utils;
-import edu.umass.cs.gnsclient.client.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
+import edu.umass.cs.gnscommon.exceptions.client.EncryptionException;
 
 
 public class InitTask implements Runnable
@@ -31,20 +32,29 @@ public class InitTask implements Runnable
 		byte[] publicKeyByteArray0 = publicKey0.getEncoded();
 		
 		String guid0 = Utils.convertPublicKeyToGUIDString(publicKeyByteArray0);
-		GuidEntry myGUID = new GuidEntry(alias, guid0, 
-				publicKey0, privateKey0);
 		
-		UserEntry userEntry = new UserEntry(myGUID);
-		
-		synchronized(SearchAndUpdateDriver.usersVector)
+		try 
 		{
-			SearchAndUpdateDriver.usersVector.add(userEntry);
+			GuidEntry myGUID;
+			myGUID = new GuidEntry(alias, guid0, 
+					publicKey0, privateKey0);
 			
-			if( SearchAndUpdateDriver.usersVector.size() == 
-					SearchAndUpdateDriver.numUsers )
+			UserEntry userEntry = new UserEntry(myGUID);
+			
+			synchronized(SearchAndUpdateDriver.usersVector)
 			{
-				SearchAndUpdateDriver.usersVector.notify();
+				SearchAndUpdateDriver.usersVector.add(userEntry);
+				
+				if( SearchAndUpdateDriver.usersVector.size() == 
+						SearchAndUpdateDriver.numUsers )
+				{
+					SearchAndUpdateDriver.usersVector.notify();
+				}
 			}
+		}
+		catch (EncryptionException e) 
+		{
+			e.printStackTrace();
 		}
 	}
 }

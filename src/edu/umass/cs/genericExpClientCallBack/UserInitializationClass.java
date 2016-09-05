@@ -3,7 +3,8 @@ package edu.umass.cs.genericExpClientCallBack;
 import java.util.Random;
 
 import org.json.JSONObject;
-import edu.umass.cs.gnsclient.client.GuidEntry;
+
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 public class UserInitializationClass extends AbstractRequestSendingClass
 {

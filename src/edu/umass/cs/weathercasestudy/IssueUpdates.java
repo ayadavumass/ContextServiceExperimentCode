@@ -117,9 +117,9 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		transformRand = new Random();
 	}
 	
+	
 	private void readNomadLag() throws IOException
-	{
-		
+	{	
 		minLatData = maxBuffaloLat;
 		maxLatData = minBuffaloLat;
 		minLongData = maxBuffaloLong;
@@ -436,9 +436,9 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		{
 			Date date = new Date((long)simulatedTime*1000L); // *1000 is to convert seconds to milliseconds
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
-			sdf.setTimeZone(TimeZone.getTimeZone("GMT-5")); // give a timezone reference for formating (see comment at the bottom
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
-			System.out.println("Current simulated time "+simulatedTime+" time in GMT-5 "
+			System.out.println("Current simulated time "+simulatedTime+" time in GMT "
 					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd);
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
 			//Thread.sleep(1000);
@@ -802,7 +802,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			}
 		}
 	}
-
+	
 	@Override
 	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
 	{

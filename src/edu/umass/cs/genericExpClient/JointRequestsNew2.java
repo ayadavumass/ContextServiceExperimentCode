@@ -34,6 +34,7 @@ import edu.umass.cs.nio.AbstractJSONPacketDemultiplexer;
 import edu.umass.cs.nio.JSONMessenger;
 import edu.umass.cs.nio.JSONNIOTransport;
 import edu.umass.cs.nio.interfaces.PacketDemultiplexer;
+import edu.umass.cs.nio.nioutils.NIOHeader;
 
 
 public class JointRequestsNew2<NodeIDType> implements PacketDemultiplexer<JSONObject>
@@ -582,7 +583,7 @@ public class JointRequestsNew2<NodeIDType> implements PacketDemultiplexer<JSONOb
 	}
 	
 	@Override
-	public boolean handleMessage(JSONObject jsonObject)
+	public boolean handleMessage(JSONObject jsonObject, NIOHeader nioHeader)
 	{
 		try
 		{

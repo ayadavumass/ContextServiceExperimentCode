@@ -3,7 +3,7 @@ package edu.umass.cs.privacyExp;
 import org.json.JSONObject;
 
 import edu.umass.cs.gnsclient.client.GNSClientCommands;
-import edu.umass.cs.gnsclient.client.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 public class GNSTesting 
 {
