@@ -105,9 +105,14 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public static  int NUMUSERS							= 100;
 	
 	
-	public IssueUpdates() throws NoSuchAlgorithmException, IOException
+	public IssueUpdates(String cshost, int csport, int numusers) throws NoSuchAlgorithmException, IOException
 	{
 		super( UPD_LOSS_TOLERANCE );
+		
+		csHost = cshost;
+		csPort = csport;
+		NUMUSERS = numusers;
+		
 		userMobilityEntryHashMap = new HashMap<Integer, List<TrajectoryEntry>>();
 		//realIDToMobilityIdMap    = new HashMap<Integer, Integer>();
 		realIDTrajectoryMap		 = new HashMap<Integer, List<TrajectoryEntry>>();
@@ -121,7 +126,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	}
 	
 	
-	private void readNomadLag() throws IOException
+	public void readNomadLag() throws IOException
 	{	
 		minLatData = maxBuffaloLat;
 		maxLatData = minBuffaloLat;
@@ -237,7 +242,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		}
 	}
 	
-	private void createTransformedTrajectories()
+	public void createTransformedTrajectories()
 	{	
 		Iterator<Integer> logIdIter 
 							= userMobilityEntryHashMap.keySet().iterator();
@@ -408,7 +413,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		
 	}
 	
-	private void runUpdates() throws InterruptedException
+	public void runUpdates() throws InterruptedException
 	{
 		long start = System.currentTimeMillis();
 		simulatedTime = MIN_UNIX_TIME;
@@ -809,7 +814,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		
 //		NUMUSERS = 100;
 		
-		IssueUpdates issUpd = new IssueUpdates();
+		IssueUpdates issUpd = new IssueUpdates(csHost, csPort, NUMUSERS);
 		issUpd.readNomadLag();
 		//issUpd.assignMobilityUserId();
 		issUpd.createTransformedTrajectories();

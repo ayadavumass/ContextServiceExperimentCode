@@ -9,29 +9,51 @@ public class SearchAndUpdateDriver
 	public static int csPort			= -1;
 	public static int NUMUSERS			= -1;
 	
-	public static void main( String[] args )
+	public static void main( String[] args ) throws NoSuchAlgorithmException, IOException
 	{
 		csHost = args[0];
 		csPort = Integer.parseInt(args[1]);
 		NUMUSERS = Integer.parseInt(args[2]);
 		
-		new Thread(new MobilityThread()).start();
-		new Thread(new WeatherThread()).start();
+		IssueUpdates issUpd = new IssueUpdates(csHost, csPort, NUMUSERS);
+		issUpd.readNomadLag();
+		issUpd.createTransformedTrajectories();
+		
+//		System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
+//				+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
+		issUpd.printLogStats();
+		System.out.println("\n\n");
+		issUpd.printRealUserStats();
+		
+		
+		IssueSearches issueSearch = new IssueSearches(csHost, csPort);
+		
+		
+		//issUpd.runUpdates();
+		//issueSearch.runSearches();
+		
+		
+		new Thread(new MobilityThread(issUpd)).start();
+		new Thread(new WeatherThread(issueSearch)).start();
 		
 	}
 	
 	public static class MobilityThread implements Runnable
 	{
+		private IssueUpdates issUpd;
+		
+		public MobilityThread(IssueUpdates issUpd)
+		{
+			this.issUpd = issUpd;
+		}
+		
 		@Override
 		public void run()
 		{
-			String[] args = {csHost, csPort+"", NUMUSERS+""};
-			try
-			{
-				IssueUpdates.main(args);
-			}
-			catch (NoSuchAlgorithmException | IOException | InterruptedException e) 
-			{
+			try {
+				issUpd.runUpdates();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -39,15 +61,21 @@ public class SearchAndUpdateDriver
 	
 	public static class WeatherThread implements Runnable
 	{
+		private IssueSearches issueSearch;
+		
+		public WeatherThread(IssueSearches issueSearch)
+		{
+			this.issueSearch = issueSearch;
+		}
+		
 		@Override
 		public void run()
 		{
-			String[] args = {csHost, csPort+""};
 			try 
 			{
-				IssueSearches.main(args);
+				issueSearch.runSearches();
 			}
-			catch (NoSuchAlgorithmException | IOException | InterruptedException e) 
+			catch ( InterruptedException e)
 			{
 				e.printStackTrace();
 			}

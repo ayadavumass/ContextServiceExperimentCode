@@ -41,9 +41,13 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private double sumSearchLatency							= 0;
 	private double sumResultSize							= 0;
 	
-	public IssueSearches() throws NoSuchAlgorithmException, IOException
+	public IssueSearches(String cshost, int csport) 
+				throws NoSuchAlgorithmException, IOException
 	{
 		super(SEARCH_LOSS_TOLERANCE);
+		csHost = cshost;
+		csPort = csport;
+		
 		weatherDataProcess 		 = new WeatherDataProcessing();
 		
 		if( csHost != null )
@@ -73,7 +77,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		}
 	}
 	
-	private void runSearches() throws InterruptedException
+	public void runSearches() throws InterruptedException
 	{	
 		long start = System.currentTimeMillis();
 		simulatedTime = MIN_UNIX_TIME;
@@ -169,7 +173,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	{
 		csHost = args[0];
 		csPort = Integer.parseInt(args[1]);
-		IssueSearches issueSearch = new IssueSearches();
+		IssueSearches issueSearch = new IssueSearches(csHost , csPort);
 		issueSearch.runSearches();
 	}
 }
