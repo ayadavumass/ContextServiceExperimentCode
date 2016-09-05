@@ -114,7 +114,6 @@ public class IssueSearches extends AbstractRequestSendingClass
 										= buffaloWeatherList.get(nextIndexToSend);
 			if( currWeatherEvent.getIssueUnixTimeStamp() <=  simulatedTime )
 			{
-				numSent++;
 				sendSearchQuery(currWeatherEvent, requestId++);
 				nextIndexToSend++;
 			}
@@ -157,7 +156,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 			
 			ExperimentSearchReply searchRep 
 							= new ExperimentSearchReply( requestId );
-			
+			numSent++;
 			long queryExpiry = 300000;
 			csClient.sendSearchQueryWithCallBack
 				( searchQuery, queryExpiry, searchRep, this.getCallBack() );
