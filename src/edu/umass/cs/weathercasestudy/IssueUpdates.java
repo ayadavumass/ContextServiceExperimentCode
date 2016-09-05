@@ -481,8 +481,11 @@ public class IssueUpdates extends AbstractRequestSendingClass
 					break;
 				}
 			}
-			sumUpdatesPerUserAtOnce = sumUpdatesPerUserAtOnce + updatesAtSameTime;
-			counter++;
+			if(updatesAtSameTime > 0)
+			{
+				sumUpdatesPerUserAtOnce = sumUpdatesPerUserAtOnce + updatesAtSameTime;
+				counter++;
+			}
 			nextEntryToSendMap.put(realId, nextIndex);
 		}
 		
