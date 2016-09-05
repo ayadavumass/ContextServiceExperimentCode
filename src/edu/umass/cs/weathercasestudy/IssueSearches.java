@@ -39,7 +39,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private long requestId									= 0;
 	
 	private double sumSearchLatency							= 0;
-	
+	private double sumResultSize							= 0;
 	
 	public IssueSearches() throws NoSuchAlgorithmException, IOException
 	{
@@ -65,6 +65,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 //			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
 //					+" numRecvd "+numRecvd+" numSent "+numSent);
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
+			this.sumResultSize = this.sumResultSize + resultSize;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
 				waitLock.notify();
@@ -85,7 +86,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
 						// give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
-			System.out.println("Current simulated time "+simulatedTime+" time in GMT-5 "
+			System.out.println("Search: Current simulated time "+simulatedTime+" time in GMT-5 "
 					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd);
 			sendSearchesWhoseTimeHasCome(simulatedTime);
 			Thread.sleep(1000);
@@ -94,12 +95,13 @@ public class IssueSearches extends AbstractRequestSendingClass
 		}
 		long end = System.currentTimeMillis();
 		double sendingRate = (numSent*1000.0)/(end-start);
-		System.out.println("Eventual sending rate "+sendingRate+" reqs/s");
+		System.out.println("Search eventual sending rate "+sendingRate+" reqs/s");
 		this.waitForFinish();
 		long endTime = System.currentTimeMillis();
 		double systemThpt = (numRecvd*1000.0)/(endTime-start);
-		System.out.println("System throughput "+systemThpt+" reqs/s");
-		System.out.println("Avg update latency "+(sumSearchLatency/numRecvd)+" ms");
+		System.out.println("Search system throughput "+systemThpt+" reqs/s");
+		System.out.println("Search avg search latency "+(sumSearchLatency/numRecvd)+" ms "
+				+" result size "+(sumResultSize/numRecvd));
 	}
 	
 	

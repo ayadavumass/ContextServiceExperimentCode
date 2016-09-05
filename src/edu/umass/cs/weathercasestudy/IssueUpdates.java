@@ -234,29 +234,6 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		}
 	}
 	
-//	private void assignMobilityUserId()
-//	{
-//		for( int i=0; i<NUMUSERS; i++ )
-//		{
-//			int randMobIndex = rand.nextInt( userMobilityEntryHashMap.size() );
-//			Iterator<Integer> userIdIter = userMobilityEntryHashMap.keySet().iterator();
-//			int curr = 0;
-//			Integer mobilityId = -1;
-//			while( userIdIter.hasNext() )
-//			{
-//				mobilityId = userIdIter.next();
-//				if( randMobIndex == curr )
-//				{
-//					break;
-//				}
-//				curr++;
-//			}
-//			
-//			realIDToMobilityIdMap.put(i, mobilityId);
-//			lastEntrySentMap.put(i, -1);
-//		}
-//	}
-	
 	private void createTransformedTrajectories()
 	{	
 		Iterator<Integer> logIdIter 
@@ -438,7 +415,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
-			System.out.println("Current simulated time "+simulatedTime+" time in GMT "
+			System.out.println("Update current simulated time "+simulatedTime+" time in GMT "
 					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd);
 			sendUpdatesWhoseTimeHasCome(simulatedTime);
 			//Thread.sleep(1000);
@@ -447,14 +424,13 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		}
 		long end = System.currentTimeMillis();
 		double sendingRate = (numSent*1000.0)/(end-start);
-		System.out.println("Eventual sending rate "+sendingRate+" reqs/s");
+		System.out.println("Update eventual sending rate "+sendingRate+" reqs/s");
 		this.waitForFinish();
 		long endTime = System.currentTimeMillis();
 		double systemThpt = (numRecvd*1000.0)/(endTime-start);
-		System.out.println("System throughput "+systemThpt+" reqs/s");
-		System.out.println("Avg update latency "+(sumUpdateLatency/numRecvd)+" ms");
+		System.out.println("Update system throughput "+systemThpt+" reqs/s");
+		System.out.println("Update avg update latency "+(sumUpdateLatency/numRecvd)+" ms");
 	}
-	
 	
 	private void sendUpdatesWhoseTimeHasCome(double simulatedTime)
 	{
