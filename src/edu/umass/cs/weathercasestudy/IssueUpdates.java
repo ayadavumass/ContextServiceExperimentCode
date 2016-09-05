@@ -464,6 +464,9 @@ public class IssueUpdates extends AbstractRequestSendingClass
 					if( currUpdatesMap.containsKey(realId) )
 					{
 						Queue<UpdateInfo> guidUpdateList = currUpdatesMap.get(realId);
+						// this update superseding the last update.
+						guidUpdateList.poll();
+						
 						UpdateInfo updInfo = new UpdateInfo(realId, trajEntry);
 						guidUpdateList.add(updInfo);
 					}
