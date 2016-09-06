@@ -127,7 +127,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 			csClient  = new ContextServiceClient<String>(csHost, csPort, 
 						ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
 		
-		transformRand = new Random();
+		transformRand = new Random(myID);
 	}
 	
 	
