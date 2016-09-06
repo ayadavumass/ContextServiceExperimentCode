@@ -28,7 +28,7 @@ import edu.umass.cs.utils.UtilFunctions;
 
 public class IssueUpdates extends AbstractRequestSendingClass
 {
-	public static final double UPD_LOSS_TOLERANCE       = 0.0;
+	public static final double UPD_LOSS_TOLERANCE       = 0.5;
 	
 	public static final int WAIT_TIME					= 100000000;
 	

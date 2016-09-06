@@ -18,7 +18,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	public static final String LONG_ATTR_NAME				= "longitude";
 	
 	
-	public static final double SEARCH_LOSS_TOLERANCE       	= 0.0;
+	public static final double SEARCH_LOSS_TOLERANCE       	= 0.5;
 	public static final double MIN_UNIX_TIME				= 1385770103;
 	public static final double MAX_UNIX_TIME				= 1391127928;
 	
