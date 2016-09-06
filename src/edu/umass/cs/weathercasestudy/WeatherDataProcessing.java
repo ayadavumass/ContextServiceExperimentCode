@@ -35,7 +35,6 @@ public class WeatherDataProcessing
 	public static final String multiPolygonVal			= "MultiPolygon";
 	
 	
-	
 	public static final double minBuffaloLat 			= 42.0;
 	public static final double maxBuffaloLat 			= 44.0;
 	
@@ -43,6 +42,8 @@ public class WeatherDataProcessing
 	public static final double maxBuffaloLong 			= -78.0;
 	
 	///home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000
+	//public static final String weatherDataPath 			
+	//		= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
 	public static final String weatherDataPath 			= "/users/ayadavum/weatherData/weatherEvent.json";
 	
 	private final List<JSONObject> weatherEventList;
@@ -74,7 +75,6 @@ public class WeatherDataProcessing
 			String sCurrentLine;
 			
 			br = new BufferedReader(new FileReader(weatherDataPath));
-			
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
@@ -209,9 +209,9 @@ public class WeatherDataProcessing
 		if( polygonType.equals(polygonVal) )
 		{
 			List<GlobalCoordinate> polygon = processAPolygonFromGeoJSON( polygonsArr,  polygonType);
-			assert(polygon != null);
+			//assert(polygon != null);
 			if(polygon != null)
-			polygonsList.add(polygon);
+				polygonsList.add(polygon);
 		}
 		else if( polygonType.equals(multiPolygonVal) )
 		{
@@ -221,9 +221,9 @@ public class WeatherDataProcessing
 				{
 					JSONArray polygonsJSON = polygonsArr.getJSONArray(i);
 					List<GlobalCoordinate> polygon = processAPolygonFromGeoJSON( polygonsJSON, polygonType );
-					assert(polygon != null);
+					//assert(polygon != null);
 					if(polygon != null)
-					polygonsList.add(polygon);
+						polygonsList.add(polygon);
 				}
 				catch (JSONException e)
 				{

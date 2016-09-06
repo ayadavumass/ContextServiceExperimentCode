@@ -53,7 +53,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public static final double MIN_UNIX_TIME			= 1385770103;
 	public static final double MAX_UNIX_TIME			= 1391127928;
 	
-	public static final String guidPrefix				= "GUID";
+	public static  String guidPrefix					= "GUID";
 	
 	public static final String latitudeAttr				= "latitude";
 	public static final String longitudeAttr			= "longitude";
@@ -103,15 +103,20 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	private boolean useRealTraj							= false;
 	
 	public static  int NUMUSERS							= 100;
+	private final int myID;
 	
 	
-	public IssueUpdates(String cshost, int csport, int numusers) throws NoSuchAlgorithmException, IOException
+	public IssueUpdates(String cshost, int csport, int numusers, int myID) 
+														throws NoSuchAlgorithmException, IOException
 	{
 		super( UPD_LOSS_TOLERANCE );
 		
 		csHost = cshost;
 		csPort = csport;
 		NUMUSERS = numusers;
+		this.myID = myID;
+		
+		guidPrefix = guidPrefix + myID;
 		
 		userMobilityEntryHashMap = new HashMap<Integer, List<TrajectoryEntry>>();
 		//realIDToMobilityIdMap    = new HashMap<Integer, Integer>();
@@ -814,7 +819,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		
 //		NUMUSERS = 100;
 		
-		IssueUpdates issUpd = new IssueUpdates(csHost, csPort, NUMUSERS);
+		IssueUpdates issUpd = new IssueUpdates(csHost, csPort, NUMUSERS, 0);
 		issUpd.readNomadLag();
 		//issUpd.assignMobilityUserId();
 		issUpd.createTransformedTrajectories();
