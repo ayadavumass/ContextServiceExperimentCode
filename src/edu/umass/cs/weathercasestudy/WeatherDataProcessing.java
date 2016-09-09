@@ -42,15 +42,18 @@ public class WeatherDataProcessing
 	public static final double maxBuffaloLong 			= -78.0;
 	
 	///home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000
-	//public static final String weatherDataPath 			
-	//		= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
-	public static final String weatherDataPath 			= "/users/ayadavum/weatherData/weatherEvent.json";
+	public static final String weatherDataPath 			
+			= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
+	
+	//public static final String weatherDataPath 			= "/users/ayadavum/weatherData/weatherEvent.json";
 	
 	private final List<JSONObject> weatherEventList;
 	
 	private final List<WeatherEventStorage> buffaloAreaWeatherEvents;
 	
 	private DateFormat dfm = new SimpleDateFormat("yyyyMMddHHmm");
+	
+	private double sumActiveTime						= 0.0;
 	
 	public WeatherDataProcessing()
 	{
@@ -137,6 +140,7 @@ public class WeatherDataProcessing
 	
 	private void filterBuffaloWeatherEvents()
 	{
+		long weatherEventId = 0;
 		for( int i=0; i < weatherEventList.size(); i++ )
 		{
 			JSONObject weatherEventJSON = weatherEventList.get(i);
@@ -156,11 +160,33 @@ public class WeatherDataProcessing
 				
 				if( buffaloWeatherEvents.size() > 0 )
 				{
+					
 					long issuedUnixTime = getUnixTimeStamp(issuedTime);
+					long finalUnixTime  = getUnixTimeStamp(expiredTime);
 					WeatherEventStorage weatherEvent 
-						= new WeatherEventStorage( issuedTime, expiredTime, weatherPheCode, 
-								buffaloWeatherEvents , issuedUnixTime );
+						= new WeatherEventStorage(weatherEventId++, 
+								issuedTime, expiredTime, weatherPheCode, 
+								buffaloWeatherEvents , issuedUnixTime,  finalUnixTime );
+					
+					
 					buffaloAreaWeatherEvents.add(weatherEvent);
+					dfm.setTimeZone(TimeZone.getTimeZone("GMT"));
+					
+					
+					long expiryTimeLong;
+					try 
+					{
+						expiryTimeLong = dfm.parse(expiredTime).getTime();
+						
+						expiryTimeLong=expiryTimeLong/1000;
+						
+						this.sumActiveTime = this.sumActiveTime 
+											+(expiryTimeLong-issuedUnixTime );
+					} 
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 			catch (JSONException e)
@@ -182,7 +208,8 @@ public class WeatherDataProcessing
 		
 		System.out.println("start unix time "+buffaloAreaWeatherEvents.get(0).getIssueUnixTimeStamp()
 				+" end unix time "+buffaloAreaWeatherEvents.get
-				(buffaloAreaWeatherEvents.size()-1).getIssueUnixTimeStamp());
+				(buffaloAreaWeatherEvents.size()-1).getIssueUnixTimeStamp()
+				+ "avg active time "+(this.sumActiveTime/buffaloAreaWeatherEvents.size()));
 	}
 	
 	private long getUnixTimeStamp(String timestamp)

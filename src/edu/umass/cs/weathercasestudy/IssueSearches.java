@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
@@ -22,7 +25,20 @@ public class IssueSearches extends AbstractRequestSendingClass
 	public static final double MIN_UNIX_TIME				= 1385770103;
 	public static final double MAX_UNIX_TIME				= 1391127928;
 	
-	public static final double timeContractionFactor 		= 17859.416666667;
+	
+	
+	// in ms
+	public static final double TIME_CONTRACTION_EXP_TIME	= 1000.0; // unit is ms
+	// for 1 sec
+	public static final double TIME_CONTRACTION_REAL_TIME 	= 17859.416666667;  // unit is s
+	
+	public static final double PERIODIC_REFRESH_SLEEP_TIME	= 10;  // 10 ms. 1000 ms exp time = 300 mins real time
+	                                                               // so setting it to 10 ms low value
+	
+	public static final double TIME_UPDATE_SLEEP_TIME		= 10;  // 10 ms. 1000 ms exp time = 300 mins real time
+    // so setting it to 10 ms low value
+	
+	
 	
 	private WeatherDataProcessing weatherDataProcess;
 	
@@ -41,6 +57,14 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private double sumSearchLatency							= 0;
 	private double sumResultSize							= 0;
 	
+	private double currentRealTime							= MIN_UNIX_TIME;
+	
+	private final ConcurrentHashMap<String, ActiveQueryStorage> activeQMap;
+	
+	//private final TimerThread timerThread;
+	
+	private final double refreshTimeInSec					= 300;  // 300 s, 5 min refresh time
+	
 	public IssueSearches(String cshost, int csport) 
 				throws NoSuchAlgorithmException, IOException
 	{
@@ -49,6 +73,9 @@ public class IssueSearches extends AbstractRequestSendingClass
 		csPort = csport;
 		
 		weatherDataProcess 		 = new WeatherDataProcessing();
+		activeQMap 				 = new ConcurrentHashMap<String, ActiveQueryStorage>();
+		
+		//timerThread				 = new TimerThread();
 		
 		if( csHost != null )
 			csClient  = new ContextServiceClient<String>(csHost, csPort, 
@@ -94,7 +121,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+" avg reply size "+(sumResultSize/numRecvd));
 			sendSearchesWhoseTimeHasCome(simulatedTime);
 			Thread.sleep(1000);
-			simulatedTime = simulatedTime +timeContractionFactor;
+			simulatedTime = simulatedTime +TIME_CONTRACTION_REAL_TIME;
 			
 		}
 		long end = System.currentTimeMillis();
@@ -166,6 +193,94 @@ public class IssueSearches extends AbstractRequestSendingClass
 			long queryExpiry = 300000;
 			csClient.sendSearchQueryWithCallBack
 				( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+			
+			String activeQueryKey = currWeatherEvent.getWeatherEventId()+"-"+i;
+			ActiveQueryStorage activeQ = new ActiveQueryStorage( activeQueryKey, 
+					currWeatherEvent.getIssueUnixTimeStamp(), 
+					currWeatherEvent.getExpireUnixTimeStamp(), searchQuery );
+			
+			this.activeQMap.put(activeQueryKey, activeQ);
+		}
+	}
+	
+	private class PeriodicRefreshThread implements Runnable
+	{
+		@Override
+		public void run() 
+		{
+			while( true )
+			{
+				try 
+				{
+					Thread.sleep((long) PERIODIC_REFRESH_SLEEP_TIME);
+				} 
+				catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
+				
+				List<String> removingKeyList = new LinkedList<String>();
+				
+				Iterator<String> queryIter = activeQMap.keySet().iterator();
+				
+				
+				while( queryIter.hasNext() )
+				{
+					String queryKey = queryIter.next();
+					ActiveQueryStorage activeQueryStore = activeQMap.get(queryKey);
+					if( currentRealTime > activeQueryStore.getExpiryUnixTime() )
+					{
+						// remove the query
+						removingKeyList.add(queryKey);
+					}
+					else
+					{
+						if( 
+						(currentRealTime - activeQueryStore.getLastSentUnixTime()) >= refreshTimeInSec )
+						{
+							activeQueryStore.updateLastSentUnixTime((long)currentRealTime);
+							//sendARefreshQuery();
+						}
+					}	
+				}
+				
+				// now remove queries
+				for(int i=0; i<removingKeyList.size(); i++)
+				{
+					
+				}
+				
+				
+			}
+		}
+	}
+	
+	private class TimerThread implements Runnable
+	{
+		private final double timeContractFactor;
+		
+		public TimerThread()
+		{
+			timeContractFactor 
+					= (TIME_CONTRACTION_REAL_TIME*TIME_UPDATE_SLEEP_TIME)/TIME_CONTRACTION_EXP_TIME;
+		}
+		
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				try
+				{
+					Thread.sleep((long) TIME_UPDATE_SLEEP_TIME);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+				
+				currentRealTime = currentRealTime + timeContractFactor;
+			}
 		}
 	}
 	
