@@ -546,7 +546,7 @@ public class IssueUpdatesGNS extends AbstractRequestSendingClass
 					
 					UpdateTask updTask = new UpdateTask(attrValJSON, guidEntry, this);
 					SearchAndUpdateDriver.taskES.execute(updTask);
-					
+					numSent++;
 					numberSentSoFar++;
 					
 					if( numberSentSoFar >= totalUpdates )
