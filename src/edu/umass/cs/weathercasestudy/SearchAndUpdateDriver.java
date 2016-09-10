@@ -40,6 +40,9 @@ public class SearchAndUpdateDriver
 	// for 1 sec
 	public static final double TIME_CONTRACTION_REAL_TIME 		= 17859.416666667;  // unit is s
 	
+	public static final double TIME_UPDATE_SLEEP_TIME			= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
+    // so setting it to 10 ms low value
+	
 	public static  String guidPrefix							= "GUID";
 	
 
@@ -53,8 +56,11 @@ public class SearchAndUpdateDriver
 	
 	public static boolean runGNS								= false;
 	
+	public static int queryRefreshTime;
 	
 	public static ExecutorService taskES;
+	
+	public static double currentRealTime						= MIN_UNIX_TIME;
 	
 	
 	public static void main( String[] args ) 
@@ -65,13 +71,14 @@ public class SearchAndUpdateDriver
 		NUMUSERS = Integer.parseInt(args[2]);
 		myID = Integer.parseInt(args[3]);
 		runSearch = Boolean.parseBoolean(args[4]);
-		runGNS = Boolean.parseBoolean(args[5]);
+		queryRefreshTime = Integer.parseInt(args[5]);
+		runGNS = Boolean.parseBoolean(args[6]);
 		
 		guidPrefix = guidPrefix +myID;
 		
 		if( runGNS )
 		{
-			threadPoolSize = Integer.parseInt(args[6]);
+			threadPoolSize = Integer.parseInt(args[7]);
 			
 			taskES 			  = Executors.newFixedThreadPool(threadPoolSize);
 			
@@ -112,6 +119,8 @@ public class SearchAndUpdateDriver
 				issueSearchGNS = new IssueSearchesGNS();
 			}
 			
+			TimerThread timer = new TimerThread();
+			new Thread(timer).start();
 			
 			Thread th1 = new Thread(new MobilityThreadGNS(issUpdGNS));
 			th1.start();
@@ -144,7 +153,7 @@ public class SearchAndUpdateDriver
 		}
 		else
 		{
-			IssueUpdates issUpd = new IssueUpdates(csHost, csPort, NUMUSERS, myID);
+			IssueUpdates2 issUpd = new IssueUpdates2(csHost, csPort, NUMUSERS, myID);
 			issUpd.readNomadLag();
 			issUpd.createTransformedTrajectories();
 			
@@ -158,9 +167,12 @@ public class SearchAndUpdateDriver
 			IssueSearches issueSearch = null;
 			if( runSearch )
 			{
-				issueSearch = new IssueSearches(csHost, csPort);
+				issueSearch = new IssueSearches(csHost, csPort, queryRefreshTime);
 			}
 			
+			
+			TimerThread timer = new TimerThread();
+			new Thread(timer).start();
 			
 			Thread th1 = new Thread(new MobilityThreadCS(issUpd));
 			th1.start();
@@ -227,9 +239,9 @@ public class SearchAndUpdateDriver
 	
 	public static class MobilityThreadCS implements Runnable
 	{
-		private IssueUpdates issUpd;
+		private IssueUpdates2 issUpd;
 		
-		public MobilityThreadCS(IssueUpdates issUpd)
+		public MobilityThreadCS(IssueUpdates2 issUpd)
 		{
 			this.issUpd = issUpd;
 		}
@@ -311,6 +323,36 @@ public class SearchAndUpdateDriver
 			catch ( InterruptedException e)
 			{
 				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public static class TimerThread implements Runnable
+	{
+		private final double timeContractFactor;
+		
+		public TimerThread()
+		{
+			timeContractFactor 
+					= (TIME_CONTRACTION_REAL_TIME*TIME_UPDATE_SLEEP_TIME)/TIME_CONTRACTION_EXP_TIME;
+		}
+		
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				try
+				{
+					Thread.sleep((long) TIME_UPDATE_SLEEP_TIME);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+				
+				currentRealTime = currentRealTime + timeContractFactor;
 			}
 		}
 	}

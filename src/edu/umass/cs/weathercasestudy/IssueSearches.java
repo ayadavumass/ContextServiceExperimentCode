@@ -32,12 +32,12 @@ public class IssueSearches extends AbstractRequestSendingClass
 	// for 1 sec
 	public static final double TIME_CONTRACTION_REAL_TIME 	= 17859.416666667;  // unit is s
 	
-	public static final double PERIODIC_REFRESH_SLEEP_TIME	= 10;  // 10 ms. 1000 ms exp time = 300 mins real time
+	public static final double PERIODIC_REFRESH_SLEEP_TIME	= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
 	                                                               // so setting it to 10 ms low value
 	
-	public static final double TIME_UPDATE_SLEEP_TIME		= 10;  // 10 ms. 1000 ms exp time = 300 mins real time
-    // so setting it to 10 ms low value
 	
+	
+	public static final double TIME_REQUEST_SLEEP			= 10.0;
 	
 	
 	private WeatherDataProcessing weatherDataProcess;
@@ -49,7 +49,6 @@ public class IssueSearches extends AbstractRequestSendingClass
 	public static boolean useGNS							= false;
 	
 	
-	private double simulatedTime;
 	private int nextIndexToSend 							= 0;
 	
 	private long requestId									= 0;
@@ -57,25 +56,28 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private double sumSearchLatency							= 0;
 	private double sumResultSize							= 0;
 	
-	private double currentRealTime							= MIN_UNIX_TIME;
+	
 	
 	private final ConcurrentHashMap<String, ActiveQueryStorage> activeQMap;
 	
-	//private final TimerThread timerThread;
+	private final PeriodicRefreshThread periodicRefreshThread;
 	
-	private final double refreshTimeInSec					= 300;  // 300 s, 5 min refresh time
+	private double refreshTimeInSec							= 300.0;  // 300 s, 5 min refresh time
 	
-	public IssueSearches(String cshost, int csport) 
+	public IssueSearches( String cshost, int csport, double refreshTimeInSec )
 				throws NoSuchAlgorithmException, IOException
 	{
-		super(SEARCH_LOSS_TOLERANCE);
+		super( SEARCH_LOSS_TOLERANCE );
 		csHost = cshost;
 		csPort = csport;
 		
+		this.refreshTimeInSec 	 = refreshTimeInSec;
 		weatherDataProcess 		 = new WeatherDataProcessing();
 		activeQMap 				 = new ConcurrentHashMap<String, ActiveQueryStorage>();
 		
-		//timerThread				 = new TimerThread();
+		periodicRefreshThread    = new PeriodicRefreshThread();
+		
+		new Thread(periodicRefreshThread).start();
 		
 		if( csHost != null )
 			csClient  = new ContextServiceClient<String>(csHost, csPort, 
@@ -105,24 +107,23 @@ public class IssueSearches extends AbstractRequestSendingClass
 	}
 	
 	public void runSearches() throws InterruptedException
-	{	
+	{
 		long start = System.currentTimeMillis();
-		simulatedTime = MIN_UNIX_TIME;
-		while( simulatedTime <= MAX_UNIX_TIME )
+		while( SearchAndUpdateDriver.currentRealTime <= MAX_UNIX_TIME )
 		{
-			Date date = new Date((long)simulatedTime*1000L); 
+			Date date = new Date((long)SearchAndUpdateDriver.currentRealTime*1000L); 
 						// *1000 is to convert seconds to milliseconds
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
 						// the format of your date
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
 						// give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
-			System.out.println("Search: Current simulated time "+simulatedTime+" time in GMT-5 "
-					+dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+" avg reply size "+(sumResultSize/numRecvd));
-			sendSearchesWhoseTimeHasCome(simulatedTime);
-			Thread.sleep(1000);
-			simulatedTime = simulatedTime +TIME_CONTRACTION_REAL_TIME;
-			
+			System.out.println("Search: Current simulated time "
+					+ SearchAndUpdateDriver.currentRealTime+" time in GMT-5 "
+					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+" avg reply size "
+					+ (sumResultSize/numRecvd));
+			sendSearchesWhoseTimeHasCome();
+			Thread.sleep((long)TIME_REQUEST_SLEEP);
 		}
 		long end = System.currentTimeMillis();
 		double sendingRate = (numSent*1000.0)/(end-start);
@@ -136,7 +137,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	}
 	
 	
-	private void sendSearchesWhoseTimeHasCome(double simulatedTime)
+	private void sendSearchesWhoseTimeHasCome()
 	{
 		List<WeatherEventStorage> buffaloWeatherList 
 							= weatherDataProcess.getBuffaloAreaWeatherEvents();
@@ -145,7 +146,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		{
 			WeatherEventStorage currWeatherEvent 
 										= buffaloWeatherList.get(nextIndexToSend);
-			if( currWeatherEvent.getIssueUnixTimeStamp() <=  simulatedTime )
+			if( currWeatherEvent.getIssueUnixTimeStamp() <=  SearchAndUpdateDriver.currentRealTime )
 			{
 				sendSearchQuery(currWeatherEvent, requestId++);
 				nextIndexToSend++;
@@ -206,14 +207,14 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private class PeriodicRefreshThread implements Runnable
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			while( true )
 			{
-				try 
+				try
 				{
 					Thread.sleep((long) PERIODIC_REFRESH_SLEEP_TIME);
-				} 
+				}
 				catch (InterruptedException e) 
 				{
 					e.printStackTrace();
@@ -228,7 +229,8 @@ public class IssueSearches extends AbstractRequestSendingClass
 				{
 					String queryKey = queryIter.next();
 					ActiveQueryStorage activeQueryStore = activeQMap.get(queryKey);
-					if( currentRealTime > activeQueryStore.getExpiryUnixTime() )
+					if( SearchAndUpdateDriver.currentRealTime 
+										> activeQueryStore.getExpiryUnixTime() )
 					{
 						// remove the query
 						removingKeyList.add(queryKey);
@@ -236,10 +238,11 @@ public class IssueSearches extends AbstractRequestSendingClass
 					else
 					{
 						if( 
-						(currentRealTime - activeQueryStore.getLastSentUnixTime()) >= refreshTimeInSec )
+						(SearchAndUpdateDriver.currentRealTime - activeQueryStore.getLastSentUnixTime()) >= refreshTimeInSec )
 						{
-							activeQueryStore.updateLastSentUnixTime((long)currentRealTime);
-							//sendARefreshQuery();
+							activeQueryStore.updateLastSentUnixTime(
+										(long)SearchAndUpdateDriver.currentRealTime);
+							sendARefreshQuery(activeQueryStore);
 						}
 					}	
 				}
@@ -247,40 +250,20 @@ public class IssueSearches extends AbstractRequestSendingClass
 				// now remove queries
 				for(int i=0; i<removingKeyList.size(); i++)
 				{
-					
+					String key = removingKeyList.get(i);
+					activeQMap.remove(key);
 				}
-				
-				
 			}
 		}
-	}
-	
-	private class TimerThread implements Runnable
-	{
-		private final double timeContractFactor;
 		
-		public TimerThread()
+		private void sendARefreshQuery( ActiveQueryStorage activeQueryStore )
 		{
-			timeContractFactor 
-					= (TIME_CONTRACTION_REAL_TIME*TIME_UPDATE_SLEEP_TIME)/TIME_CONTRACTION_EXP_TIME;
-		}
-		
-		@Override
-		public void run()
-		{
-			while(true)
-			{
-				try
-				{
-					Thread.sleep((long) TIME_UPDATE_SLEEP_TIME);
-				}
-				catch (InterruptedException e)
-				{
-					e.printStackTrace();
-				}
-				
-				currentRealTime = currentRealTime + timeContractFactor;
-			}
+			String searchQuery = activeQueryStore.getQueryString();
+			ExperimentSearchReply searchRep = new ExperimentSearchReply( numSent );
+			numSent++;
+			long queryExpiry = 300000;
+			csClient.sendSearchQueryWithCallBack
+				( searchQuery, queryExpiry, searchRep, getCallBack() );
 		}
 	}
 	
@@ -288,7 +271,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	{
 		csHost = args[0];
 		csPort = Integer.parseInt(args[1]);
-		IssueSearches issueSearch = new IssueSearches(csHost , csPort);
+		IssueSearches issueSearch = new IssueSearches(csHost , csPort, 300);
 		issueSearch.runSearches();
 	}
 }
