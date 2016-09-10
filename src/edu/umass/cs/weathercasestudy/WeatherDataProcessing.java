@@ -42,10 +42,10 @@ public class WeatherDataProcessing
 	public static final double maxBuffaloLong 			= -78.0;
 	
 	///home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000
-	public static final String weatherDataPath 			
-			= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
+	//public static final String weatherDataPath 			
+	//		= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
 	
-	//public static final String weatherDataPath 			= "/users/ayadavum/weatherData/weatherEvent.json";
+	public static final String weatherDataPath 			= "/users/ayadavum/weatherData/weatherEvent.json";
 	
 	private final List<JSONObject> weatherEventList;
 	
