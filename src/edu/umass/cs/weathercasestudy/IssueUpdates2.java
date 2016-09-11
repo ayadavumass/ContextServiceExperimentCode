@@ -28,18 +28,17 @@ import edu.umass.cs.utils.UtilFunctions;
 
 public class IssueUpdates2 extends AbstractRequestSendingClass
 {
-	public static final double UPD_LOSS_TOLERANCE       = 0.5;
-	
 	public static final int WAIT_TIME					= 100000000;
+//	public static final double UPD_LOSS_TOLERANCE       = 0.5;
 	
 	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
 	// 42.87417896666666 | 43.00299947777777 | -78.87563904444443 | -78.66029963333332 
 	
-	public static final double minBuffaloLat 			= 42.0;
-	public static final double maxBuffaloLat 			= 44.0;
-	
-	public static final double minBuffaloLong			= -80.0;
-	public static final double maxBuffaloLong 			= -78.0;
+//	public static final double minBuffaloLat 			= 42.0;
+//	public static final double maxBuffaloLat 			= 44.0;
+//	
+//	public static final double minBuffaloLong			= -80.0;
+//	public static final double maxBuffaloLong 			= -78.0;
 	
 //	public static final double minBuffaloLat 			= 42.87417896666666;
 //	public static final double maxBuffaloLat 			= 43.00299947777777;
@@ -47,19 +46,16 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 //	public static final double minBuffaloLong			= -78.87563904444443;
 //	public static final double maxBuffaloLong 			= -78.66029963333332;
 	
+//	public static final double timeContractionFactor 	= 17859.416666667;
 	
-	public static final double timeContractionFactor 	= 17859.416666667;
+//	public static  String guidPrefix					= "GUID";
 	
-	
-	
-	public static  String guidPrefix					= "GUID";
-	
-	public static final String latitudeAttr				= "latitude";
-	public static final String longitudeAttr			= "longitude";
+//	public static final String latitudeAttr				= "latitude";
+//	public static final String longitudeAttr			= "longitude";
 	
 	
 	public static ContextServiceClient<String> csClient;
-	public static boolean useGNS						= false;
+	//public static boolean useGNS						= false;
 	
 	public static final String nomadLogDataPath 		
 									= "/users/ayadavum/nomadLog/loc_seq";
@@ -106,21 +102,20 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	private boolean useLateralTransfrom					= true;
 	private boolean useRealTraj							= false;
 	
-	public static  int NUMUSERS							= 100;
+//	public static  int NUMUSERS							= 100;
 	//private final int myID;
 	
 	
 	public IssueUpdates2(String cshost, int csport, int numusers, int myID) 
 														throws NoSuchAlgorithmException, IOException
 	{
-		super( UPD_LOSS_TOLERANCE );
+		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );
 		
 		csHost = cshost;
 		csPort = csport;
-		NUMUSERS = numusers;
+		SearchAndUpdateDriver.NUMUSERS = numusers;
 		//this.myID = myID;
 		
-		guidPrefix = guidPrefix + myID;
 		
 		userMobilityEntryHashMap = new HashMap<Integer, List<TrajectoryEntry>>();
 		//realIDToMobilityIdMap    = new HashMap<Integer, Integer>();
@@ -139,10 +134,10 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	
 	public void readNomadLag() throws IOException
 	{	
-		minLatData = maxBuffaloLat;
-		maxLatData = minBuffaloLat;
-		minLongData = maxBuffaloLong;
-		maxLongData = minBuffaloLong;
+		minLatData = SearchAndUpdateDriver.maxBuffaloLat;
+		maxLatData = SearchAndUpdateDriver.minBuffaloLat;
+		minLongData = SearchAndUpdateDriver.maxBuffaloLong;
+		maxLongData = SearchAndUpdateDriver.minBuffaloLong;
 		
 		File file = new File("buffaloTrace.txt");
 		
@@ -173,8 +168,10 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 				double latitude = Double.parseDouble(parsed[3]);
 				double longitude = Double.parseDouble(parsed[4]);
 				
-				if( (latitude >= minBuffaloLat) && (latitude <= maxBuffaloLat) 
-						&& (longitude >= minBuffaloLong) && (longitude <= maxBuffaloLong) )
+				if( (latitude >= SearchAndUpdateDriver.minBuffaloLat) && 
+						(latitude <= SearchAndUpdateDriver.maxBuffaloLat) 
+						&& (longitude >= SearchAndUpdateDriver.minBuffaloLong) && 
+						(longitude <= SearchAndUpdateDriver.maxBuffaloLong) )
 				{
 					Date date = new Date(unixtimestamp*1000L); // *1000 is to convert seconds to millisecond
 					String str = userId+","+unixtimestamp+","+latitude+","+longitude+","
@@ -258,7 +255,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		Iterator<Integer> logIdIter 
 							= userMobilityEntryHashMap.keySet().iterator();
 		
-		for( int i=0; i<NUMUSERS; i++ )
+		for( int i=0; i<SearchAndUpdateDriver.NUMUSERS; i++ )
 		{
 			// assign original trajectories first
 //			// and after that we assign laterally transformed trajectories.
@@ -318,7 +315,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			nextEntryToSendMap.put(i, 0);
 		}
 		
-		assert(realIDTrajectoryMap.size() == NUMUSERS);
+		assert(realIDTrajectoryMap.size() == SearchAndUpdateDriver.NUMUSERS);
 	}
 	
 //	private String getTrajListString(List<TrajectoryEntry> trajList)
@@ -362,10 +359,11 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			GlobalCoordinate transformedCoord = null;
 			if( i == 0 )
 			{
-				double transformedLat = minBuffaloLat 
-						+ transformRand.nextDouble()*(maxBuffaloLat-minBuffaloLat);
-				double transformedLong = minBuffaloLong 
-						+ transformRand.nextDouble()*(maxBuffaloLong-minBuffaloLong);
+				double transformedLat = SearchAndUpdateDriver.minBuffaloLat 
+						+ transformRand.nextDouble()*
+							(SearchAndUpdateDriver.maxBuffaloLat-SearchAndUpdateDriver.minBuffaloLat);
+				double transformedLong = SearchAndUpdateDriver.minBuffaloLong 
+						+ transformRand.nextDouble()*(SearchAndUpdateDriver.maxBuffaloLong-SearchAndUpdateDriver.minBuffaloLong);
 				
 				
 				transformedCoord = new GlobalCoordinate(transformedLat, transformedLong);
@@ -414,8 +412,10 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	
 	private boolean isCoordWithinBounds(double latitude, double longitude)
 	{
-		if( (latitude >= minBuffaloLat) && (latitude <= maxBuffaloLat) 
-				&& (longitude >= minBuffaloLong) && (longitude <= maxBuffaloLong) )
+		if( (latitude >= SearchAndUpdateDriver.minBuffaloLat) && 
+				(latitude <= SearchAndUpdateDriver.maxBuffaloLat) 
+				&& (longitude >= SearchAndUpdateDriver.minBuffaloLong) && 
+				(longitude <= SearchAndUpdateDriver.maxBuffaloLong) )
 		{
 			return true;
 		}
@@ -447,8 +447,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
 		}
+		
 		long end = System.currentTimeMillis();
 		double sendingRate = (numSent*1000.0)/(end-start);
 		System.out.println("Update eventual sending rate "+sendingRate+" reqs/s");
@@ -524,20 +524,20 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	private void sendUpdate(int realId, TrajectoryEntry trajEntry )
 	{
 		String userGUID = "";
-		if( useGNS )
+		if( SearchAndUpdateDriver.runGNS )
 		{
 //			userGUID = userGuidEntry.getGuid();
 		}
 		else
 		{
-			userGUID = UtilFunctions.getGUIDHash(guidPrefix+realId);
+			userGUID = UtilFunctions.getGUIDHash(SearchAndUpdateDriver.guidPrefix+realId);
 		}
 		
 		JSONObject attrValJSON = new JSONObject();
 		try
 		{
-			attrValJSON.put(latitudeAttr, trajEntry.getLatitude());
-			attrValJSON.put(longitudeAttr, trajEntry.getLongitude());
+			attrValJSON.put(SearchAndUpdateDriver.latitudeAttr, trajEntry.getLatitude());
+			attrValJSON.put(SearchAndUpdateDriver.longitudeAttr, trajEntry.getLongitude());
 		}
 		catch (JSONException e)
 		{
@@ -796,13 +796,14 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 				throws NoSuchAlgorithmException, 
 				IOException, InterruptedException
 	{
-		csHost = args[0];
-		csPort = Integer.parseInt(args[1]);
-		NUMUSERS = Integer.parseInt(args[2]);
+//		csHost = args[0];
+//		csPort = Integer.parseInt(args[1]);
+//		NUMUSERS = Integer.parseInt(args[2]);
 		
 //		NUMUSERS = 100;
 		
-		IssueUpdates2 issUpd = new IssueUpdates2(csHost, csPort, NUMUSERS, 0);
+		IssueUpdates2 issUpd = new IssueUpdates2(csHost, csPort, 
+				SearchAndUpdateDriver.NUMUSERS, 0);
 		issUpd.readNomadLag();
 		//issUpd.assignMobilityUserId();
 		issUpd.createTransformedTrajectories();
