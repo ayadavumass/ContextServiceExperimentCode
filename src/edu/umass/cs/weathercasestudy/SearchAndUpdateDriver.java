@@ -14,8 +14,12 @@ public class SearchAndUpdateDriver
 	public static final double UPD_LOSS_TOLERANCE       		= 0.5;
 	public static final double SEARCH_LOSS_TOLERANCE       		= 0.5;
 	
-	public static final double MIN_UNIX_TIME					= 1385770103;
-	public static final double MAX_UNIX_TIME					= 1391127928;
+	//public static final double MIN_UNIX_TIME					= 1385770103;
+	//public static final double MAX_UNIX_TIME					= 1391127928;
+	
+	
+	public static final double EXP_START_TIME					= 1389744000;
+	public static final double EXP_END_TIME						= 1391127928;
 	
 	public static final String nomadLogDataPath 				= "/users/ayadavum/nomadLog/loc_seq";
 	
@@ -60,7 +64,7 @@ public class SearchAndUpdateDriver
 	
 	public static ExecutorService taskES;
 	
-	public static double currentRealTime						= MIN_UNIX_TIME;
+	public static double currentRealTime						= EXP_START_TIME;
 	
 	
 	public static void main( String[] args ) 

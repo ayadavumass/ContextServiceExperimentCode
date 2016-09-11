@@ -424,8 +424,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public void runUpdates() throws InterruptedException
 	{
 		long start = System.currentTimeMillis();
-		simulatedTime = SearchAndUpdateDriver.MIN_UNIX_TIME;
-		while( simulatedTime <= SearchAndUpdateDriver.MAX_UNIX_TIME )
+		simulatedTime = SearchAndUpdateDriver.EXP_START_TIME;
+		while( simulatedTime <= SearchAndUpdateDriver.EXP_END_TIME )
 		{
 			Date date = new Date((long)simulatedTime*1000L); // *1000 is to convert seconds to milliseconds
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date

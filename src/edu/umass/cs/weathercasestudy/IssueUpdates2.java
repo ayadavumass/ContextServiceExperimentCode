@@ -168,7 +168,9 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 				double latitude = Double.parseDouble(parsed[3]);
 				double longitude = Double.parseDouble(parsed[4]);
 				
-				if( (latitude >= SearchAndUpdateDriver.minBuffaloLat) && 
+				if(  ( unixtimestamp >= SearchAndUpdateDriver.EXP_START_TIME ) &&
+					 ( unixtimestamp <= SearchAndUpdateDriver.EXP_END_TIME ) &&
+						(latitude >= SearchAndUpdateDriver.minBuffaloLat) && 
 						(latitude <= SearchAndUpdateDriver.maxBuffaloLat) 
 						&& (longitude >= SearchAndUpdateDriver.minBuffaloLong) && 
 						(longitude <= SearchAndUpdateDriver.maxBuffaloLong) )
@@ -428,7 +430,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		long start = System.currentTimeMillis();
 		//simulatedTime = SearchAndUpdateDriver.MIN_UNIX_TIME;
 		while( SearchAndUpdateDriver.currentRealTime 
-				<= SearchAndUpdateDriver.MAX_UNIX_TIME )
+				<= SearchAndUpdateDriver.EXP_END_TIME )
 		{
 			sendUpdatesWhoseTimeHasCome();
 			
