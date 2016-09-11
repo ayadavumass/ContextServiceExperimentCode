@@ -430,23 +430,36 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		while( SearchAndUpdateDriver.currentRealTime 
 				<= SearchAndUpdateDriver.MAX_UNIX_TIME )
 		{
+			sendUpdatesWhoseTimeHasCome();
+			
+			try 
+			{
+				Thread.sleep(REQUEST_SLEEP_TIME);
+			} 
+			catch (InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+			
 			Date date = new Date
 					((long)SearchAndUpdateDriver.currentRealTime*1000L); // *1000 is to convert seconds to milliseconds
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // give a timezone reference for formating (see comment at the bottom
 			String dateFormat = sdf.format(date);
+			
+			long currTime = System.currentTimeMillis();
+			double sendingRate = (numSent*1000.0)/(currTime-start);
+			double systemThpt = (numRecvd*1000.0)/(currTime-start);
+			
 			System.out.println("Update current simulated time "
 					+ SearchAndUpdateDriver.currentRealTime+" time in GMT "
-					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+ " updatesAtSameTime "
-					+ (sumUpdatesPerUserAtOnce/counter));
-			sendUpdatesWhoseTimeHasCome();
-			
-			try {
-				Thread.sleep(REQUEST_SLEEP_TIME);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd
+					+ " updatesAtSameTime "
+					+ (sumUpdatesPerUserAtOnce/counter)
+					+ " sending rate "+sendingRate
+					+ " system throughput "+systemThpt
+					+ " latency "+(sumUpdateLatency/numRecvd)+" ms");
 		}
 		
 		long end = System.currentTimeMillis();
