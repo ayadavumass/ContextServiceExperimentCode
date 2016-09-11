@@ -57,8 +57,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	public static ContextServiceClient<String> csClient;
 	//public static boolean useGNS						= false;
 	
-	public static final String nomadLogDataPath 		
-									= "/users/ayadavum/nomadLog/loc_seq";
+	//public static final String nomadLogDataPath 		
+	//								= "/users/ayadavum/nomadLog/loc_seq";
 	
 	public static final int REQUEST_SLEEP_TIME			= 10; // ms
 	
@@ -156,7 +156,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader(nomadLogDataPath));
+			br = new BufferedReader(new FileReader(
+					SearchAndUpdateDriver.nomadLogDataPath));
 			
 			
 			while( (sCurrentLine = br.readLine()) != null )
@@ -821,13 +822,13 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 				SearchAndUpdateDriver.NUMUSERS, 0);
 		issUpd.readNomadLag();
 		//issUpd.assignMobilityUserId();
-		issUpd.createTransformedTrajectories();
+		//issUpd.createTransformedTrajectories();
 		
-		System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
-				+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
-		issUpd.printLogStats();
-		System.out.println("\n\n");
-		issUpd.printRealUserStats();
-		issUpd.runUpdates();
+//		System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
+//				+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
+//		issUpd.printLogStats();
+//		System.out.println("\n\n");
+//		issUpd.printRealUserStats();
+//		issUpd.runUpdates();
 	}
 }

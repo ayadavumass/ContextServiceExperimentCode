@@ -21,9 +21,13 @@ public class SearchAndUpdateDriver
 	public static final double EXP_START_TIME					= 1389744000;
 	public static final double EXP_END_TIME						= 1391127928;
 	
+//	public static final double EXP_START_TIME					= 1385770103;
+//	public static final double EXP_END_TIME						= 1389644000;
+	
 	public static final String nomadLogDataPath 				= "/users/ayadavum/nomadLog/loc_seq";
-	
-	
+																//= "/home/adipc/Documents/nomadlogData/loc_seq";
+	public static final String weatherDataPath 					= "/users/ayadavum/weatherData/weatherEvent.json";
+																//= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
 	public static String csHost									= null;
 	public static int csPort									= -1;
 	public static int NUMUSERS									= -1;
@@ -42,7 +46,7 @@ public class SearchAndUpdateDriver
 	// in ms
 	public static final double TIME_CONTRACTION_EXP_TIME		= 1000.0; // unit is ms
 	// for 1 sec
-	public static final double TIME_CONTRACTION_REAL_TIME 		= 17859.416666667/3.0;  // unit is s
+	public static final double TIME_CONTRACTION_REAL_TIME 		= 1537.697777778;  // unit is s
 	
 	public static final double TIME_UPDATE_SLEEP_TIME			= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
     // so setting it to 10 ms low value

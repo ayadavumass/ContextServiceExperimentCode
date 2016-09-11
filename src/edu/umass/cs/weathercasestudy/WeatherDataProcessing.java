@@ -35,17 +35,17 @@ public class WeatherDataProcessing
 	public static final String multiPolygonVal			= "MultiPolygon";
 	
 	
-	public static final double minBuffaloLat 			= 42.0;
-	public static final double maxBuffaloLat 			= 44.0;
-	
-	public static final double minBuffaloLong			= -80.0;
-	public static final double maxBuffaloLong 			= -78.0;
+//	public static final double minBuffaloLat 			= 42.0;
+//	public static final double maxBuffaloLat 			= 44.0;
+//	
+//	public static final double minBuffaloLong			= -80.0;
+//	public static final double maxBuffaloLong 			= -78.0;
 	
 	///home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000
 	//public static final String weatherDataPath 			
 	//		= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
 	
-	public static final String weatherDataPath 			= "/users/ayadavum/weatherData/weatherEvent.json";
+	//public static final String weatherDataPath 			= "/users/ayadavum/weatherData/weatherEvent.json";
 	
 	private final List<JSONObject> weatherEventList;
 	
@@ -77,7 +77,7 @@ public class WeatherDataProcessing
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader(weatherDataPath));
+			br = new BufferedReader(new FileReader(SearchAndUpdateDriver.weatherDataPath));
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
@@ -155,14 +155,17 @@ public class WeatherDataProcessing
 				String polygonType = geoJSON.getString(typeKey);
 				JSONArray polygonsArr = geoJSON.getJSONArray(polygonKey);
 				
+				long issuedUnixTime = getUnixTimeStamp(issuedTime);
+				long finalUnixTime  = getUnixTimeStamp(expiredTime);
+				
 				List<List<GlobalCoordinate>> buffaloWeatherEvents 
-										= convertToListOfPolygons(polygonsArr, polygonType);
+										= convertToListOfPolygons(polygonsArr, polygonType, issuedUnixTime);
 				
 				if( buffaloWeatherEvents.size() > 0 )
 				{
 					
-					long issuedUnixTime = getUnixTimeStamp(issuedTime);
-					long finalUnixTime  = getUnixTimeStamp(expiredTime);
+					//long issuedUnixTime = getUnixTimeStamp(issuedTime);
+					//long finalUnixTime  = getUnixTimeStamp(expiredTime);
 					WeatherEventStorage weatherEvent 
 						= new WeatherEventStorage(weatherEventId++, 
 								issuedTime, expiredTime, weatherPheCode, 
@@ -229,7 +232,7 @@ public class WeatherDataProcessing
 	}
 	
 	private List<List<GlobalCoordinate>> convertToListOfPolygons(JSONArray polygonsArr, 
-			String polygonType)
+			String polygonType, long issueUnixTime)
 	{
 		List<List<GlobalCoordinate>> polygonsList = new LinkedList<List<GlobalCoordinate>>();
 		
@@ -238,7 +241,10 @@ public class WeatherDataProcessing
 			List<GlobalCoordinate> polygon = processAPolygonFromGeoJSON( polygonsArr,  polygonType);
 			//assert(polygon != null);
 			if(polygon != null)
-				polygonsList.add(polygon);
+			{
+				if(issueUnixTime >= SearchAndUpdateDriver.EXP_START_TIME)
+					polygonsList.add(polygon);
+			}
 		}
 		else if( polygonType.equals(multiPolygonVal) )
 		{
@@ -250,7 +256,10 @@ public class WeatherDataProcessing
 					List<GlobalCoordinate> polygon = processAPolygonFromGeoJSON( polygonsJSON, polygonType );
 					//assert(polygon != null);
 					if(polygon != null)
-						polygonsList.add(polygon);
+					{
+						if(issueUnixTime >= SearchAndUpdateDriver.EXP_START_TIME)
+							polygonsList.add(polygon);
+					}
 				}
 				catch (JSONException e)
 				{
@@ -346,8 +355,8 @@ public class WeatherDataProcessing
 //		public static final double minBuffaloLong			= -80.0;
 //		public static final double maxBuffaloLong 			= -78.0;
 		
-		if( checkOverlap( minBuffaloLat, maxBuffaloLat, minLat, maxLat ) &&
-			checkOverlap( minBuffaloLong, maxBuffaloLong, minLong, maxLong ) )
+		if( checkOverlap( SearchAndUpdateDriver.minBuffaloLat, SearchAndUpdateDriver.maxBuffaloLat, minLat, maxLat ) &&
+			checkOverlap( SearchAndUpdateDriver.minBuffaloLong, SearchAndUpdateDriver.maxBuffaloLong, minLong, maxLong ) )
 		{
 			return true;
 		}

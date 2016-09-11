@@ -16,26 +16,9 @@ import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 
 public class IssueSearches extends AbstractRequestSendingClass
-{
-	public static final String LAT_ATTR_NAME				= "latitude";
-	public static final String LONG_ATTR_NAME				= "longitude";
-	
-	
-	public static final double SEARCH_LOSS_TOLERANCE       	= 0.5;
-	public static final double MIN_UNIX_TIME				= 1385770103;
-	public static final double MAX_UNIX_TIME				= 1391127928;
-	
-	
-	
-	// in ms
-	public static final double TIME_CONTRACTION_EXP_TIME	= 1000.0; // unit is ms
-	// for 1 sec
-	public static final double TIME_CONTRACTION_REAL_TIME 	= 17859.416666667;  // unit is s
-	
+{	
 	public static final double PERIODIC_REFRESH_SLEEP_TIME	= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
 	                                                               // so setting it to 10 ms low value
-	
-	
 	
 	public static final double TIME_REQUEST_SLEEP			= 10.0;
 	
@@ -67,7 +50,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	public IssueSearches( String cshost, int csport, double refreshTimeInSec )
 				throws NoSuchAlgorithmException, IOException
 	{
-		super( SEARCH_LOSS_TOLERANCE );
+		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE );
 		csHost = cshost;
 		csPort = csport;
 		
@@ -109,7 +92,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	public void runSearches() throws InterruptedException
 	{
 		long start = System.currentTimeMillis();
-		while( SearchAndUpdateDriver.currentRealTime <= MAX_UNIX_TIME )
+		while( SearchAndUpdateDriver.currentRealTime <= SearchAndUpdateDriver.EXP_END_TIME )
 		{
 			Date date = new Date((long)SearchAndUpdateDriver.currentRealTime*1000L); 
 						// *1000 is to convert seconds to milliseconds
@@ -184,9 +167,9 @@ public class IssueSearches extends AbstractRequestSendingClass
 			double maxLong = boundingRect.getMaxY();
 			
 			String searchQuery
-				= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE "+LAT_ATTR_NAME+" >= "+minLat+
-				" AND "+LAT_ATTR_NAME+" <= "+maxLat+" AND "+LONG_ATTR_NAME+" >= "+
-				minLong+" AND "+LONG_ATTR_NAME+" <= "+maxLong;
+				= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE "+SearchAndUpdateDriver.latitudeAttr+" >= "+minLat+
+				" AND "+SearchAndUpdateDriver.latitudeAttr+" <= "+maxLat+" AND "+SearchAndUpdateDriver.longitudeAttr+" >= "+
+				minLong+" AND "+SearchAndUpdateDriver.longitudeAttr+" <= "+maxLong;
 			
 			ExperimentSearchReply searchRep 
 							= new ExperimentSearchReply( requestId );
@@ -269,9 +252,9 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	public static void main( String[] args ) throws NoSuchAlgorithmException, IOException, InterruptedException
 	{
-		csHost = args[0];
-		csPort = Integer.parseInt(args[1]);
+		//csHost = args[0];
+		//csPort = Integer.parseInt(args[1]);
 		IssueSearches issueSearch = new IssueSearches(csHost , csPort, 300);
-		issueSearch.runSearches();
+		//issueSearch.runSearches();
 	}
 }
