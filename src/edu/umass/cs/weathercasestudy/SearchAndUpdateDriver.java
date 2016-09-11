@@ -249,12 +249,7 @@ public class SearchAndUpdateDriver
 		@Override
 		public void run()
 		{
-			try {
-				issUpd.runUpdates();
-			} catch (InterruptedException e) 
-			{
-				e.printStackTrace();
-			}
+			issUpd.runUpdates();
 		}
 	}
 	

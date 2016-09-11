@@ -423,7 +423,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			return false;
 	}
 	
-	public void runUpdates() throws InterruptedException
+	public void runUpdates() 
 	{
 		long start = System.currentTimeMillis();
 		//simulatedTime = SearchAndUpdateDriver.MIN_UNIX_TIME;
@@ -441,7 +441,12 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+ " updatesAtSameTime "
 					+ (sumUpdatesPerUserAtOnce/counter));
 			sendUpdatesWhoseTimeHasCome();
-			Thread.sleep(REQUEST_SLEEP_TIME);
+			
+			try {
+				Thread.sleep(REQUEST_SLEEP_TIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			
 		}
 		long end = System.currentTimeMillis();
@@ -473,7 +478,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			while( nextIndex < trajList.size() )
 			{
 				TrajectoryEntry trajEntry = trajList.get(nextIndex);
-				nextIndex++;
+				
 				long currUnixTime = trajEntry.getUnixTimeStamp();
 				if( currUnixTime <= SearchAndUpdateDriver.currentRealTime )
 				{
@@ -496,6 +501,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 						currUpdatesMap.put(realId, guidUpdateList);
 					}
 					updatesAtSameTime++;
+					
+					nextIndex++;
 				}
 				else
 				{
@@ -540,8 +547,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply
 												(requestId++, userGUID);
 		
-		System.out.println("requestId "+requestId+" realId "
-							+realId+" attrValJSON "+attrValJSON);
+//		System.out.println("requestId "+requestId+" realId "
+//							+realId+" attrValJSON "+attrValJSON);
 		numSent++;
 		csClient.sendUpdateWithCallBack( userGUID, null, 
 										attrValJSON, -1, updateRep, this.getCallBack() );
@@ -770,8 +777,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		{
 			numRecvd++;
 			//numUpdatesRecvd++;
-			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
-					+" numRecvd "+numRecvd+" numSent "+numSent);
+//			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
+//					+" numRecvd "+numRecvd+" numSent "+numSent);
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
