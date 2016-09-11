@@ -540,8 +540,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply
 												(requestId++, userGUID);
 		
-//		System.out.println("requestId "+requestId+" realId "
-//							+realId+" attrValJSON "+attrValJSON);
+		System.out.println("requestId "+requestId+" realId "
+							+realId+" attrValJSON "+attrValJSON);
 		numSent++;
 		csClient.sendUpdateWithCallBack( userGUID, null, 
 										attrValJSON, -1, updateRep, this.getCallBack() );
@@ -770,8 +770,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		{
 			numRecvd++;
 			//numUpdatesRecvd++;
-//			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
-//					+" numRecvd "+numRecvd+" numSent "+numSent);
+			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
+					+" numRecvd "+numRecvd+" numSent "+numSent);
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
