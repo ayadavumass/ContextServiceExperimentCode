@@ -13,13 +13,13 @@ import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 
 public class IssueSearches extends AbstractRequestSendingClass
-{	
+{
 	public static final double PERIODIC_REFRESH_SLEEP_TIME	= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
-	                                                               // so setting it to 10 ms low value
+	                                                                 // so setting it to 10 ms low value
 	
 	public static final double TIME_REQUEST_SLEEP			= 10.0;
 	
-	public static final int WAIT_TIME						= 300000;
+	public static final int WAIT_TIME						= 100000;
 	
 	
 	private WeatherDataProcessing weatherDataProcess;
@@ -36,7 +36,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private long requestId									= 0;
 	
 	private double sumSearchLatency							= 0;
-	private double sumResultSize							= 0;	
+	private double sumResultSize							= 0;
 	
 	
 	private final ConcurrentHashMap<String, ActiveQueryStorage> activeQMap;
