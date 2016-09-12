@@ -46,12 +46,16 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	private double refreshTimeInSec							= 300.0;  // 300 s, 5 min refresh time
 	
-	public IssueSearches( ContextServiceClient<String> csclient, double refreshTimeInSec )
-				throws NoSuchAlgorithmException, IOException
+	private final int searchId;
+	private long searchStartTime;
+	
+	public IssueSearches( ContextServiceClient<String> csclient, double refreshTimeInSec, 
+			int searchId ) throws NoSuchAlgorithmException, IOException
 	{
 		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE );
 		
 		this.refreshTimeInSec 	 = refreshTimeInSec;
+		this.searchId			 = searchId;
 		weatherDataProcess 		 = new WeatherDataProcessing();
 		activeQMap 				 = new ConcurrentHashMap<String, ActiveQueryStorage>();
 		
@@ -86,32 +90,56 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	public void runSearches() throws InterruptedException
 	{
-		long start = System.currentTimeMillis();
+		searchStartTime = System.currentTimeMillis();
 		while( SearchAndUpdateDriver.currentRealTime <= SearchAndUpdateDriver.EXP_END_TIME )
 		{
-			Date date = new Date((long)SearchAndUpdateDriver.currentRealTime*1000L); 
-						// *1000 is to convert seconds to milliseconds
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
-						// the format of your date
-			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
-						// give a timezone reference for formating (see comment at the bottom
-			String dateFormat = sdf.format(date);
-			System.out.println("Search: Current simulated time "
-					+ SearchAndUpdateDriver.currentRealTime+" time in GMT-5 "
-					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+" avg reply size "
-					+ (sumResultSize/numRecvd));
+//			Date date = new Date((long)SearchAndUpdateDriver.currentRealTime*1000L); 
+//						// *1000 is to convert seconds to milliseconds
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
+//						// the format of your date
+//			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
+//						// give a timezone reference for formating (see comment at the bottom
+//			String dateFormat = sdf.format(date);
+//			System.out.println("Search: Current simulated time "
+//					+ SearchAndUpdateDriver.currentRealTime+" time in GMT-5 "
+//					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd+" avg reply size "
+//					+ (sumResultSize/numRecvd));
+			
 			sendSearchesWhoseTimeHasCome();
 			Thread.sleep((long)TIME_REQUEST_SLEEP);
 		}
 		long end = System.currentTimeMillis();
-		double sendingRate = (numSent*1000.0)/(end-start);
+		double sendingRate = (numSent*1000.0)/(end-searchStartTime);
 		System.out.println("Search eventual sending rate "+sendingRate+" reqs/s");
 		this.waitForFinish();
 		long endTime = System.currentTimeMillis();
-		double systemThpt = (numRecvd*1000.0)/(endTime-start);
+		double systemThpt = (numRecvd*1000.0)/(endTime-searchStartTime);
 		System.out.println("Search system throughput "+systemThpt+" reqs/s");
 		System.out.println("Search avg search latency "+(sumSearchLatency/numRecvd)+" ms "
 				+" result size "+(sumResultSize/numRecvd));
+	}
+	
+	public String getStatString()
+	{
+		//Date date = new Date((long)SearchAndUpdateDriver.currentRealTime*1000L); 
+		// *1000 is to convert seconds to milliseconds
+		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
+		// the format of your date
+		//sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
+		// give a timezone reference for formating (see comment at the bottom
+		//String dateFormat = sdf.format(date);
+		
+		long currTime = System.currentTimeMillis();
+		double sendingRate = (numSent*1000.0)/(currTime-searchStartTime);
+		double systemThpt = (numRecvd*1000.0)/(currTime-searchStartTime);
+		
+		String str = "SearchId "+searchId+" numSent "+numSent+" numRecvd "
+							+ numRecvd+" avg reply size "+ (sumResultSize/numRecvd
+							+ " sending rate "+sendingRate
+							+ " system throughput "+systemThpt
+							+ " latency "+(sumSearchLatency/numRecvd)+" ms"
+							+ " result size "+(sumResultSize/numRecvd));
+		return str;
 	}
 	
 	
@@ -250,7 +278,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		//csHost = args[0];
 		//csPort = Integer.parseInt(args[1]);
 		//ContextServiceClient<String> csClient = new ContextServiceClient<String>();
-		IssueSearches issueSearch = new IssueSearches(null, 300);
+		IssueSearches issueSearch = new IssueSearches(null, 300, 0);
 		//issueSearch.runSearches();
 	}
 }

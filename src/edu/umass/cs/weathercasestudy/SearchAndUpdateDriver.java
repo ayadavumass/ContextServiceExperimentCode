@@ -76,6 +76,8 @@ public class SearchAndUpdateDriver
 	
 	public static double currentRealTime						= EXP_START_TIME;
 	
+	public static IssueUpdates2 issUpd;
+	public static List<IssueSearches> searchList;
 	
 	public static void main( String[] args )
 									throws Exception
@@ -169,9 +171,9 @@ public class SearchAndUpdateDriver
 		}
 		else
 		{
-			IssueUpdates2 issUpd = null;
+			issUpd = null;
 			//IssueSearches issueSearch = null;
-			List<IssueSearches> searchList = new LinkedList<IssueSearches>();
+			searchList 				= new LinkedList<IssueSearches>();
 			
 			if( runUpdate )
 			{
@@ -196,7 +198,7 @@ public class SearchAndUpdateDriver
 				for( int i=0; i<numSearchRepetitions; i++ )
 				{
 					IssueSearches issueSearch 
-							= new IssueSearches(csClient, queryRefreshTime);
+							= new IssueSearches(csClient, queryRefreshTime, i);
 					
 					searchList.add(issueSearch);
 				}
@@ -376,7 +378,7 @@ public class SearchAndUpdateDriver
 	public static class TimerThread implements Runnable
 	{
 		private final double timeContractFactor;
-		
+		private long time = 0;
 		public TimerThread()
 		{
 			timeContractFactor 
@@ -398,6 +400,24 @@ public class SearchAndUpdateDriver
 				}
 				
 				currentRealTime = currentRealTime + timeContractFactor;
+				time = time + (long)TIME_UPDATE_SLEEP_TIME;
+				if((time % 5000) == 0)
+				{
+					String printStr = "Update ";
+					if(issUpd != null)
+					{
+						printStr = printStr + " "+issUpd.getStatString();
+					}
+					
+					printStr = printStr+" "+ " Search ";
+					for(int i=0; i<searchList.size(); i++)
+					{
+						printStr = printStr +searchList.get(i).getStatString()+" ";
+					}
+					
+					System.out.println(printStr);
+				}
+				
 			}
 		}
 	}

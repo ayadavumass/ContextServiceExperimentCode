@@ -102,6 +102,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	private boolean useLateralTransfrom					= true;
 	private boolean useRealTraj							= false;
 	
+	private long updateStartTime;
+	
 //	public static  int NUMUSERS							= 100;
 	//private final int myID;
 	
@@ -428,7 +430,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	
 	public void runUpdates() 
 	{
-		long start = System.currentTimeMillis();
+		updateStartTime = System.currentTimeMillis();
 		//simulatedTime = SearchAndUpdateDriver.MIN_UNIX_TIME;
 		while( SearchAndUpdateDriver.currentRealTime 
 				<= SearchAndUpdateDriver.EXP_END_TIME )
@@ -444,35 +446,59 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 				e.printStackTrace();
 			}
 			
-			Date date = new Date
-					((long)SearchAndUpdateDriver.currentRealTime*1000L); // *1000 is to convert seconds to milliseconds
-			
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
-			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // give a timezone reference for formating (see comment at the bottom
-			String dateFormat = sdf.format(date);
-			
-			long currTime = System.currentTimeMillis();
-			double sendingRate = (numSent*1000.0)/(currTime-start);
-			double systemThpt = (numRecvd*1000.0)/(currTime-start);
-			
-			System.out.println("Update current simulated time "
-					+ SearchAndUpdateDriver.currentRealTime+" time in GMT "
-					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd
-					+ " updatesAtSameTime "
-					+ (sumUpdatesPerUserAtOnce/counter)
-					+ " sending rate "+sendingRate
-					+ " system throughput "+systemThpt
-					+ " latency "+(sumUpdateLatency/numRecvd)+" ms");
+//			Date date = new Date
+//					((long)SearchAndUpdateDriver.currentRealTime*1000L); // *1000 is to convert seconds to milliseconds
+//			
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
+//			sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // give a timezone reference for formating (see comment at the bottom
+//			String dateFormat = sdf.format(date);
+//			
+//			long currTime = System.currentTimeMillis();
+//			double sendingRate = (numSent*1000.0)/(currTime-start);
+//			double systemThpt = (numRecvd*1000.0)/(currTime-start);
+//			
+//			System.out.println("Update current simulated time "
+//					+ SearchAndUpdateDriver.currentRealTime+" time in GMT "
+//					+ dateFormat+" numSent "+numSent+" numRecvd "+numRecvd
+//					+ " updatesAtSameTime "
+//					+ (sumUpdatesPerUserAtOnce/counter)
+//					+ " sending rate "+sendingRate
+//					+ " system throughput "+systemThpt
+//					+ " latency "+(sumUpdateLatency/numRecvd)+" ms");
 		}
 		
 		long end = System.currentTimeMillis();
-		double sendingRate = (numSent*1000.0)/(end-start);
+		double sendingRate = (numSent*1000.0)/(end-updateStartTime);
 		System.out.println("Update eventual sending rate "+sendingRate+" reqs/s");
 		this.waitForFinish();
 		long endTime = System.currentTimeMillis();
-		double systemThpt = (numRecvd*1000.0)/(endTime-start);
+		double systemThpt = (numRecvd*1000.0)/(endTime-updateStartTime);
 		System.out.println("Update system throughput "+systemThpt+" reqs/s");
 		System.out.println("Update avg update latency "+(sumUpdateLatency/numRecvd)+" ms");
+	}
+	
+	
+	public String getStatString()
+	{
+//		Date date = new Date
+//				((long)SearchAndUpdateDriver.currentRealTime*1000L); // *1000 is to convert seconds to milliseconds
+//		
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
+//		sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // give a timezone reference for formating (see comment at the bottom
+//		String dateFormat = sdf.format(date);
+		
+		long currTime = System.currentTimeMillis();
+		double sendingRate = (numSent*1000.0)/(currTime-updateStartTime);
+		double systemThpt = (numRecvd*1000.0)/(currTime-updateStartTime);
+		
+		String str = " numSent "+numSent+" numRecvd "+numRecvd
+				+ " updatesAtSameTime "
+				+ (sumUpdatesPerUserAtOnce/counter)
+				+ " sending rate "+sendingRate
+				+ " system throughput "+systemThpt
+				+ " latency "+(sumUpdateLatency/numRecvd)+" ms";
+		
+		return str;
 	}
 	
 	private void sendUpdatesWhoseTimeHasCome()
