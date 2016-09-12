@@ -1,8 +1,11 @@
 package edu.umass.cs.weathercasestudy;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -403,7 +406,15 @@ public class SearchAndUpdateDriver
 				time = time + (long)TIME_UPDATE_SLEEP_TIME;
 				if((time % 5000) == 0)
 				{
-					String printStr = "Update ";
+					Date date = new Date((long)currentRealTime*1000L); 
+					// *1000 is to convert seconds to milliseconds
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
+					// the format of your date
+					sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
+					// give a timezone reference for formating (see comment at the bottom
+					String dateFormat = sdf.format(date);
+					
+					String printStr = "Date "+dateFormat+" Update ";
 					if(issUpd != null)
 					{
 						printStr = printStr + " "+issUpd.getStatString();
