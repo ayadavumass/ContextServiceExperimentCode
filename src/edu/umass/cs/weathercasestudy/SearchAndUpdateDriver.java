@@ -32,7 +32,10 @@ public class SearchAndUpdateDriver
 	public static int csPort									= -1;
 	public static int NUMUSERS									= -1;
 	public static int myID										= -1;
+	
 	public static boolean runSearch								= false;
+	public static boolean runUpdate								= false;
+	
 	
 	public static final String latitudeAttr						= "latitude";
 	public static final String longitudeAttr					= "longitude";
@@ -71,7 +74,7 @@ public class SearchAndUpdateDriver
 	public static double currentRealTime						= EXP_START_TIME;
 	
 	
-	public static void main( String[] args ) 
+	public static void main( String[] args )
 									throws Exception
 	{
 		csHost = args[0];
@@ -79,14 +82,15 @@ public class SearchAndUpdateDriver
 		NUMUSERS = Integer.parseInt(args[2]);
 		myID = Integer.parseInt(args[3]);
 		runSearch = Boolean.parseBoolean(args[4]);
-		queryRefreshTime = Integer.parseInt(args[5]);
-		runGNS = Boolean.parseBoolean(args[6]);
+		runUpdate = Boolean.parseBoolean(args[5]);
+		queryRefreshTime = Integer.parseInt(args[6]);
+		runGNS = Boolean.parseBoolean(args[7]);
 		
 		guidPrefix = guidPrefix +myID;
 		
 		if( runGNS )
 		{
-			threadPoolSize = Integer.parseInt(args[7]);
+			threadPoolSize = Integer.parseInt(args[8]);
 			
 			taskES 			  = Executors.newFixedThreadPool(threadPoolSize);
 			
@@ -161,18 +165,23 @@ public class SearchAndUpdateDriver
 		}
 		else
 		{
-			IssueUpdates2 issUpd = new IssueUpdates2(csHost, csPort, NUMUSERS, myID);
-			issUpd.readNomadLag();
-			issUpd.createTransformedTrajectories();
-			
-//			System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
-//					+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
-			issUpd.printLogStats();
-			System.out.println("\n\n");
-			issUpd.printRealUserStats();
-			
-			
+			IssueUpdates2 issUpd = null;
 			IssueSearches issueSearch = null;
+			
+			if( runUpdate )
+			{
+				issUpd = new IssueUpdates2(csHost, csPort, NUMUSERS, myID);
+				issUpd.readNomadLag();
+				issUpd.createTransformedTrajectories();
+			
+				//			System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
+				//					+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
+				issUpd.printLogStats();
+				System.out.println("\n\n");
+				issUpd.printRealUserStats();
+			}
+			
+			
 			if( runSearch )
 			{
 				issueSearch = new IssueSearches(csHost, csPort, queryRefreshTime);
@@ -182,21 +191,32 @@ public class SearchAndUpdateDriver
 			TimerThread timer = new TimerThread();
 			new Thread(timer).start();
 			
-			Thread th1 = new Thread(new MobilityThreadCS(issUpd));
-			th1.start();
+			Thread th1 = null;
 			Thread th2 = null;
+			
+			
+			if( runUpdate )
+			{
+				th1 = new Thread(new MobilityThreadCS(issUpd));
+				th1.start();
+			}
+			
+			
 			if( runSearch )
 			{
 				th2 = new Thread(new WeatherThreadCS(issueSearch));
 				th2.start();
 			}
 			
-			try 
+			if( runUpdate)
 			{
-				th1.join();
-			} catch (InterruptedException e) 
-			{
-				e.printStackTrace();
+				try 
+				{
+					th1.join();
+				} catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
 			}
 			
 			if( runSearch )
@@ -210,9 +230,7 @@ public class SearchAndUpdateDriver
 					e.printStackTrace();
 				}
 			}
-		}
-		
-		
+		}	
 		System.exit(0);
 	}
 	
