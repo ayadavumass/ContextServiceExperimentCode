@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
@@ -71,6 +72,8 @@ public class SearchAndUpdateDriver
 	
 	public static ExecutorService taskES;
 	
+	public static int numSearchRepetitions;
+	
 	public static double currentRealTime						= EXP_START_TIME;
 	
 	
@@ -84,13 +87,14 @@ public class SearchAndUpdateDriver
 		runSearch = Boolean.parseBoolean(args[4]);
 		runUpdate = Boolean.parseBoolean(args[5]);
 		queryRefreshTime = Integer.parseInt(args[6]);
-		runGNS = Boolean.parseBoolean(args[7]);
+		numSearchRepetitions = Integer.parseInt(args[7]);
+		runGNS = Boolean.parseBoolean(args[8]);
 		
 		guidPrefix = guidPrefix +myID;
 		
 		if( runGNS )
 		{
-			threadPoolSize = Integer.parseInt(args[8]);
+			threadPoolSize = Integer.parseInt(args[9]);
 			
 			taskES 			  = Executors.newFixedThreadPool(threadPoolSize);
 			
@@ -166,7 +170,8 @@ public class SearchAndUpdateDriver
 		else
 		{
 			IssueUpdates2 issUpd = null;
-			IssueSearches issueSearch = null;
+			//IssueSearches issueSearch = null;
+			List<IssueSearches> searchList = new LinkedList<IssueSearches>();
 			
 			if( runUpdate )
 			{
@@ -184,7 +189,17 @@ public class SearchAndUpdateDriver
 			
 			if( runSearch )
 			{
-				issueSearch = new IssueSearches(csHost, csPort, queryRefreshTime);
+				ContextServiceClient<String> csClient 
+							= new ContextServiceClient<String>
+								(csHost, csPort, ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
+				
+				for( int i=0; i<numSearchRepetitions; i++ )
+				{
+					IssueSearches issueSearch 
+							= new IssueSearches(csClient, queryRefreshTime);
+					
+					searchList.add(issueSearch);
+				}
 			}
 			
 			
@@ -192,8 +207,8 @@ public class SearchAndUpdateDriver
 			new Thread(timer).start();
 			
 			Thread th1 = null;
-			Thread th2 = null;
 			
+			List<Thread> searchThreads = new LinkedList<Thread>();
 			
 			if( runUpdate )
 			{
@@ -204,9 +219,14 @@ public class SearchAndUpdateDriver
 			
 			if( runSearch )
 			{
-				th2 = new Thread(new WeatherThreadCS(issueSearch));
-				th2.start();
+				for( int i=0; i<searchList.size(); i++ )
+				{
+					Thread th2 = new Thread(new WeatherThreadCS(searchList.get(i)));
+					th2.start();
+					searchThreads.add(th2);
+				}
 			}
+			
 			
 			if( runUpdate)
 			{
@@ -221,14 +241,18 @@ public class SearchAndUpdateDriver
 			
 			if( runSearch )
 			{
-				try
+				for( int i=0; i<searchThreads.size(); i++ )
 				{
-					th2.join();
-				}
-				catch ( InterruptedException e )
-				{
-					e.printStackTrace();
-				}
+					Thread th2 = searchThreads.get(i);
+					try
+					{
+						th2.join();
+					}
+					catch ( InterruptedException e )
+					{
+						e.printStackTrace();
+					}
+				}	
 			}
 		}	
 		System.exit(0);

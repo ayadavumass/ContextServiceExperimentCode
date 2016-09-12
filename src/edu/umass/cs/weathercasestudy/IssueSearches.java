@@ -25,8 +25,8 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	private WeatherDataProcessing weatherDataProcess;
 	
-	private static String csHost;
-	private static int csPort;
+//	private static String csHost;
+//	private static int csPort;
 	
 	public static ContextServiceClient<String> csClient;
 	public static boolean useGNS							= false;
@@ -37,8 +37,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private long requestId									= 0;
 	
 	private double sumSearchLatency							= 0;
-	private double sumResultSize							= 0;
-	
+	private double sumResultSize							= 0;	
 	
 	
 	private final ConcurrentHashMap<String, ActiveQueryStorage> activeQMap;
@@ -47,12 +46,10 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	private double refreshTimeInSec							= 300.0;  // 300 s, 5 min refresh time
 	
-	public IssueSearches( String cshost, int csport, double refreshTimeInSec )
+	public IssueSearches( ContextServiceClient<String> csclient, double refreshTimeInSec )
 				throws NoSuchAlgorithmException, IOException
 	{
 		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE );
-		csHost = cshost;
-		csPort = csport;
 		
 		this.refreshTimeInSec 	 = refreshTimeInSec;
 		weatherDataProcess 		 = new WeatherDataProcessing();
@@ -62,9 +59,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		
 		new Thread(periodicRefreshThread).start();
 		
-		if( csHost != null )
-			csClient  = new ContextServiceClient<String>(csHost, csPort, 
-						ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
+		csClient  = csclient;
 	}
 	
 	@Override
@@ -254,7 +249,8 @@ public class IssueSearches extends AbstractRequestSendingClass
 	{
 		//csHost = args[0];
 		//csPort = Integer.parseInt(args[1]);
-		IssueSearches issueSearch = new IssueSearches(csHost , csPort, 300);
+		//ContextServiceClient<String> csClient = new ContextServiceClient<String>();
+		IssueSearches issueSearch = new IssueSearches(null, 300);
 		//issueSearch.runSearches();
 	}
 }
