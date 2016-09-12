@@ -14,6 +14,7 @@ import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 
 public class IssueSearchesGNS extends AbstractRequestSendingClass
 {
+	public static final int WAIT_TIME							= 100000;
 //	public static final String LAT_ATTR_NAME					= "latitude";
 //	public static final String LONG_ATTR_NAME					= "longitude";
 //	public static final double MIN_UNIX_TIME					= 1385770103;
@@ -65,7 +66,7 @@ public class IssueSearchesGNS extends AbstractRequestSendingClass
 	public IssueSearchesGNS()
 				throws NoSuchAlgorithmException, IOException
 	{
-		super(SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE);
+		super(SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE, WAIT_TIME);
 		
 		weatherDataProcess 		 = new WeatherDataProcessing();
 		//activeQMap 				 = new ConcurrentHashMap<String, ActiveQueryStorage>();

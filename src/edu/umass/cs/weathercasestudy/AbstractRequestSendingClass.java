@@ -20,12 +20,14 @@ public abstract class AbstractRequestSendingClass
 	private final double lossTolerance;
 	
 	private final CallBackInterface expCallback;
+	private final long waitTime;
 	
-	public AbstractRequestSendingClass( double lossTolerance )
+	public AbstractRequestSendingClass( double lossTolerance, long waitTime )
 	{
 		expCallback =  new ExperimentCallBack(this);
 		threadFinished = false;
 		this.lossTolerance = lossTolerance;
+		this.waitTime = waitTime;
 		numSent = 0;
 		numRecvd = 0;
 		waitTimer = new Timer();
@@ -38,7 +40,7 @@ public abstract class AbstractRequestSendingClass
 	
 	protected void waitForFinish()
 	{
-		waitTimer.schedule(new WaitTimerTask(), IssueUpdates.WAIT_TIME);
+		waitTimer.schedule(new WaitTimerTask(), waitTime);
 		
 		synchronized(waitLock)
 		{

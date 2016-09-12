@@ -4,12 +4,9 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
@@ -21,6 +18,8 @@ public class IssueSearches extends AbstractRequestSendingClass
 	                                                               // so setting it to 10 ms low value
 	
 	public static final double TIME_REQUEST_SLEEP			= 10.0;
+	
+	public static final int WAIT_TIME						= 100000;
 	
 	
 	private WeatherDataProcessing weatherDataProcess;
@@ -52,7 +51,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	public IssueSearches( ContextServiceClient<String> csclient, double refreshTimeInSec, 
 			int searchId ) throws NoSuchAlgorithmException, IOException
 	{
-		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE );
+		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE, WAIT_TIME );
 		
 		this.refreshTimeInSec 	 = refreshTimeInSec;
 		this.searchId			 = searchId;

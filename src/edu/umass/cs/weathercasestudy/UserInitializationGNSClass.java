@@ -8,13 +8,14 @@ public class UserInitializationGNSClass extends AbstractRequestSendingClass
 {
 	public static final double INSERT_LOSS_TOLERANCE 	= 0.0;
 	public static final double INIT_RATE				= 100.0;
+	public static final int WAIT_TIME					= 100000000;
 	// different random generator for each variable, as using one for all of them
 	// doesn't give uniform properties.
 	private final Random initRand;
 	
 	public UserInitializationGNSClass()
 	{
-		super( INSERT_LOSS_TOLERANCE );
+		super( INSERT_LOSS_TOLERANCE, WAIT_TIME );
 		initRand = new Random(SearchAndUpdateDriver.myID*100);
 	}
 	

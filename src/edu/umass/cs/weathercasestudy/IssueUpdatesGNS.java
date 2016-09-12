@@ -27,7 +27,7 @@ import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 public class IssueUpdatesGNS extends AbstractRequestSendingClass
 {	
-	//public static final int WAIT_TIME					= 100000000;
+	public static final int WAIT_TIME					= 100000000;
 	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
 	// 42.87417896666666 | 43.00299947777777 | -78.87563904444443 | -78.66029963333332 
 	
@@ -75,7 +75,7 @@ public class IssueUpdatesGNS extends AbstractRequestSendingClass
 	public IssueUpdatesGNS() 
 														throws NoSuchAlgorithmException, IOException
 	{
-		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );
+		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE, WAIT_TIME );
 		
 		userMobilityEntryHashMap = new HashMap<Integer, List<TrajectoryEntry>>();
 		realIDTrajectoryMap		 = new HashMap<Integer, List<TrajectoryEntry>>();

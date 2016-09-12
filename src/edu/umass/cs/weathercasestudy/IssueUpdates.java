@@ -111,7 +111,7 @@ public class IssueUpdates extends AbstractRequestSendingClass
 	public IssueUpdates(String cshost, int csport, int numusers, int myID) 
 														throws NoSuchAlgorithmException, IOException
 	{
-		super( UPD_LOSS_TOLERANCE );
+		super( UPD_LOSS_TOLERANCE, WAIT_TIME );
 		
 		csHost = cshost;
 		csPort = csport;

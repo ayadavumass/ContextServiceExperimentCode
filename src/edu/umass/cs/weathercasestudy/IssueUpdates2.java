@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
-import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,7 +109,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	public IssueUpdates2(String cshost, int csport, int numusers, int myID) 
 														throws NoSuchAlgorithmException, IOException
 	{
-		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );
+		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE, WAIT_TIME );
 		
 		csHost = cshost;
 		csPort = csport;
