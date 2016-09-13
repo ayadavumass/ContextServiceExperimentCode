@@ -106,6 +106,7 @@ public abstract class AbstractRequestSendingClass
 			{
 				threadFinishLock.notify();
 			}
+			System.exit(0);
 		}
 	}
 	
