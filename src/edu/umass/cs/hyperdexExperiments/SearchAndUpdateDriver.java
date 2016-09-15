@@ -3,25 +3,19 @@ package edu.umass.cs.hyperdexExperiments;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 
 import org.hyperdex.client.Client;
-import org.json.JSONArray;
-import org.json.JSONException;
 
-import edu.umass.cs.contextservice.client.ContextServiceClient;
-import edu.umass.cs.contextservice.logging.ContextServiceLogger;
-import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 public class SearchAndUpdateDriver
 {
 	public static final String COORD_IP							= "serv0";
 	public static final int COORD_PORT							= 4999;
+	public static final String HYPERSPACE_NAME					= "contextnet";
 	
 	// 100 seconds, experiment runs for 100 seconds
 	public static 	 long EXPERIMENT_TIME						= 100000;
@@ -261,18 +255,33 @@ public class SearchAndUpdateDriver
 	}
 	
 	
-//	public static Client getHyperdexClient()
-//	{
-//		synchronized(clientLock)
-//		{
-//			while( hyperdexClients.size() == 0 )
-//			{
-//				
-//				
-//			}
-//		}
-//		
-//	}
+	public static Client getHyperdexClient()
+	{
+		synchronized(clientLock)
+		{
+			while( hyperdexClients.size() == 0 )
+			{
+				try 
+				{
+					clientLock.wait();
+				} catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+			Client hClient = hyperdexClients.poll();
+			return hClient;
+		}
+	}
+	
+	public static void returnHyperdexClient(Client hClient)
+	{
+		synchronized(clientLock)
+		{
+			hyperdexClients.add(hClient);
+			clientLock.notify();
+		}
+	}
 	
 	
 //	public static JSONObject getUpdateJSONForCS(int userState, double userLat, 

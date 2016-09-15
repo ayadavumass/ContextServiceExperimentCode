@@ -25,8 +25,8 @@ public class SearchAndUpdateDriver
 	//public static final double MAX_UNIX_TIME					= 1391127928;
 	
 	
-	//public static final double EXP_START_TIME					= 1389744000;
-	public static final double EXP_START_TIME					= 1390176000;
+	public static final double EXP_START_TIME					= 1390953600;
+	//public static final double EXP_START_TIME					= 1390176000;
 	public static final double EXP_END_TIME						= 1391127928;
 	
 //	public static final double EXP_START_TIME					= 1385770103;

@@ -1,6 +1,7 @@
 package edu.umass.cs.hyperdexExperiments;
 
-import org.json.JSONObject;
+import java.util.Map;
+
 
 /**
  * Class implements the task used for 
@@ -10,11 +11,11 @@ import org.json.JSONObject;
  */
 public class UpdateTask implements Runnable
 {
-	private final JSONObject attrValuePairs;
+	private final Map<String, Object> attrValuePairs;
 	private final String userGUID;
 	private final AbstractRequestSendingClass requestSendingTask;
 	
-	public UpdateTask( JSONObject attrValuePairs, String userGUID,
+	public UpdateTask( Map<String, Object> attrValuePairs, String userGUID,
 			AbstractRequestSendingClass requestSendingTask )
 	{
 		this.attrValuePairs = attrValuePairs;
@@ -40,6 +41,7 @@ public class UpdateTask implements Runnable
 				System.out.println("Sending update userGUID "
 									+userGUID+" attrValuePairs "+attrValuePairs);
 				long start = System.currentTimeMillis();
+				
 //				SearchAndUpdateDriver.csClient.sendUpdate(userGUID, null, 
 //						attrValuePairs, -1);
 				long end = System.currentTimeMillis();

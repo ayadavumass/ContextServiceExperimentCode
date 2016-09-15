@@ -171,7 +171,7 @@ public class BothSearchAndUpdate extends
 			e.printStackTrace();
 		}
 		
-		UpdateTask updTask = new UpdateTask( attrValJSON, userGUID, this );
+		UpdateTask updTask = new UpdateTask( null, userGUID, this );
 		updTask.run();
 		
 		currUserGuidNum++;

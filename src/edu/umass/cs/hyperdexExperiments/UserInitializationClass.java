@@ -46,7 +46,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 //										attrValJSON, -1, updateRep, this.getCallBack());
 		
 		
-		UpdateTask updTask = new UpdateTask(attrValJSON, userGUID, this);
+		UpdateTask updTask = new UpdateTask(null, userGUID, this);
 		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	

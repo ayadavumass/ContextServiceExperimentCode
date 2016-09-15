@@ -108,7 +108,7 @@ public class UpdateFixedUsers extends AbstractRequestSendingClass implements Run
 			e.printStackTrace();
 		}
 		//System.out.println("Updating "+currUserGuidNum+" "+attrValJSON);
-		UpdateTask updTask = new UpdateTask( attrValJSON, userGUID, this );
+		UpdateTask updTask = new UpdateTask( null, userGUID, this );
 		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
