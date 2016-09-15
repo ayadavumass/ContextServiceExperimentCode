@@ -534,7 +534,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 						if( this.lastUpdateTimeStamp.containsKey(realId) )
 						{
 							long lastIssueTime = lastUpdateTimeStamp.get(realId);
-							if( ( SearchAndUpdateDriver.currentRealTime - lastIssueTime ) <= skippingTimeInSec )
+							if( ( currUnixTime - lastIssueTime ) <= skippingTimeInSec )
 							{
 								nextIndex++;
 								continue;

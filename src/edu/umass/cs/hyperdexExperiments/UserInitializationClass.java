@@ -1,8 +1,9 @@
 package edu.umass.cs.hyperdexExperiments;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
-import org.json.JSONObject;
 
 public class UserInitializationClass extends AbstractRequestSendingClass
 {
@@ -24,8 +25,9 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 //			userGuidEntry = SearchAndUpdateDriver.gnsClient.guidCreate(
 //					SearchAndUpdateDriver.accountGuid, SearchAndUpdateDriver.guidPrefix+guidNum);
 //		}
-		//Map<>
-		JSONObject attrValJSON = new JSONObject();
+		Map<String, Object> attrValMap = new HashMap<String, Object>();
+		
+		//JSONObject attrValJSON = new JSONObject();
 		
 		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
 		
@@ -34,7 +36,8 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			String attrName = SearchAndUpdateDriver.attrPrefix+i;
 			double attrVal  = SearchAndUpdateDriver.ATTR_MIN 
 					+ attrDiff * initRand.nextDouble();
-			attrValJSON.put(attrName, attrVal);
+			//attrValJSON.put(attrName, attrVal);
+			attrValMap.put(attrName, attrVal);
 		}
 		
 		String userGUID = "";
@@ -44,12 +47,12 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 //		
 //		SearchAndUpdateDriver.csClient.sendUpdateWithCallBack
 //										(userGUID, null, 
-//										attrValJSON, -1, updateRep, this.getCallBack());
+//										attrValJSON, -1, updateRep, this.getCallBack());		
 		
-		
-		UpdateTask updTask = new UpdateTask(null, userGUID, this);
+		UpdateTask updTask = new UpdateTask(attrValMap, userGUID, this);
 		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
+	
 	
 	public void initializaRateControlledRequestSender() throws Exception
 	{
