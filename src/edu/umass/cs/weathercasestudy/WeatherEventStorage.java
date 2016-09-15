@@ -64,4 +64,10 @@ public class WeatherEventStorage
 	{
 		return this.expireUnixTimeStamp;
 	}
+	
+	public double getDurationInSecs()
+	{
+		double dur = expireUnixTimeStamp - issueUnixTimeStamp;
+		return dur;
+	}
 }

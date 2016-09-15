@@ -210,7 +210,8 @@ public class IssueSearches extends AbstractRequestSendingClass
 			ExperimentSearchReply searchRep 
 							= new ExperimentSearchReply( requestId );
 			numSent++;
-			long queryExpiry = 300000;
+			double div = currWeatherEvent.getDurationInSecs()/SearchAndUpdateDriver.TIME_CONTRACTION_REAL_TIME;
+			long queryExpiry = (long) Math.ceil( div);
 			csClient.sendSearchQueryWithCallBack
 				( searchQuery, queryExpiry, searchRep, this.getCallBack() );
 			
