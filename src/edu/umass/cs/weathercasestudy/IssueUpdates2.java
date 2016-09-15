@@ -76,6 +76,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	// mobility log trajectories.
 	private HashMap<Integer, List<TrajectoryEntry>> realIDTrajectoryMap;
 	
+	private HashMap<Integer, Long> lastUpdateTimeStamp;
+	
 	//private double simulatedTime;
 	
 	private long requestId;
@@ -103,7 +105,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	private long updateStartTime;
 	
 	private boolean skippingUpdateEnabled				= true;
-	private int skippingNumber							= 2; //only mod 2 will be sent, so half of it
+	private int skippingTimeInSec						= 30*60; //once in 30 min
 	
 //	public static  int NUMUSERS							= 100;
 	//private final int myID;
@@ -124,6 +126,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		//realIDToMobilityIdMap    = new HashMap<Integer, Integer>();
 		realIDTrajectoryMap		 = new HashMap<Integer, List<TrajectoryEntry>>();
 		nextEntryToSendMap       = new HashMap<Integer, Integer>();
+		lastUpdateTimeStamp      = new HashMap<Integer, Long>();
 		
 		if( csHost != null )
 			csClient  = new ContextServiceClient<String>(csHost, csPort, 
@@ -520,15 +523,21 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			
 			while( nextIndex < trajList.size() )
 			{
-				if(skippingUpdateEnabled)
+				TrajectoryEntry trajEntry = trajList.get(nextIndex);
+				
+				if( skippingUpdateEnabled )
 				{
-					if(nextIndex % skippingNumber == 0)
+					if( this.lastUpdateTimeStamp.containsKey(realId) )
 					{
-						nextIndex++;
-						continue;
+						long lastIssueTime = lastUpdateTimeStamp.get(realId);
+						if( ( SearchAndUpdateDriver.currentRealTime - lastIssueTime ) <= skippingTimeInSec )
+						{
+							nextIndex++;
+							continue;
+						}
 					}
 				}
-				TrajectoryEntry trajEntry = trajList.get(nextIndex);
+				
 				
 				long currUnixTime = trajEntry.getUnixTimeStamp();
 				if( currUnixTime <= SearchAndUpdateDriver.currentRealTime )
@@ -554,6 +563,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 					updatesAtSameTime++;
 					
 					nextIndex++;
+					
+					this.lastUpdateTimeStamp.put(realId, currUnixTime);
 				}
 				else
 				{
