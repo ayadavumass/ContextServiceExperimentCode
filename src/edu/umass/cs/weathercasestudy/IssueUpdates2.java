@@ -525,23 +525,24 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			{
 				TrajectoryEntry trajEntry = trajList.get(nextIndex);
 				
-				if( skippingUpdateEnabled )
-				{
-					if( this.lastUpdateTimeStamp.containsKey(realId) )
-					{
-						long lastIssueTime = lastUpdateTimeStamp.get(realId);
-						if( ( SearchAndUpdateDriver.currentRealTime - lastIssueTime ) <= skippingTimeInSec )
-						{
-							nextIndex++;
-							continue;
-						}
-					}
-				}
-				
 				
 				long currUnixTime = trajEntry.getUnixTimeStamp();
 				if( currUnixTime <= SearchAndUpdateDriver.currentRealTime )
 				{
+					if( skippingUpdateEnabled )
+					{
+						if( this.lastUpdateTimeStamp.containsKey(realId) )
+						{
+							long lastIssueTime = lastUpdateTimeStamp.get(realId);
+							if( ( SearchAndUpdateDriver.currentRealTime - lastIssueTime ) <= skippingTimeInSec )
+							{
+								nextIndex++;
+								continue;
+							}
+						}
+					}
+					
+					
 					//sendUpdate(realId, trajEntry );
 					totalUpdates++;
 					if( currUpdatesMap.containsKey(realId) )

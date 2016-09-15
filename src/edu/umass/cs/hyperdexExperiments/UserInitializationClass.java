@@ -24,6 +24,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 //			userGuidEntry = SearchAndUpdateDriver.gnsClient.guidCreate(
 //					SearchAndUpdateDriver.accountGuid, SearchAndUpdateDriver.guidPrefix+guidNum);
 //		}
+		//Map<>
 		JSONObject attrValJSON = new JSONObject();
 		
 		double attrDiff   = SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN;
