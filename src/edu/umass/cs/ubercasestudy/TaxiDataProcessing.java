@@ -1,12 +1,11 @@
 package edu.umass.cs.ubercasestudy;
 
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Iterator;
 
 
 public class TaxiDataProcessing 
@@ -14,13 +13,13 @@ public class TaxiDataProcessing
 	public static final String TAXI_DATA_PATH		
 					= "/home/adipc/Documents/NYCTaxiData/yellow_tripdata_2016-02.csv";
 	
-	private long currLineNum;
+	//private long currLineNum;
 	
 	private HashMap<String, Long> perDayTaxiPickUps;
 	
 	public TaxiDataProcessing()
 	{
-		currLineNum = 0;
+		//currLineNum = 0;
 		perDayTaxiPickUps = new HashMap<String, Long>();
 	}
 	
@@ -29,7 +28,7 @@ public class TaxiDataProcessing
 		
 	}
 	
-	/*public void readTheTaxiFile()
+	public void readTheTaxiFile()
 	{
 		BufferedReader br = null;
 		try
@@ -40,33 +39,29 @@ public class TaxiDataProcessing
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
-				if( sCurrentLine.startsWith("{") )
+				String[] lineParsed = sCurrentLine.split(",");
+				String dateTime = lineParsed[1];
+				
+				String[] dateParsed = dateTime.split(" ");
+				String date = dateParsed[0];
+				
+				if( perDayTaxiPickUps.containsKey(date) )
 				{
-					// exclude the main geoJSON
-					if(sCurrentLine.length() > 2)
-					{
-						int commaIndex = sCurrentLine.length()-1;
-						if( sCurrentLine.charAt(commaIndex) == ',' )
-						{
-							String removeLastComma = sCurrentLine.substring(0, commaIndex);
-							JSONObject weatherEventJSON = new JSONObject(removeLastComma);
-							weatherEventList.add(weatherEventJSON);
-						}
-						else
-						{
-							JSONObject weatherEventJSON = new JSONObject(sCurrentLine);
-							weatherEventList.add(weatherEventJSON);
-						}
-					}
+					long currNum = perDayTaxiPickUps.get(date);
+					currNum++;
+					perDayTaxiPickUps.put(date, currNum);
+				}
+				else
+				{
+					perDayTaxiPickUps.put(date, new Long(1));
 				}
 			}
-		} catch (IOException e) 
+		} 
+		catch (IOException e) 
 		{
 			e.printStackTrace();
-		} catch (JSONException e) 
-		{
-			e.printStackTrace();
-		} finally
+		} 
+		finally
 		{
 			try
 			{
@@ -78,26 +73,20 @@ public class TaxiDataProcessing
 			}
 		}
 		
-		System.out.println("Number of weather events "+weatherEventList.size());
-//		bw.close();
-//		System.out.println( "unique users "
-//							+userMobilityEntryHashMap.size() );
-//		
-//		Iterator<Integer> userIdIter = userMobilityEntryHashMap.keySet().iterator();
-//		
-//		while( userIdIter.hasNext() )
-//		{
-//			int userId = userIdIter.next();
-//			
-//			List<TrajectoryEntry> logEntryList 
-//							= userMobilityEntryHashMap.get(userId);
-//			
-//			logEntryList.sort
-//			((o1, o2) -> o1.getUnixTimeStamp().compareTo(o2.getUnixTimeStamp()));
-//		}
-	}*/
+		Iterator<String> dateIter = perDayTaxiPickUps.keySet().iterator();
+		
+		while( dateIter.hasNext() )
+		{
+			String date = dateIter.next();
+			
+			long totalPickup = perDayTaxiPickUps.get(date);
+			System.out.println("Date "+date+" totalPickup "+totalPickup);
+		}
+	}
 	
 	public static void main(String[] args)
-	{	
+	{
+		TaxiDataProcessing taxiData = new TaxiDataProcessing();
+		taxiData.readTheTaxiFile();	
 	}
 }

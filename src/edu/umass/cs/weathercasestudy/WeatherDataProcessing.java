@@ -298,6 +298,7 @@ public class WeatherDataProcessing
 					polygonList.add(gCoord);
 				}
 				
+				//return polygonList;
 				if(checkIfPolygonFallsInBuffalo( polygonList ))
 				{
 					return polygonList;

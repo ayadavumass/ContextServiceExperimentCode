@@ -9,12 +9,15 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 public class SearchAndUpdateDriver
 {
+	public static final int TRIGGER_READING_INTERVAL			= 1000;
+	
 	public static final double UPD_LOSS_TOLERANCE       		= 0.5;
 	public static final double SEARCH_LOSS_TOLERANCE       		= 0.5;
 	
@@ -83,6 +86,8 @@ public class SearchAndUpdateDriver
 	public static IssueUpdates2 issUpd;
 	public static List<IssueSearches> searchList;
 	
+	public static boolean triggerEnabled;
+	
 	public static void main( String[] args )
 									throws Exception
 	{
@@ -95,12 +100,13 @@ public class SearchAndUpdateDriver
 		queryRefreshTime = Integer.parseInt(args[6]);
 		numSearchRepetitions = Integer.parseInt(args[7]);
 		runGNS = Boolean.parseBoolean(args[8]);
+		triggerEnabled = Boolean.parseBoolean(args[9]);
 		
 		guidPrefix = guidPrefix +myID;
 		
 		if( runGNS )
 		{
-			threadPoolSize = Integer.parseInt(args[9]);
+			threadPoolSize = Integer.parseInt(args[10]);
 			
 			taskES 			  = Executors.newFixedThreadPool(threadPoolSize);
 			

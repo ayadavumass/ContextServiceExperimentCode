@@ -9,8 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.messages.RefreshTrigger;
 
 public class IssueSearches extends AbstractRequestSendingClass
 {
@@ -39,9 +43,10 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private double sumResultSize							= 0;
 	
 	
-	private final ConcurrentHashMap<String, ActiveQueryStorage> activeQMap;
+	private ConcurrentHashMap<String, ActiveQueryStorage> activeQMap;
 	
-	private final PeriodicRefreshThread periodicRefreshThread;
+	private PeriodicRefreshThread periodicRefreshThread;
+	private ReadTriggerRecvd readTriggers;
 	
 	private double refreshTimeInSec							= 300.0;  // 300 s, 5 min refresh time
 	
@@ -56,13 +61,22 @@ public class IssueSearches extends AbstractRequestSendingClass
 		this.refreshTimeInSec 	 = refreshTimeInSec;
 		this.searchId			 = searchId;
 		weatherDataProcess 		 = new WeatherDataProcessing();
-		activeQMap 				 = new ConcurrentHashMap<String, ActiveQueryStorage>();
-		
-		periodicRefreshThread    = new PeriodicRefreshThread();
-		
-		new Thread(periodicRefreshThread).start();
-		
 		csClient  = csclient;
+		
+		if(!SearchAndUpdateDriver.triggerEnabled)
+		{
+			activeQMap 				 = new ConcurrentHashMap<String, ActiveQueryStorage>();
+			
+			periodicRefreshThread    = new PeriodicRefreshThread();
+			
+			new Thread(periodicRefreshThread).start();
+		}
+		else
+		{
+			readTriggers = new ReadTriggerRecvd();
+			new Thread(readTriggers).start();
+		}
+		
 	}
 	
 	@Override
@@ -200,12 +214,15 @@ public class IssueSearches extends AbstractRequestSendingClass
 			csClient.sendSearchQueryWithCallBack
 				( searchQuery, queryExpiry, searchRep, this.getCallBack() );
 			
-			String activeQueryKey = currWeatherEvent.getWeatherEventId()+"-"+i;
-			ActiveQueryStorage activeQ = new ActiveQueryStorage( activeQueryKey, 
-					currWeatherEvent.getIssueUnixTimeStamp(), 
-					currWeatherEvent.getExpireUnixTimeStamp(), searchQuery );
-			
-			this.activeQMap.put(activeQueryKey, activeQ);
+			if(!SearchAndUpdateDriver.triggerEnabled)
+			{
+				String activeQueryKey = currWeatherEvent.getWeatherEventId()+"-"+i;
+				ActiveQueryStorage activeQ = new ActiveQueryStorage( activeQueryKey, 
+						currWeatherEvent.getIssueUnixTimeStamp(), 
+						currWeatherEvent.getExpireUnixTimeStamp(), searchQuery );
+				
+				this.activeQMap.put(activeQueryKey, activeQ);
+			}
 		}
 	}
 	
@@ -269,6 +286,52 @@ public class IssueSearches extends AbstractRequestSendingClass
 			long queryExpiry = 300000;
 			csClient.sendSearchQueryWithCallBack
 				( searchQuery, queryExpiry, searchRep, getCallBack() );
+		}
+	}
+	
+	public static class ReadTriggerRecvd implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				JSONArray triggerArray = new JSONArray();
+				csClient.getQueryUpdateTriggers(triggerArray);
+				
+//				System.out.println("Reading triggers num read "
+//												+triggerArray.length());
+				
+				for( int i=0;i<triggerArray.length();i++ )
+				{
+					try 
+					{
+						RefreshTrigger<Integer> refreshTrig 
+							= new RefreshTrigger<Integer>(triggerArray.getJSONObject(i));
+						long timeTakenSinceUpdate 
+							= System.currentTimeMillis() - refreshTrig.getUpdateStartTime();
+						if(timeTakenSinceUpdate <= 0)
+						{
+							System.out.println("Trigger recvd time sync issue between two machines ");
+						}
+						else
+						{
+							System.out.println("Trigger recvd time taken "+timeTakenSinceUpdate);
+						}
+					} catch (JSONException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				
+				try
+				{
+					Thread.sleep(SearchAndUpdateDriver.TRIGGER_READING_INTERVAL);
+				} catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
