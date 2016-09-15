@@ -102,6 +102,9 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	
 	private long updateStartTime;
 	
+	private boolean skippingUpdateEnabled				= true;
+	private int skippingNumber							= 2; //only mod 2 will be sent, so half of it
+	
 //	public static  int NUMUSERS							= 100;
 	//private final int myID;
 	
@@ -517,6 +520,14 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			
 			while( nextIndex < trajList.size() )
 			{
+				if(skippingUpdateEnabled)
+				{
+					if(nextIndex % skippingNumber == 0)
+					{
+						nextIndex++;
+						continue;
+					}
+				}
 				TrajectoryEntry trajEntry = trajList.get(nextIndex);
 				
 				long currUnixTime = trajEntry.getUnixTimeStamp();
