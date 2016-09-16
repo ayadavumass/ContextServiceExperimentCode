@@ -24,7 +24,7 @@ public class SearchAndUpdateDriver
 
 	public static final double TIME_REQUEST_SLEEP				= 100.0;
 
-	public static final int WAIT_TIME							= 600000;
+	public static final int WAIT_TIME							= 200000;
 
 	public static final int TRIGGER_READING_INTERVAL			= 1000;
 	
@@ -68,7 +68,7 @@ public class SearchAndUpdateDriver
 	// in ms
 	public static final double TIME_CONTRACTION_EXP_TIME		= 1000.0; // unit is ms
 	// for 1 sec
-	public static final double TIME_CONTRACTION_REAL_TIME 		= 24.0;  // unit is s
+	public static final double TIME_CONTRACTION_REAL_TIME 		= 96.0;  // unit is s
 	
 	public static final double TIME_UPDATE_SLEEP_TIME			= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
     // so setting it to 10 ms low value
