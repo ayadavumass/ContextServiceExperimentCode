@@ -9,13 +9,23 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 public class SearchAndUpdateDriver
 {
+	public static final double PERIODIC_REFRESH_SLEEP_TIME		= 100.0;  // 10 ms. 1000 ms exp time = 300 mins real time
+    // so setting it to 10 ms low value
+
+	public static final double TIME_REQUEST_SLEEP				= 100.0;
+
+	public static final int WAIT_TIME							= 200000;
+
 	public static final int TRIGGER_READING_INTERVAL			= 1000;
 	
 	public static final double UPD_LOSS_TOLERANCE       		= 0.5;
@@ -88,6 +98,8 @@ public class SearchAndUpdateDriver
 	
 	public static boolean triggerEnabled;
 	
+	public static ContextServiceClient<String> csClient; 
+	public static WeatherDataProcessing weatherDataProcess;
 	public static void main( String[] args )
 									throws Exception
 	{
@@ -201,14 +213,14 @@ public class SearchAndUpdateDriver
 			
 			if( runSearch )
 			{
-				ContextServiceClient<String> csClient 
-							= new ContextServiceClient<String>
-								(csHost, csPort, ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
+				csClient = new ContextServiceClient<String>
+							(csHost, csPort, ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
 				
+				weatherDataProcess = new WeatherDataProcessing();
 				for( int i=0; i<numSearchRepetitions; i++ )
 				{
 					IssueSearches issueSearch 
-							= new IssueSearches(csClient, queryRefreshTime, i);
+							= new IssueSearches(csClient, i, weatherDataProcess);
 					
 					searchList.add(issueSearch);
 				}
@@ -220,7 +232,7 @@ public class SearchAndUpdateDriver
 			
 			Thread th1 = null;
 			
-			List<Thread> searchThreads = new LinkedList<Thread>();
+			//List<Thread> searchThreads = new LinkedList<Thread>();
 			
 			if( runUpdate )
 			{
@@ -228,15 +240,26 @@ public class SearchAndUpdateDriver
 				th1.start();
 			}
 			
-			
+			IssueSearchRequests searchReqs = null;
+			Thread th2 = null;
 			if( runSearch )
 			{
-				for( int i=0; i<searchList.size(); i++ )
-				{
-					Thread th2 = new Thread(new WeatherThreadCS(searchList.get(i)));
-					th2.start();
-					searchThreads.add(th2);
-				}
+				searchReqs = new IssueSearchRequests();
+				
+				th2 = new Thread(searchReqs);
+				th2.start();
+				
+				
+				PeriodicRefreshThread periodicRefresh = new PeriodicRefreshThread();
+				new Thread(periodicRefresh).start();
+				
+				
+//				for( int i=0; i<searchList.size(); i++ )
+//				{
+//					Thread th2 = new Thread(new WeatherThreadCS(searchList.get(i)));
+//					th2.start();
+//					searchThreads.add(th2);
+//				}
 			}
 			
 			
@@ -253,18 +276,32 @@ public class SearchAndUpdateDriver
 			
 			if( runSearch )
 			{
-				for( int i=0; i<searchThreads.size(); i++ )
+				th2.join();
+				
+				for( int i=0; i<searchList.size(); i++ )
 				{
-					Thread th2 = searchThreads.get(i);
-					try
-					{
-						th2.join();
-					}
-					catch ( InterruptedException e )
-					{
-						e.printStackTrace();
-					}
+					IssueSearches appObj = searchList.get(i);
+					appObj.setSendingEndTime();
 				}
+				
+				for( int i=0; i<searchList.size(); i++ )
+				{
+					IssueSearches appObj = searchList.get(i);
+					appObj.waitForAppToFinish();
+				}
+				
+//				for( int i=0; i<searchThreads.size(); i++ )
+//				{
+//					Thread th2 = searchThreads.get(i);
+//					try
+//					{
+//						th2.join();
+//					}
+//					catch ( InterruptedException e )
+//					{
+//						e.printStackTrace();
+//					}
+//				}
 			}
 		}
 		System.exit(0);
@@ -315,28 +352,28 @@ public class SearchAndUpdateDriver
 		}
 	}
 	
-	public static class WeatherThreadCS implements Runnable
-	{
-		private IssueSearches issueSearch;
-		
-		public WeatherThreadCS(IssueSearches issueSearch)
-		{
-			this.issueSearch = issueSearch;
-		}
-		
-		@Override
-		public void run()
-		{
-			try 
-			{
-				issueSearch.runSearches();
-			}
-			catch ( InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
+//	public static class WeatherThreadCS implements Runnable
+//	{
+//		private IssueSearches issueSearch;
+//		
+//		public WeatherThreadCS(IssueSearches issueSearch)
+//		{
+//			this.issueSearch = issueSearch;
+//		}
+//		
+//		@Override
+//		public void run()
+//		{
+//			try 
+//			{
+//				issueSearch.runSearches();
+//			}
+//			catch ( InterruptedException e)
+//			{
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	
 	
 	public static class MobilityThreadGNS implements Runnable
@@ -436,6 +473,115 @@ public class SearchAndUpdateDriver
 					System.out.println(printStr);
 				}
 				
+			}
+		}
+	}
+	
+	
+	private static class IssueSearchRequests implements Runnable
+	{
+		
+		public IssueSearchRequests()
+		{
+			for(int i=0; i<searchList.size(); i++)
+			{
+				IssueSearches appObj = searchList.get(i);
+				appObj.startExpTime();
+			}
+		}
+		
+		@Override
+		public void run() 
+		{
+			while( SearchAndUpdateDriver.currentRealTime <= SearchAndUpdateDriver.EXP_END_TIME )
+			{
+				try
+				{
+					Thread.sleep((long) TIME_REQUEST_SLEEP);
+				}
+				catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
+				
+				
+				for(int i=0; i<searchList.size(); i++)
+				{
+					IssueSearches appObj = searchList.get(i);
+					appObj.sendSearchesWhoseTimeHasCome();
+				}
+			}
+		}
+	}
+	
+	private static class PeriodicRefreshThread implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			while( true )
+			{
+				try
+				{
+					Thread.sleep((long) PERIODIC_REFRESH_SLEEP_TIME);
+				}
+				catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
+				
+				for(int i=0; i<searchList.size(); i++)
+				{
+					IssueSearches appObj = searchList.get(i);
+					appObj.performRefreshQueries();
+				}
+			}
+		}
+	}
+	
+	
+	public static class ReadTriggerRecvd implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				JSONArray triggerArray = new JSONArray();
+				csClient.getQueryUpdateTriggers(triggerArray);
+				
+//				System.out.println("Reading triggers num read "
+//												+triggerArray.length());
+				
+				for( int i=0;i<triggerArray.length();i++ )
+				{
+					try 
+					{
+						RefreshTrigger<Integer> refreshTrig 
+							= new RefreshTrigger<Integer>(triggerArray.getJSONObject(i));
+						long timeTakenSinceUpdate 
+							= System.currentTimeMillis() - refreshTrig.getUpdateStartTime();
+						if(timeTakenSinceUpdate <= 0)
+						{
+							System.out.println("Trigger recvd time sync issue between two machines ");
+						}
+						else
+						{
+							System.out.println("Trigger recvd time taken "+timeTakenSinceUpdate);
+						}
+					} catch (JSONException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				
+				try
+				{
+					Thread.sleep(SearchAndUpdateDriver.TRIGGER_READING_INTERVAL);
+				} catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 	}
