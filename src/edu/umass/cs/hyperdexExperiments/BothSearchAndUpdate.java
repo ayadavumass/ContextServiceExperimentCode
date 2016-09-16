@@ -2,6 +2,7 @@ package edu.umass.cs.hyperdexExperiments;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import org.json.JSONArray;
@@ -410,18 +411,17 @@ public class BothSearchAndUpdate extends
 		
 		int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
 		double randVal = SearchAndUpdateDriver.ATTR_MIN 
-				+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
+				+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX 
+						- SearchAndUpdateDriver.ATTR_MIN);
 		
-		JSONObject attrValJSON = new JSONObject();
-		try
-		{
-			attrValJSON.put(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
-		} catch (JSONException e)
-		{
-			e.printStackTrace();
-		}
+		Map<String, Object> attrValMap = new HashMap<String, Object>();
 		
-		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(reqIdNum, userGUID);
+		//JSONObject attrValJSON = new JSONObject();
+		
+		attrValMap.put
+				(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
+		
+		//ExperimentUpdateReply updateRep = new ExperimentUpdateReply(reqIdNum, userGUID);
 		
 //		SearchAndUpdateDriver.csClient.sendUpdateWithCallBack
 //										(userGUID, null, 
@@ -429,8 +429,8 @@ public class BothSearchAndUpdate extends
 		//SearchAndUpdateDriver.csClient.sendUpdate(userGUID, null, 
 		//		attrValuePairs, -1);
 		//System.out.println("Updating "+currUserGuidNum+" "+attrValJSON);
-//		UpdateTask updTask = new UpdateTask( attrValJSON, userGUID, this );
-//		SearchAndUpdateDriver.taskES.execute(updTask);
+		UpdateTask updTask = new UpdateTask( attrValMap, userGUID, this );
+		SearchAndUpdateDriver.taskES.execute(updTask);
 	}
 	
 	public double getAverageUpdateLatency()

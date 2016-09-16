@@ -163,13 +163,13 @@ public class SearchAndUpdateDriver
 		{
 			if(updateEnable && !searchEnable)
 			{
-				locUpdate = new UpdateFixedUsers();
-				new Thread(locUpdate).start();
+				//locUpdate = new UpdateFixedUsers();
+				//new Thread(locUpdate).start();
 			}
 			else if(searchEnable && !updateEnable)
 			{
-				searchQClass = new UniformQueryClass();
-				new Thread(searchQClass).start();
+				//searchQClass = new UniformQueryClass();
+				//new Thread(searchQClass).start();
 			}
 			else if(searchEnable && updateEnable)
 			{
@@ -179,11 +179,11 @@ public class SearchAndUpdateDriver
 			
 			if(updateEnable && !searchEnable)
 			{
-				locUpdate.waitForThreadFinish();
+				//locUpdate.waitForThreadFinish();
 			}
 			else if(searchEnable && !updateEnable)
 			{
-				searchQClass.waitForThreadFinish();
+				//searchQClass.waitForThreadFinish();
 			}
 			else if(searchEnable && updateEnable)
 			{
