@@ -68,7 +68,7 @@ public class SearchAndUpdateDriver
 	// in ms
 	public static final double TIME_CONTRACTION_EXP_TIME		= 1000.0; // unit is ms
 	// for 1 sec
-	public static final double TIME_CONTRACTION_REAL_TIME 		= 32.282962963;  // unit is s
+	public static final double TIME_CONTRACTION_REAL_TIME 		= 24.0;  // unit is s
 	
 	public static final double TIME_UPDATE_SLEEP_TIME			= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
     // so setting it to 10 ms low value
