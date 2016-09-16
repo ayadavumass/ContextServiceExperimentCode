@@ -250,9 +250,11 @@ public class SearchAndUpdateDriver
 				th2 = new Thread(searchReqs);
 				th2.start();
 				
-				
-				PeriodicRefreshThread periodicRefresh = new PeriodicRefreshThread();
-				new Thread(periodicRefresh).start();
+				if( !triggerEnabled )
+				{
+					PeriodicRefreshThread periodicRefresh = new PeriodicRefreshThread();
+					new Thread(periodicRefresh).start();
+				}
 				
 				
 //				for( int i=0; i<searchList.size(); i++ )
