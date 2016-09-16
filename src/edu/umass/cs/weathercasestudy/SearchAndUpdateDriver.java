@@ -520,7 +520,7 @@ public class SearchAndUpdateDriver
 		@Override
 		public void run()
 		{
-			while( true )
+			while( SearchAndUpdateDriver.currentRealTime <= SearchAndUpdateDriver.EXP_END_TIME )
 			{
 				try
 				{
