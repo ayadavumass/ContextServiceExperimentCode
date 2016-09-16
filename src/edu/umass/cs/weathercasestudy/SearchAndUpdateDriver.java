@@ -448,7 +448,7 @@ public class SearchAndUpdateDriver
 				
 				currentRealTime = currentRealTime + timeContractFactor;
 				time = time + (long)TIME_UPDATE_SLEEP_TIME;
-				if((time % 5000) == 0)
+				if((time % 60000) == 0)
 				{
 					Date date = new Date((long)currentRealTime*1000L); 
 					// *1000 is to convert seconds to milliseconds
