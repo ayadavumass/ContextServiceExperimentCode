@@ -1,17 +1,22 @@
 package edu.umass.cs.hyperdexExperiments;
 
+import java.util.Map;
+
+import org.hyperdex.client.Client;
 import org.json.JSONArray;
 
 public class SearchTask implements Runnable
 {
-	private final String searchQuery;
+	//private final String searchQuery;
 	private final JSONArray replybackArray;
 	private final AbstractRequestSendingClass requestSendingTask;
 	
-	public SearchTask( String searchQuery, JSONArray replybackArray, 
+	private final Map<String, Object> searchQueryMap;
+	
+	public SearchTask( Map<String, Object> searchQueryMap, JSONArray replybackArray, 
 			AbstractRequestSendingClass requestSendingTask )
 	{
-		this.searchQuery = searchQuery;
+		this.searchQueryMap = searchQueryMap;
 		this.replybackArray = replybackArray;
 		this.requestSendingTask = requestSendingTask;
 	}
@@ -21,13 +26,25 @@ public class SearchTask implements Runnable
 	{
 		try
 		{
+			Client hClient = SearchAndUpdateDriver.getHyperdexClient();	
+			
+			long start = System.currentTimeMillis();
+			long numReplies = hClient.count( SearchAndUpdateDriver.HYPERSPACE_NAME, 
+					searchQueryMap );
+			
+			long end = System.currentTimeMillis();
+			requestSendingTask.incrementSearchNumRecvd
+											((int)numReplies, end-start);
+			
+			
 //			ExperimentSearchReply searchRep 
 //								= new ExperimentSearchReply( reqId );
 			
 //			SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
 //								(searchQuery, 300000, searchRep, requestSendingTask.getCallBack());
 			
-			long start = System.currentTimeMillis();
+			//long start = System.currentTimeMillis();
+			
 			
 //			int replySize 
 //				= SearchAndUpdateDriver.csClient.sendSearchQuery

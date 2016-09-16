@@ -24,7 +24,7 @@ public class SearchAndUpdateDriver
 
 	public static final double TIME_REQUEST_SLEEP				= 100.0;
 
-	public static final int WAIT_TIME							= 200000;
+	public static final int WAIT_TIME							= 600000;
 
 	public static final int TRIGGER_READING_INTERVAL			= 1000;
 	

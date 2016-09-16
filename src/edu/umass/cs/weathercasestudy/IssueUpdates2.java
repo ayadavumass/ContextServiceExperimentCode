@@ -26,7 +26,6 @@ import edu.umass.cs.utils.UtilFunctions;
 
 public class IssueUpdates2 extends AbstractRequestSendingClass
 {
-	public static final int WAIT_TIME					= 200000;
 //	public static final double UPD_LOSS_TOLERANCE       = 0.5;
 	
 	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
@@ -114,7 +113,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	public IssueUpdates2(String cshost, int csport, int numusers, int myID) 
 														throws NoSuchAlgorithmException, IOException
 	{
-		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE, WAIT_TIME );
+		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE, SearchAndUpdateDriver.WAIT_TIME );
 		
 		csHost = cshost;
 		csPort = csport;

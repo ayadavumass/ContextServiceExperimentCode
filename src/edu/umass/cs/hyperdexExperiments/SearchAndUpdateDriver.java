@@ -16,6 +16,7 @@ public class SearchAndUpdateDriver
 	public static final String COORD_IP							= "serv0";
 	public static final int COORD_PORT							= 4999;
 	public static final String HYPERSPACE_NAME					= "contextnet";
+	public static final String GUID_ATTR_NAME					= "GUID";
 	
 	// 100 seconds, experiment runs for 100 seconds
 	public static 	 long EXPERIMENT_TIME						= 100000;

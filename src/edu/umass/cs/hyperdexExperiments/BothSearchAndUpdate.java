@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import org.hyperdex.client.Range;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -228,7 +229,7 @@ public class BothSearchAndUpdate extends
 					+" <= "+attrMax+" AND ";
 			}
 		}
-		SearchTask searchTask = new SearchTask( searchQuery, new JSONArray(), this );
+		SearchTask searchTask = new SearchTask( null, new JSONArray(), this );
 		searchTask.run();
 	}
 	
@@ -323,8 +324,10 @@ public class BothSearchAndUpdate extends
 	
 	private void sendQueryMessageWithSmallRanges(long reqIdNum)
 	{
-		String searchQuery
-			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
+		Map<String, Object> queryPredMap = new HashMap<String, Object>();
+		
+//		String searchQuery
+//			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
 		
 		HashMap<String, Boolean> distinctAttrMap 
 			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
@@ -349,25 +352,33 @@ public class BothSearchAndUpdate extends
 			// making it curcular
 			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
 			{
-				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
-				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+//				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
+//				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+				attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			}
-			// last so no AND
-			if( !attrIter.hasNext() )
-			{
-				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-						+" <= "+attrMax;
-			}
-			else
-			{
-				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-					+" <= "+attrMax+" AND ";
-			}
+			queryPredMap.put(attrName, new Range(attrMin, attrMax));
+//			// last so no AND
+//			if( !attrIter.hasNext() )
+//			{
+//				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+//						+" <= "+attrMax;
+//			}
+//			else
+//			{
+//				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
+//					+" <= "+attrMax+" AND ";
+//				
+//				//checks.put("contextATT0", new Range(0.0, 1.0));
+//				queryPredMap.put(attrName, new Range(attrMin, attrMax));
+//				
+//			}
 		}
 		
-		ExperimentSearchReply searchRep 
-				= new ExperimentSearchReply( reqIdNum );
+		SearchTask searchTask = new SearchTask( queryPredMap, new JSONArray(), this );
+		SearchAndUpdateDriver.taskES.execute(searchTask);
 		
+//		ExperimentSearchReply searchRep 
+//				= new ExperimentSearchReply( reqIdNum );	
 //		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
 //			( searchQuery, SearchAndUpdateDriver.queryExpiryTime, searchRep, this.getCallBack() );
 	}
