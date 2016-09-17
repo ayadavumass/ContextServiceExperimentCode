@@ -104,7 +104,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	private long updateStartTime;
 	
 	private boolean skippingUpdateEnabled				= true;
-	private int skippingTimeInSec						= 60*60; //once in 30 min
+	private int skippingTimeInSec						= 120*60; //once in 30 min
 	
 //	public static  int NUMUSERS							= 100;
 	//private final int myID;
