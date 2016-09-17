@@ -19,10 +19,10 @@ import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 public class SearchAndUpdateDriver
 {
-	public static final double PERIODIC_REFRESH_SLEEP_TIME		= 100.0;  // 10 ms. 1000 ms exp time = 300 mins real time
+	public static final double PERIODIC_REFRESH_SLEEP_TIME		= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
     // so setting it to 10 ms low value
 
-	public static final double TIME_REQUEST_SLEEP				= 100.0;
+	public static final double TIME_REQUEST_SLEEP				= 10.0;
 
 	public static final int WAIT_TIME							= 200000;
 
@@ -35,7 +35,8 @@ public class SearchAndUpdateDriver
 	//public static final double MAX_UNIX_TIME					= 1391127928;
 	
 	
-	public static final double EXP_START_TIME					= 1390953600;
+	public static final double EXP_START_TIME					= 1390867200; // 28 JAN
+	//public static final double EXP_START_TIME					= 1390953600; // 29 JAN
 	//public static final double EXP_START_TIME					= 1390176000;
 	//public static final double EXP_END_TIME						= 1391127928;
 	public static final double EXP_END_TIME						= 1391040000;
@@ -68,7 +69,7 @@ public class SearchAndUpdateDriver
 	// in ms
 	public static final double TIME_CONTRACTION_EXP_TIME		= 1000.0; // unit is ms
 	// for 1 sec
-	public static final double TIME_CONTRACTION_REAL_TIME 		= 96.0;  // unit is s
+	public static final double TIME_CONTRACTION_REAL_TIME 		= 192.0;  // unit is s
 	
 	public static final double TIME_UPDATE_SLEEP_TIME			= 10.0;  // 10 ms. 1000 ms exp time = 300 mins real time
     // so setting it to 10 ms low value

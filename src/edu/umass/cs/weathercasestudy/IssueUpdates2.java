@@ -57,7 +57,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	//public static final String nomadLogDataPath 		
 	//								= "/users/ayadavum/nomadLog/loc_seq";
 	
-	public static final int REQUEST_SLEEP_TIME			= 10; // ms
+	//public static final int REQUEST_SLEEP_TIME			= 10; // ms
 	
 	//	public static final String nomadLogDataPath 		
 	//								= "/home/adipc/Documents/nomadlogData/loc_seq";
@@ -442,7 +442,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			
 			try 
 			{
-				Thread.sleep(REQUEST_SLEEP_TIME);
+				Thread.sleep((long)SearchAndUpdateDriver.TIME_REQUEST_SLEEP);
 			} 
 			catch (InterruptedException e) 
 			{
