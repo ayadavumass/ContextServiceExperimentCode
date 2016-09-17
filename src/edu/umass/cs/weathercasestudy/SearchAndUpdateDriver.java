@@ -256,6 +256,13 @@ public class SearchAndUpdateDriver
 					PeriodicRefreshThread periodicRefresh = new PeriodicRefreshThread();
 					new Thread(periodicRefresh).start();
 				}
+				else
+				{
+					ReadTriggerRecvd readTrigger = new ReadTriggerRecvd();
+					new Thread(readTrigger).start();
+				}
+				
+				
 				
 				
 //				for( int i=0; i<searchList.size(); i++ )
