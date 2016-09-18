@@ -226,7 +226,7 @@ public class SearchClass extends AbstractRequestSendingClass
 		}
 		
 		searchQuery = searchQuery + " AND ( "+attrName +" >= "+attrMin +" AND " 
-				+attrName +" <= "+attrMax+" ) ";
+				+attrName +" <= "+attrMax+" ) ) ";
 		
 		return searchQuery;
 	}
