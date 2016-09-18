@@ -55,6 +55,14 @@ public class WeatherDataProcessing
 	
 	private double sumActiveTime						= 0.0;
 	
+	private double minimumLat							= 60;
+	private double maximumLat							= 0;
+	
+	
+	private double minimumLong							= 0;
+	private double maximumLong							= -300;
+	
+	
 	public WeatherDataProcessing()
 	{
 		weatherEventList = new LinkedList<JSONObject>();
@@ -136,6 +144,12 @@ public class WeatherDataProcessing
 //			logEntryList.sort
 //			((o1, o2) -> o1.getUnixTimeStamp().compareTo(o2.getUnixTimeStamp()));
 //		}
+	}
+	
+	public void printAreaBounds()
+	{
+		System.out.println("Min Latitude "+minimumLat+" Max Latitude "+maximumLat
+				+" Min Longitude "+minimumLong+" Max Longitude "+maximumLong);
 	}
 	
 	private void filterBuffaloWeatherEvents()
@@ -266,11 +280,9 @@ public class WeatherDataProcessing
 					e.printStackTrace();
 				}
 			}
-		}
-		
+		}	
 		return polygonsList;
 	}
-	
 	
 	private List<GlobalCoordinate> processAPolygonFromGeoJSON( JSONArray polygonsArr, 
 			String polyType )
@@ -294,16 +306,20 @@ public class WeatherDataProcessing
 					//System.out.println("coord "+coord);
 					double longitude = coord.getDouble(0);
 					double latitude = coord.getDouble(1);
+					
+					updateBounds(latitude, longitude);
+					
+					
 					GlobalCoordinate gCoord = new GlobalCoordinate(latitude, longitude);
 					polygonList.add(gCoord);
 				}
 				
-				//return polygonList;
-				if(checkIfPolygonFallsInBuffalo( polygonList ))
-				{
-					return polygonList;
-					//polygonsList.add(polygonList);
-				}
+				return polygonList;
+//				if(checkIfPolygonFallsInBuffalo( polygonList ))
+//				{
+//					return polygonList;
+//					//polygonsList.add(polygonList);
+//				}
 			}
 			catch (JSONException e)
 			{
@@ -315,6 +331,31 @@ public class WeatherDataProcessing
 			assert(false);
 		}
 		return null;
+	}
+	
+	
+	private void updateBounds(double latitude, double longitude)
+	{
+		if( latitude <= minimumLat )
+		{
+			minimumLat = latitude;
+		}
+		
+		if( latitude >= maximumLat )
+		{
+			maximumLat = latitude;
+		}
+		
+		
+		if( longitude <= minimumLong )
+		{
+			minimumLong = longitude;
+		}
+		
+		if( longitude >= maximumLong )
+		{
+			maximumLong = longitude;
+		}
 	}
 	
 	private boolean checkIfPolygonFallsInBuffalo( 
@@ -385,6 +426,7 @@ public class WeatherDataProcessing
 	{
 		WeatherDataProcessing weatherData 
 								= new WeatherDataProcessing();
+		weatherData.printAreaBounds();
 		//weatherData.readTheWeatherFile();
 		//weatherData.filterBuffaloWeatherEvents();
 	}

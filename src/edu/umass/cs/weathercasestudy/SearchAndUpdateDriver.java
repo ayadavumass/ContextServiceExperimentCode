@@ -48,6 +48,7 @@ public class SearchAndUpdateDriver
 																//= "/home/adipc/Documents/nomadlogData/loc_seq";
 	public static final String weatherDataPath 					= "/users/ayadavum/weatherData/weatherEvent.json";
 																//= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
+	
 	public static String csHost									= null;
 	public static int csPort									= -1;
 	public static int NUMUSERS									= -1;
@@ -60,11 +61,11 @@ public class SearchAndUpdateDriver
 	public static final String latitudeAttr						= "latitude";
 	public static final String longitudeAttr					= "longitude";
 	
-	public static final double minBuffaloLat 					= 42.0;
-	public static final double maxBuffaloLat 					= 44.0;
+	public static final double minBuffaloLat 					= 41.8;
+	public static final double maxBuffaloLat 					= 45.1;
 	
 	public static final double minBuffaloLong					= -80.0;
-	public static final double maxBuffaloLong 					= -78.0;
+	public static final double maxBuffaloLong 					= -74.5;
 	
 	// in ms
 	public static final double TIME_CONTRACTION_EXP_TIME		= 1000.0; // unit is ms
