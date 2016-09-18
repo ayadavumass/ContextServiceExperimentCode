@@ -259,6 +259,11 @@ public class SearchClass extends AbstractRequestSendingClass
 			sumTime = sumTime + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
+				double endTimeReplyRecvd = System.currentTimeMillis();
+				double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+				
+				System.out.println("Search result:Goodput "+sysThrput);
+				
 				waitLock.notify();
 			}
 		}
