@@ -77,9 +77,12 @@ public class MySQLThroughputBenchmarking
 	
 	public static long numOfSearchQueries;
 	
-	public static boolean disableCircularQueryTrigger = true;
+	public static boolean disableCircularQueryTrigger			= true;
 	
 	public static ExecutorService	 taskES						= null;
+	
+	public static boolean rowByrowFetching						= false;
+	public static boolean getOnlyCount							= false;
 	
 	public MySQLThroughputBenchmarking()
 	{
@@ -337,6 +340,8 @@ public class MySQLThroughputBenchmarking
 		requestsps          = Integer.parseInt(args[4]);
 		PoolSize  		    = Integer.parseInt(args[5]);
 		predicateLength     = Double.parseDouble(args[6]);
+		rowByrowFetching	= Boolean.parseBoolean(args[7]);
+		getOnlyCount        = Boolean.parseBoolean(args[8]);
 		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
@@ -358,6 +363,7 @@ public class MySQLThroughputBenchmarking
 			e.printStackTrace();
 		}
 		
+		System.out.println("Reading only count "+getOnlyCount+" rowByrowFetching "+rowByrowFetching);
 		AbstractRequestSendingClass requestTypeObj = new SearchClass();
 		
 		new Thread(requestTypeObj).start();

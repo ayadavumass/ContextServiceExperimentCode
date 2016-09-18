@@ -111,8 +111,18 @@ public class SearchClass extends AbstractRequestSendingClass
 	
 	private String getASingleAttributeQuery()
 	{
-		String searchQuery
-			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.dataTableName+" WHERE ( ";
+		String searchQuery = "";
+		if(MySQLThroughputBenchmarking.getOnlyCount)
+		{
+			searchQuery 
+				= "SELECT COUNT(nodeGUID) AS RESULT_SIZE FROM "+MySQLThroughputBenchmarking.dataTableName+" WHERE ( ";
+		}
+		else
+		{
+			searchQuery
+				= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.dataTableName+" WHERE ( ";
+		}
+		
 		
 		boolean latOrLong = queryRand.nextBoolean();
 		if(latOrLong)
@@ -175,8 +185,18 @@ public class SearchClass extends AbstractRequestSendingClass
 	
 	private String getAMultipleAttributeQuery()
 	{
-		String searchQuery
-			= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.dataTableName+" WHERE ( ";
+		String searchQuery = "";
+		if(MySQLThroughputBenchmarking.getOnlyCount)
+		{
+			searchQuery
+				= "SELECT COUNT(nodeGUID) AS RESULT_SIZE FROM "+MySQLThroughputBenchmarking.dataTableName+" WHERE ( ";
+		}
+		else
+		{
+			searchQuery
+				= "SELECT nodeGUID FROM "+MySQLThroughputBenchmarking.dataTableName+" WHERE ( ";
+		}
+		
 		
 		// latitude case
 		String attrName = "latitude";

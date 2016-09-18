@@ -27,10 +27,10 @@ public class SearchTask implements Runnable
 		try
 		{
 			long start = System.currentTimeMillis();
-			JSONArray resultArray = getValueInfoObjectRecord();
+			JSONArray resultArray = new JSONArray();
+			int resultSize =  getValueInfoObjectRecord(resultArray);
 			long end = System.currentTimeMillis();
-			int replySize = resultArray.length();
-			requestSendingTask.incrementSearchNumRecvd(replySize, end-start);
+			requestSendingTask.incrementSearchNumRecvd(resultSize, end-start);
 		} catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -41,27 +41,43 @@ public class SearchTask implements Runnable
 		}
 	}
 	
-	public JSONArray getValueInfoObjectRecord()
+	public int getValueInfoObjectRecord(JSONArray resultArray)
 	{
-		JSONArray jsoArray = new JSONArray();
 		Connection myConn = null;
 		Statement stmt = null;
-		
+		int resultSize = 0;
 		try
 		{	
 			myConn = MySQLThroughputBenchmarking.dsInst.getConnection();
-			stmt = myConn.createStatement();
+			
+			if(MySQLThroughputBenchmarking.rowByrowFetching)
+			{
+				stmt = myConn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+			              java.sql.ResultSet.CONCUR_READ_ONLY);
+				stmt.setFetchSize(Integer.MIN_VALUE);
+			}
+			else
+			{
+				stmt = myConn.createStatement();
+			}
+			
 			
 			ResultSet rs = stmt.executeQuery(searchQuery);
 			
 			while( rs.next() )
 			{
 				//Retrieve by column name
-				//double value  	 = rs.getDouble("value");
-				byte[] nodeGUIDBytes  = rs.getBytes("nodeGUID");
-				String nodeGUIDString = Utils.bytArrayToHex(nodeGUIDBytes);
-			
-				jsoArray.put(nodeGUIDString);
+				if( MySQLThroughputBenchmarking.getOnlyCount )
+				{
+					resultSize = rs.getInt("RESULT_SIZE");
+				}
+				else
+				{
+					byte[] nodeGUIDBytes  = rs.getBytes("nodeGUID");
+					String nodeGUIDString = Utils.bytArrayToHex(nodeGUIDBytes);
+					resultSize++;
+					resultArray.put(nodeGUIDString);
+				}
 			}
 			
 			rs.close();
@@ -83,6 +99,6 @@ public class SearchTask implements Runnable
 				 e.printStackTrace();
 			 }
 		}
-		return jsoArray;
+		return resultSize;
 	}
 }
