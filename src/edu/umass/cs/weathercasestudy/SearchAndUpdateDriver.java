@@ -209,8 +209,8 @@ public class SearchAndUpdateDriver
 				//			System.out.println("minLatData "+issUpd.minLatData+" maxLatData "+issUpd.maxLatData
 				//					+" minLongData "+issUpd.minLongData+" maxLongData "+issUpd.maxLongData);
 				//issUpd.printLogStats();
-				System.out.println("\n\n");
-				issUpd.printRealUserStats();
+				//System.out.println("\n\n");
+				//issUpd.printRealUserStats();
 			}
 			
 			
