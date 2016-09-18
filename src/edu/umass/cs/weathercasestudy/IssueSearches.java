@@ -14,7 +14,7 @@ import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 
 public class IssueSearches extends AbstractRequestSendingClass
-{		
+{
 	private WeatherDataProcessing weatherDataProcess;
 	
 //	private static String csHost;
@@ -41,6 +41,12 @@ public class IssueSearches extends AbstractRequestSendingClass
 	private final int searchId;
 	//private long searchStartTime;
 	private long searchEndTime;
+	
+	private double sumLatitude								= 0.0;
+	private double sumLongitude								= 0.0;
+	private double numOriginalSearch						= 0.0;
+	
+	private Object numSentLock								= new Object();
 	
 	public IssueSearches( ContextServiceClient<String> csclient, 
 			int searchId, WeatherDataProcessing weatherDataProcess) throws NoSuchAlgorithmException, IOException
@@ -194,7 +200,12 @@ public class IssueSearches extends AbstractRequestSendingClass
 	{
 		String searchQuery = activeQueryStore.getQueryString();
 		ExperimentSearchReply searchRep = new ExperimentSearchReply( numSent );
-		numSent++;
+		
+		synchronized(numSentLock)
+		{
+			numSent++;
+		}
+		
 		long queryExpiry = 300000;
 		csClient.sendSearchQueryWithCallBack
 			( searchQuery, queryExpiry, searchRep, getCallBack() );
@@ -215,11 +226,14 @@ public class IssueSearches extends AbstractRequestSendingClass
 		double systemThpt = (numRecvd*1000.0)/(currTime-expStartTime);
 		
 		String str = "SearchId "+searchId+" numSent "+numSent+" numRecvd "
-							+ numRecvd+" avg reply size "+ (sumResultSize/numRecvd
+							+ numRecvd+" avg reply size "+ (sumResultSize/numRecvd)
 							+ " sending rate "+sendingRate
 							+ " system throughput "+systemThpt
 							+ " latency "+(sumSearchLatency/numRecvd)+" ms"
-							+ " result size "+(sumResultSize/numRecvd));
+							+ " result size "+(sumResultSize/numRecvd)
+							+ " numOriginalSearch "+numOriginalSearch
+							+ " avergage LatRange "+(this.sumLatitude/numOriginalSearch)
+							+ " avergage LongRange "+(this.sumLongitude/numOriginalSearch);
 		return str;
 	}
 	
@@ -270,6 +284,11 @@ public class IssueSearches extends AbstractRequestSendingClass
 			double minLong = boundingRect.getMinY();
 			double maxLong = boundingRect.getMaxY();
 			
+			this.sumLatitude = this.sumLatitude + (maxLat - minLat);
+			this.sumLongitude = this.sumLongitude + (maxLong - minLong);
+			
+			numOriginalSearch++;
+			
 			String searchQuery
 				= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE "+SearchAndUpdateDriver.latitudeAttr+" >= "+minLat+
 				" AND "+SearchAndUpdateDriver.latitudeAttr+" <= "+maxLat+" AND "+SearchAndUpdateDriver.longitudeAttr+" >= "+
@@ -277,7 +296,12 @@ public class IssueSearches extends AbstractRequestSendingClass
 			
 			ExperimentSearchReply searchRep 
 							= new ExperimentSearchReply( requestId );
-			numSent++;
+			
+			synchronized(numSentLock)
+			{
+				numSent++;
+			}
+			
 			double div = currWeatherEvent.getDurationInSecs()/SearchAndUpdateDriver.TIME_CONTRACTION_REAL_TIME;
 			long queryExpiry = (long) Math.ceil( div);
 			csClient.sendSearchQueryWithCallBack
@@ -294,69 +318,6 @@ public class IssueSearches extends AbstractRequestSendingClass
 			}
 		}
 	}
-	
-	/*private class PeriodicRefreshThread implements Runnable
-	{
-		@Override
-		public void run()
-		{
-			while( true )
-			{
-				try
-				{
-					Thread.sleep((long) PERIODIC_REFRESH_SLEEP_TIME);
-				}
-				catch (InterruptedException e) 
-				{
-					e.printStackTrace();
-				}
-				
-				List<String> removingKeyList = new LinkedList<String>();
-				
-				Iterator<String> queryIter = activeQMap.keySet().iterator();
-				
-				
-				while( queryIter.hasNext() )
-				{
-					String queryKey = queryIter.next();
-					ActiveQueryStorage activeQueryStore = activeQMap.get(queryKey);
-					if( SearchAndUpdateDriver.currentRealTime 
-										> activeQueryStore.getExpiryUnixTime() )
-					{
-						// remove the query
-						removingKeyList.add(queryKey);
-					}
-					else
-					{
-						if( 
-						(SearchAndUpdateDriver.currentRealTime - activeQueryStore.getLastSentUnixTime()) >= refreshTimeInSec )
-						{
-							activeQueryStore.updateLastSentUnixTime(
-										(long)SearchAndUpdateDriver.currentRealTime);
-							sendARefreshQuery(activeQueryStore);
-						}
-					}	
-				}
-				
-				// now remove queries
-				for(int i=0; i<removingKeyList.size(); i++)
-				{
-					String key = removingKeyList.get(i);
-					activeQMap.remove(key);
-				}
-			}
-		}
-		
-		private void sendARefreshQuery( ActiveQueryStorage activeQueryStore )
-		{
-			String searchQuery = activeQueryStore.getQueryString();
-			ExperimentSearchReply searchRep = new ExperimentSearchReply( numSent );
-			numSent++;
-			long queryExpiry = 300000;
-			csClient.sendSearchQueryWithCallBack
-				( searchQuery, queryExpiry, searchRep, getCallBack() );
-		}
-	}*/
 	
 	public static void main( String[] args ) throws NoSuchAlgorithmException, IOException, InterruptedException
 	{
