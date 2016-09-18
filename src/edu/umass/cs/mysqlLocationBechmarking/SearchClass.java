@@ -190,7 +190,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			= ( MySQLThroughputBenchmarking.predicateLength
 					* ( MySQLThroughputBenchmarking.LAT_MAX 
 					- MySQLThroughputBenchmarking.LAT_MIN ) );
-			
+		
 		double attrMax = attrMin + predLength;
 		//		double latitudeMax = latitudeMin 
 		//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
@@ -206,23 +206,23 @@ public class SearchClass extends AbstractRequestSendingClass
 		
 		attrName = "longitude";
 		attrMin 
-			= MySQLThroughputBenchmarking.LAT_MIN
-				+ queryRand.nextDouble()*(MySQLThroughputBenchmarking.LAT_MAX - 
-					MySQLThroughputBenchmarking.LAT_MIN);
+			= MySQLThroughputBenchmarking.LONG_MIN
+				+ queryRand.nextDouble()*(MySQLThroughputBenchmarking.LONG_MAX - 
+					MySQLThroughputBenchmarking.LONG_MIN);
 				
 		// querying 10 % of domain
 		predLength 
 			= ( MySQLThroughputBenchmarking.predicateLength
-					* ( MySQLThroughputBenchmarking.LAT_MAX 
-					- MySQLThroughputBenchmarking.LAT_MIN ) );
+					* ( MySQLThroughputBenchmarking.LONG_MAX 
+					- MySQLThroughputBenchmarking.LONG_MIN ) );
 			
 		attrMax = attrMin + predLength;
 		//		double latitudeMax = latitudeMin 
 		//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 		// making it curcular
-		if( attrMax > MySQLThroughputBenchmarking.LAT_MAX )
+		if( attrMax > MySQLThroughputBenchmarking.LONG_MAX )
 		{
-			attrMax = MySQLThroughputBenchmarking.LAT_MAX;
+			attrMax = MySQLThroughputBenchmarking.LONG_MAX;
 		}
 		
 		searchQuery = searchQuery + " AND ( "+attrName +" >= "+attrMin +" AND " 
