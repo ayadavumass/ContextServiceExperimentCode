@@ -261,6 +261,15 @@ public class SearchClass extends AbstractRequestSendingClass
 		return this.sumTime/numRecvd;
 	}
 	
+	public double getSearchCapacity()
+	{
+		double endTimeReplyRecvd = System.currentTimeMillis();
+		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+		
+		return sysThrput;
+		//System.out.println("Search result:Goodput "+sysThrput);
+	}
+	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 	{
@@ -278,12 +287,7 @@ public class SearchClass extends AbstractRequestSendingClass
 			sumResultSize = sumResultSize + resultSize;
 			sumTime = sumTime + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
-			{
-				double endTimeReplyRecvd = System.currentTimeMillis();
-				double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
-				
-				System.out.println("Search result:Goodput "+sysThrput);
-				
+			{	
 				waitLock.notify();
 			}
 		}

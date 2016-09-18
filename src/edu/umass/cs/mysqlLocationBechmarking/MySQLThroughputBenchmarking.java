@@ -370,8 +370,9 @@ public class MySQLThroughputBenchmarking
 		requestTypeObj.waitForThreadFinish();
 		double avgReplySize = ((SearchClass)requestTypeObj).getAvgResultSize();
 		double avgReplyTime = ((SearchClass)requestTypeObj).getAvgTime();
+		double searchCapacity = ((SearchClass)requestTypeObj).getSearchCapacity();
 		System.out.println("Average result size "
-		 +avgReplySize + " avg time "+avgReplyTime);
+		 +avgReplySize + " avg time "+avgReplyTime+" searchCapacity "+searchCapacity);
 		
 		System.exit(0);
 		//stateChange.waitForThreadFinish();
