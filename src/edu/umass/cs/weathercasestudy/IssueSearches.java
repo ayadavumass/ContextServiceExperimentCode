@@ -36,8 +36,6 @@ public class IssueSearches extends AbstractRequestSendingClass
 	//private PeriodicRefreshThread periodicRefreshThread;
 	//private ReadTriggerRecvd readTriggers;
 	
-	private double refreshTimeInSec							= 300.0;  // 300 s, 5 min refresh time
-	
 	//private final int searchId;
 	//private long searchStartTime;
 	private long searchEndTime;
@@ -178,12 +176,13 @@ public class IssueSearches extends AbstractRequestSendingClass
 			else
 			{
 				if( 
-				(SearchAndUpdateDriver.currentRealTime - activeQueryStore.getLastSentUnixTime()) >= refreshTimeInSec )
+				(SearchAndUpdateDriver.currentRealTime - activeQueryStore.getLastSentUnixTime()) >= 
+						SearchAndUpdateDriver.queryRefreshTime )
 				{
-					System.out.println("Refreshing a query Key "+activeQueryStore.getSearchQueryKey()
-					 +" Curr time "+SearchAndUpdateDriver.currentRealTime 
-					 +" Issue time "+activeQueryStore.getIssueUnixTime()
-					 + " Expiry time "+activeQueryStore.getExpiryUnixTime());
+//					System.out.println("Refreshing a query Key "+activeQueryStore.getSearchQueryKey()
+//					 +" Curr time "+SearchAndUpdateDriver.currentRealTime 
+//					 +" Issue time "+activeQueryStore.getIssueUnixTime()
+//					 + " Expiry time "+activeQueryStore.getExpiryUnixTime());
 					
 					activeQueryStore.updateLastSentUnixTime(
 								(long)SearchAndUpdateDriver.currentRealTime);
@@ -193,7 +192,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		}
 		
 		// now remove queries
-		System.out.println("Num Queries removed "+removingKeyList.size());
+		//System.out.println("Num Queries removed "+removingKeyList.size());
 		for(int i=0; i<removingKeyList.size(); i++)
 		{
 			String key = removingKeyList.get(i);

@@ -580,7 +580,7 @@ public class SearchAndUpdateDriver
 					e.printStackTrace();
 				}
 				
-				System.out.println("Refreshing queries size "+searchList.size());
+				//System.out.println("Refreshing queries size "+searchList.size());
 				for(int i=0; i<searchList.size(); i++)
 				{
 					IssueSearches appObj = searchList.get(i);
