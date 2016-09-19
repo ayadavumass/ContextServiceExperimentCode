@@ -239,16 +239,16 @@ public class IssueSearches extends AbstractRequestSendingClass
 		
 		searchStatClass.sendingRate = sendingRate;
 		searchStatClass.systemThpt = systemThpt;
+		searchStatClass.numSent = numSent;
+		searchStatClass.numRecvd = numRecvd;
 		searchStatClass.latency = (sumSearchLatency/numRecvd);
 		searchStatClass.avgReplySize = (sumResultSize/numRecvd);
 		searchStatClass.numOriginalSearch = numOriginalSearch;
 		searchStatClass.avgLatRange = (this.sumLatitude/numOriginalSearch);
 		searchStatClass.avgLongRange = (this.sumLongitude/numOriginalSearch);
 		
-		
 		return searchStatClass;
 	}
-	
 	
 	
 	public void sendSearchesWhoseTimeHasCome()
