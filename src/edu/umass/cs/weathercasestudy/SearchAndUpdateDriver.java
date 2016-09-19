@@ -477,14 +477,52 @@ public class SearchAndUpdateDriver
 					}
 					
 					printStr = printStr+" "+ " Search ";
-					for(int i=0; i<searchList.size(); i++)
+					
+					SearchStatClass totalStatObj = new SearchStatClass();
+					
+//					double sendingRate;
+//					double systemThpt;
+//					double numSent;
+//					double numRecvd;
+//					double avgReplySize;
+//					double latency;
+//					double resultSize;
+//					double numOriginalSearch;
+//					double avgLatRange;
+//					double avgLongRange;
+					
+					for( int i=0; i<searchList.size(); i++ )
 					{
-						printStr = printStr +searchList.get(i).getStatString()+" ";
+						SearchStatClass currStatObj = searchList.get(i).getStatObj();
+						totalStatObj.sendingRate = totalStatObj.sendingRate 
+																	+ currStatObj.sendingRate;
+						totalStatObj.systemThpt = totalStatObj.systemThpt 
+																	+ currStatObj.systemThpt;
+						totalStatObj.numSent = totalStatObj.numSent + currStatObj.numSent;
+						totalStatObj.numRecvd = totalStatObj.numRecvd + currStatObj.numRecvd;
+						totalStatObj.avgReplySize = totalStatObj.avgReplySize + currStatObj.avgReplySize;
+						totalStatObj.latency = totalStatObj.latency + currStatObj.latency;
+						totalStatObj.numOriginalSearch = totalStatObj.numOriginalSearch + currStatObj.numOriginalSearch;
+						totalStatObj.avgLatRange = totalStatObj.avgLatRange + currStatObj.avgLatRange;
+						totalStatObj.avgLongRange = totalStatObj.avgLongRange + currStatObj.avgLongRange;
+						//printStr = printStr +searchList.get(i).getStatString()+" ";
 					}
+					
+					// taking average
+					totalStatObj.sendingRate = totalStatObj.sendingRate/searchList.size();
+					totalStatObj.systemThpt = totalStatObj.systemThpt/searchList.size();
+					totalStatObj.numSent = totalStatObj.numSent/searchList.size();
+					totalStatObj.numRecvd = totalStatObj.numRecvd/searchList.size();
+					totalStatObj.avgReplySize = totalStatObj.avgReplySize/searchList.size();
+					totalStatObj.latency = totalStatObj.latency/searchList.size();
+					totalStatObj.numOriginalSearch = totalStatObj.numOriginalSearch/searchList.size();
+					totalStatObj.avgLatRange = totalStatObj.avgLatRange/searchList.size();
+					totalStatObj.avgLongRange = totalStatObj.avgLongRange/searchList.size();
+					
+					printStr = printStr + totalStatObj.toString();
 					
 					System.out.println(printStr);
 				}
-				
 			}
 		}
 	}

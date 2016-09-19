@@ -211,7 +211,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 			( searchQuery, queryExpiry, searchRep, getCallBack() );
 	}
 	
-	public String getStatString()
+	public SearchStatClass getStatObj()
 	{
 		//Date date = new Date((long)SearchAndUpdateDriver.currentRealTime*1000L); 
 		// *1000 is to convert seconds to milliseconds
@@ -221,21 +221,34 @@ public class IssueSearches extends AbstractRequestSendingClass
 		// give a timezone reference for formating (see comment at the bottom
 		//String dateFormat = sdf.format(date);
 		
+		SearchStatClass searchStatClass = new SearchStatClass();
+		
 		long currTime = System.currentTimeMillis();
 		double sendingRate = (numSent*1000.0)/(currTime-expStartTime);
 		double systemThpt = (numRecvd*1000.0)/(currTime-expStartTime);
 		
-		String str = "SearchId "+searchId+" numSent "+numSent+" numRecvd "
-							+ numRecvd+" avg reply size "+ (sumResultSize/numRecvd)
-							+ " sending rate "+sendingRate
-							+ " system throughput "+systemThpt
-							+ " latency "+(sumSearchLatency/numRecvd)+" ms"
-							+ " result size "+(sumResultSize/numRecvd)
-							+ " numOriginalSearch "+numOriginalSearch
-							+ " avergage LatRange "+(this.sumLatitude/numOriginalSearch)
-							+ " avergage LongRange "+(this.sumLongitude/numOriginalSearch);
-		return str;
+//		String str = "SearchId "+searchId+" numSent "+numSent+" numRecvd "
+//							+ numRecvd+" avg reply size "+ (sumResultSize/numRecvd)
+//							+ " sending rate "+sendingRate
+//							+ " system throughput "+systemThpt
+//							+ " latency "+(sumSearchLatency/numRecvd)+" ms"
+//							+ " result size "+(sumResultSize/numRecvd)
+//							+ " numOriginalSearch "+numOriginalSearch
+//							+ " avergage LatRange "+(this.sumLatitude/numOriginalSearch)
+//							+ " avergage LongRange "+(this.sumLongitude/numOriginalSearch);
+		
+		searchStatClass.sendingRate = sendingRate;
+		searchStatClass.systemThpt = systemThpt;
+		searchStatClass.latency = (sumSearchLatency/numRecvd);
+		searchStatClass.avgReplySize = (sumResultSize/numRecvd);
+		searchStatClass.numOriginalSearch = numOriginalSearch;
+		searchStatClass.avgLatRange = (this.sumLatitude/numOriginalSearch);
+		searchStatClass.avgLongRange = (this.sumLongitude/numOriginalSearch);
+		
+		
+		return searchStatClass;
 	}
+	
 	
 	
 	public void sendSearchesWhoseTimeHasCome()
