@@ -254,16 +254,16 @@ public class SearchAndUpdateDriver
 				
 				if( !triggerEnabled )
 				{
+					System.out.println("Starting periodic refresh thread");
 					PeriodicRefreshThread periodicRefresh = new PeriodicRefreshThread();
 					new Thread(periodicRefresh).start();
 				}
 				else
 				{
+					System.out.println("Starting recvd trigger thread");
 					ReadTriggerRecvd readTrigger = new ReadTriggerRecvd();
 					new Thread(readTrigger).start();
 				}
-				
-				
 				
 				
 //				for( int i=0; i<searchList.size(); i++ )
@@ -580,6 +580,7 @@ public class SearchAndUpdateDriver
 					e.printStackTrace();
 				}
 				
+				System.out.println("Refreshing queries size "+searchList.size());
 				for(int i=0; i<searchList.size(); i++)
 				{
 					IssueSearches appObj = searchList.get(i);

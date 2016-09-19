@@ -26,7 +26,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	private int nextIndexToSend 							= 0;
 	
-	private long requestId									= 0;
+	//private long requestId									= 0;
 	
 	private double sumSearchLatency							= 0;
 	private double sumResultSize							= 0;
@@ -38,7 +38,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	private double refreshTimeInSec							= 300.0;  // 300 s, 5 min refresh time
 	
-	private final int searchId;
+	//private final int searchId;
 	//private long searchStartTime;
 	private long searchEndTime;
 	
@@ -54,7 +54,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE, SearchAndUpdateDriver.WAIT_TIME );
 		
 		//this.refreshTimeInSec 	 = refreshTimeInSec;
-		this.searchId			 	= searchId;
+		//this.searchId			 	= searchId;
 		//weatherDataProcess 		 = new WeatherDataProcessing();
 		this.weatherDataProcess 	= weatherDataProcess;
 		csClient  = csclient;
@@ -180,6 +180,11 @@ public class IssueSearches extends AbstractRequestSendingClass
 				if( 
 				(SearchAndUpdateDriver.currentRealTime - activeQueryStore.getLastSentUnixTime()) >= refreshTimeInSec )
 				{
+					System.out.println("Refreshing a query Key "+activeQueryStore.getSearchQueryKey()
+					 +" Curr time "+SearchAndUpdateDriver.currentRealTime 
+					 +" Issue time "+activeQueryStore.getIssueUnixTime()
+					 + " Expiry time "+activeQueryStore.getExpiryUnixTime());
+					
 					activeQueryStore.updateLastSentUnixTime(
 								(long)SearchAndUpdateDriver.currentRealTime);
 					sendARefreshQuery(activeQueryStore);
@@ -188,6 +193,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 		}
 		
 		// now remove queries
+		System.out.println("Num Queries removed "+removingKeyList.size());
 		for(int i=0; i<removingKeyList.size(); i++)
 		{
 			String key = removingKeyList.get(i);
@@ -206,7 +212,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 			numSent++;
 		}
 		
-		long queryExpiry = 300000;
+		long queryExpiry = 0;
 		csClient.sendSearchQueryWithCallBack
 			( searchQuery, queryExpiry, searchRep, getCallBack() );
 	}
@@ -262,7 +268,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 										= buffaloWeatherList.get(nextIndexToSend);
 			if( currWeatherEvent.getIssueUnixTimeStamp() <=  SearchAndUpdateDriver.currentRealTime )
 			{
-				sendSearchQuery(currWeatherEvent, requestId++);
+				sendSearchQuery(currWeatherEvent, numSent);
 				nextIndexToSend++;
 			}
 			else
