@@ -38,7 +38,7 @@ public abstract class AbstractRequestSendingClass
 	
 	protected void waitForFinish()
 	{
-		waitTimer.schedule(new WaitTimerTask(), SearchAndUpdateDriver.WAIT_TIME);
+		waitTimer.schedule(new WaitTimerTask(), 300000);
 		
 		synchronized(waitLock)
 		{
