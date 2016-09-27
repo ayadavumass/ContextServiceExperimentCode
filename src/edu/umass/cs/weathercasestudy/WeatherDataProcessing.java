@@ -85,7 +85,8 @@ public class WeatherDataProcessing
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader(SearchAndUpdateDriver.weatherDataPath));
+			br 
+			= new BufferedReader(new FileReader(SearchAndUpdateDriver.weatherDataPath));
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
