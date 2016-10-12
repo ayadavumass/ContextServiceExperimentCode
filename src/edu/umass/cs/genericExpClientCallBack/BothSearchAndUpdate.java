@@ -26,8 +26,6 @@ public class BothSearchAndUpdate extends
 	private long numUpdatesRecvd			= 0;
 	
 	
-	
-	
 	// we don't want to issue new search queries for the trigger exp.
 	// so that the number of search queries in the experiment remains same.
 	// so when number of search queries reaches threshold then we reset it to 

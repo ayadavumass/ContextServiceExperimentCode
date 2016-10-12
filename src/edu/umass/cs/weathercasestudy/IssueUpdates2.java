@@ -131,8 +131,6 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 			csClient  = new ContextServiceClient<String>(csHost, csPort, 
 						ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
 		
-		
-		
 		transformRand = new Random(myID);
 	}
 	
@@ -336,7 +334,6 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 //		}
 //		return str;
 //	}
-	
 	
 //	public static final double minBuffaloLat 			= 42.0;
 //	public static final double maxBuffaloLat 			= 44.0;
