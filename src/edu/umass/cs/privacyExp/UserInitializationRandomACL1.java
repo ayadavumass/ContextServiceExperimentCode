@@ -117,7 +117,7 @@ public class UserInitializationRandomACL1 extends
 				byte[] publicKeyBytes = randGuidEntry.getPublicKey().getEncoded();
 				
 				ACLEntry aclEntry = new ACLEntry(guidACLMember, publicKeyBytes);
-				unionACLEntryMap.put( Utils.bytArrayToHex(guidACLMember), 
+				unionACLEntryMap.put( Utils.byteArrayToHex(guidACLMember), 
 						aclEntry );
 				//unionACLEntry.add(aclEntry);
 			}			
@@ -145,7 +145,7 @@ public class UserInitializationRandomACL1 extends
 					int randIndex = aclRand.nextInt( guidArray.length );
 					ACLEntry aclEntry = unionACLEntryMap.get(guidArray[randIndex]);
 					
-					attrACLMap.put(Utils.bytArrayToHex(aclEntry.getACLMemberGUID()), aclEntry);
+					attrACLMap.put(Utils.byteArrayToHex(aclEntry.getACLMemberGUID()), aclEntry);
 				}
 				
 				Iterator<String> guidIter = attrACLMap.keySet().iterator();
@@ -165,7 +165,7 @@ public class UserInitializationRandomACL1 extends
 			
 			List<AnonymizedIDEntry> anonymizedIDList = 
 						SearchAndUpdateDriver.csClient.computeAnonymizedIDs
-							(currUserEntry.getGuidEntry(), aclMap);
+							(currUserEntry.getGuidEntry(), aclMap, true);
 			
 			if(anonymizedIDList != null)
 			{

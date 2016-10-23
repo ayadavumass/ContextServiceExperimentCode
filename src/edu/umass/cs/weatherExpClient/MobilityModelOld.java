@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
 import edu.umass.cs.gnsclient.client.GNSClientCommands;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
@@ -111,8 +112,8 @@ public class MobilityModelOld
 		guidPrefix = guidPrefix+myID;
 		
 		gnsClient = new GNSClientCommands();
-		csClient = new ContextServiceClient<String>(csHost, csPort, 
-				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
+		csClient = new ContextServiceClient<String>(csHost, csPort, false, 
+				PrivacySchemes.NO_PRIVACY);
 	
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;

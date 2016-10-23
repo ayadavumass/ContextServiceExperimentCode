@@ -107,7 +107,8 @@ public class TriggerSearchClass extends AbstractRequestSendingClass
 		
 		try
 		{
-			String hexIP = Utils.bytArrayToHex(InetAddress.getByName(userIP).getAddress());	
+			String hexIP = Utils.byteArrayToHex
+						(InetAddress.getByName(userIP).getAddress());	
 			
 			String insertTableSQL = " INSERT INTO "
 					+ MySQLThroughputBenchmarking.triggerTableName 

@@ -168,10 +168,9 @@ public class MySQLBenchmarking2
 	public static void benchmarkPrivacyInsertTimeSingleInsert()
 	{
 		//INSERT INTO attr0EncryptionInfoStorage (nodeGUID, realIDEncryption, subspaceId) VALUES 
-		//(X'5D8464F1B7FFEF9EAFF42370E56E0F8FF1C9AB64' , X'5AD69BC3F059A5EB14DFB04400DB029E9287E8C46DABAF5EE79C3A9451095A1F4D06FE6326DAEF0C58A78D146FCF63593D397B0BB37D341C97472B9C7FB450B63C3AAD463E79DE5E9E74778AD330566F30445D97E88198893946CB08EFDA0DF8F82E39DFBE0487CE23E4F5252DBF92A5D2A44A467EC48C5653040AD0C61F038C', 1);
-		
+		//(X'5D8464F1B7FFEF9EAFF42370E56E0F8FF1C9AB64' , X'5AD69BC3F059A5EB14DFB04400DB029E9287E8C46DABAF5EE79C3A9451095A1F4D06FE6326DAEF0C58A78D146FCF63593D397B0BB37D341C97472B9C7FB450B63C3AAD463E79DE5E9E74778AD330566F30445D97E88198893946CB08EFDA0DF8F82E39DFBE0487CE23E4F5252DBF92A5D2A44A467EC48C5653040AD0C61F038C', 1);	
 		String sampleInsertSQL 
-		= "INSERT INTO attr0EncryptionInfoStorage (nodeGUID, realIDEncryption, subspaceId) VALUES";
+			= "INSERT INTO attr0EncryptionInfoStorage (nodeGUID, realIDEncryption, subspaceId) VALUES";
 		
 		Connection myConn = null;
 		Statement statement = null;
@@ -188,11 +187,11 @@ public class MySQLBenchmarking2
 			{
 				byte[] guidBytes = new byte[20];
 				rand.nextBytes(guidBytes);
-				String guidString = Utils.bytArrayToHex(guidBytes);
+				String guidString = Utils.byteArrayToHex(guidBytes);
 				
 				byte[] realIDEncryptionBytes = new byte[128];
 				rand.nextBytes(realIDEncryptionBytes);
-				String realIDHex = Utils.bytArrayToHex(realIDEncryptionBytes);
+				String realIDHex = Utils.byteArrayToHex(realIDEncryptionBytes);
 				
 				int subsapceId = rand.nextInt(3);
 				
@@ -242,7 +241,7 @@ public class MySQLBenchmarking2
 		//(X'5D8464F1B7FFEF9EAFF42370E56E0F8FF1C9AB64' , X'5AD69BC3F059A5EB14DFB04400DB029E9287E8C46DABAF5EE79C3A9451095A1F4D06FE6326DAEF0C58A78D146FCF63593D397B0BB37D341C97472B9C7FB450B63C3AAD463E79DE5E9E74778AD330566F30445D97E88198893946CB08EFDA0DF8F82E39DFBE0487CE23E4F5252DBF92A5D2A44A467EC48C5653040AD0C61F038C', 1);
 		
 		String sampleInsertSQL 
-		= "INSERT INTO attr0EncryptionInfoStorage (nodeGUID, realIDEncryption, subspaceId) VALUES";
+			= "INSERT INTO attr0EncryptionInfoStorage (nodeGUID, realIDEncryption, subspaceId) VALUES";
 		
 		Connection myConn = null;
 		Statement statement = null;
@@ -268,11 +267,11 @@ public class MySQLBenchmarking2
 					
 					byte[] guidBytes = new byte[20];
 					rand.nextBytes(guidBytes);
-					String guidString = Utils.bytArrayToHex(guidBytes);
+					String guidString = Utils.byteArrayToHex(guidBytes);
 					
 					byte[] realIDEncryptionBytes = new byte[128];
 					rand.nextBytes(realIDEncryptionBytes);
-					String realIDHex = Utils.bytArrayToHex(realIDEncryptionBytes);
+					String realIDHex = Utils.byteArrayToHex(realIDEncryptionBytes);
 					
 					int subsapceId = rand.nextInt(3);
 					

@@ -90,7 +90,7 @@ public class UserInitializationACLWithCircles extends
 				
 				ACLEntry aclEntry 
 							= new ACLEntry(guidACLMember, publicKeyBytes);
-				distinctGuidMap.put( Utils.bytArrayToHex(guidACLMember), 
+				distinctGuidMap.put( Utils.byteArrayToHex(guidACLMember), 
 						aclEntry );
 				//unionACLEntry.add(aclEntry);
 			}
@@ -154,7 +154,7 @@ public class UserInitializationACLWithCircles extends
 			// generate anonymized IDs
 			List<AnonymizedIDEntry> anonymizedIDList = 
 					SearchAndUpdateDriver.csClient.computeAnonymizedIDs
-					(currUserEntry.getGuidEntry(), aclMap);
+					(currUserEntry.getGuidEntry(), aclMap, true);
 			
 			if( anonymizedIDList != null )
 			{

@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
 import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
@@ -160,7 +161,7 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = false;
 			userInitEnable	  = true;
 			singleRequest	  = true;
-			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
+			transformType     = PrivacySchemes.HYPERSPACE_PRIVACY.ordinal();
 		}
 		
 		
@@ -169,9 +170,17 @@ public class SearchAndUpdateDriver
 		System.out.println("Search and update client started ");
 		guidPrefix = guidPrefix+myID;
 		
-		//gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient  = new ContextServiceClient<String>( csHost, csPort,
-				transformType );
+		if( transformType == PrivacySchemes.HYPERSPACE_PRIVACY.ordinal() )
+		{
+			csClient  = new ContextServiceClient<String>( csHost, csPort, true,
+					PrivacySchemes.HYPERSPACE_PRIVACY );
+		}
+		else if( transformType == PrivacySchemes.SUBSPACE_PRIVACY.ordinal() )
+		{
+			csClient  = new ContextServiceClient<String>( csHost, csPort, true,
+					PrivacySchemes.SUBSPACE_PRIVACY );
+		}
+		
 		System.out.println("ContextServiceClient created");
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;

@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 import edu.umass.cs.gnsclient.client.GNSClientCommands;
 
 public class WeatherAlertClient
@@ -79,8 +80,8 @@ public class WeatherAlertClient
 	public WeatherAlertClient(String gnsHost, int gnsPort, String csHost, int csPort) 
 											throws IOException, ParseException, NoSuchAlgorithmException
 	{
-		csClient = new ContextServiceClient<String>(csHost, csPort, 
-				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
+		csClient = new ContextServiceClient<String>(csHost, csPort, false,
+				PrivacySchemes.NO_PRIVACY);
 		clockTimer = new Timer();
 		 
 		boolean disableSSL = true;

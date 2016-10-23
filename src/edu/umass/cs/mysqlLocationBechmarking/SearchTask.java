@@ -74,7 +74,7 @@ public class SearchTask implements Runnable
 				else
 				{
 					byte[] nodeGUIDBytes  = rs.getBytes("nodeGUID");
-					String nodeGUIDString = Utils.bytArrayToHex(nodeGUIDBytes);
+					String nodeGUIDString = Utils.byteArrayToHex(nodeGUIDBytes);
 					resultSize++;
 					resultArray.put(nodeGUIDString);
 				}

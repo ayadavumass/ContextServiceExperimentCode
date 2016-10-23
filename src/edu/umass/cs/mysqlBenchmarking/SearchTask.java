@@ -63,7 +63,7 @@ public class SearchTask implements Runnable
 				//Retrieve by column name
 				//double value  	 = rs.getDouble("value");
 				byte[] nodeGUIDBytes  = rs.getBytes("nodeGUID");
-				String nodeGUIDString = Utils.bytArrayToHex(nodeGUIDBytes);
+				String nodeGUIDString = Utils.byteArrayToHex(nodeGUIDBytes);
 			
 				jsoArray.put(nodeGUIDString);
 			}

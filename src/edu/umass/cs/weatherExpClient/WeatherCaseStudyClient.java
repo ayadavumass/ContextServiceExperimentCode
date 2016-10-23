@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 
 public class WeatherCaseStudyClient
@@ -217,8 +218,8 @@ public class WeatherCaseStudyClient
 		
 		queryGenRandom = new Random((Integer)myID);
 		
-		csClient = new ContextServiceClient<String>(csHost, csPort, 
-				ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
+		csClient = new ContextServiceClient<String>(csHost, csPort, false, 
+				PrivacySchemes.NO_PRIVACY);
         
 		//eservice = Executors.newFixedThreadPool(1000);
 		eservice = Executors.newCachedThreadPool();

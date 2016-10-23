@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 public class Driver
 {
@@ -59,7 +60,8 @@ public class Driver
 		String csHost = args[0];
 		int csPort = Integer.parseInt(args[1]);
 		
-		csClient = new ContextServiceClient<String>(csHost, csPort);
+		csClient = new ContextServiceClient<String>(csHost, csPort, true, 
+				PrivacySchemes.NO_PRIVACY);
 		
 		InitializeTaxisClass initializeTaxi = new InitializeTaxisClass();
 		

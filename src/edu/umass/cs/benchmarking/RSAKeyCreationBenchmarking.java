@@ -5,10 +5,11 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 
 public class RSAKeyCreationBenchmarking 
 {
-	
 	public static void main(String[] args) throws NoSuchAlgorithmException
 	{
 		int numKeys = Integer.parseInt(args[0]);
@@ -21,8 +22,10 @@ public class RSAKeyCreationBenchmarking
 		{
 			
 			KeyPair kp0 = kpg.genKeyPair();
-			PublicKey publicKey0 = kp0.getPublic();
-			PrivateKey privateKey0 = kp0.getPrivate();
+			RSAPublicKey publicKey0 = (RSAPublicKey) kp0.getPublic();
+			RSAPrivateKey privateKey0 = (RSAPrivateKey) kp0.getPrivate();
+			int len = publicKey0.getModulus().bitLength();
+			System.out.println("key len "+len+ " "+privateKey0.getEncoded().length);
 		}
 		
 		long end = System.currentTimeMillis();

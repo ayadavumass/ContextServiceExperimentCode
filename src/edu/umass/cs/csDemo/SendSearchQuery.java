@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 public class SendSearchQuery
 {
@@ -18,8 +19,8 @@ public class SendSearchQuery
 		int csPort = Integer.parseInt(parsed[1]);
 		
 		ContextServiceClient<Integer> csClient 
-			= new ContextServiceClient<Integer>(csIP, csPort, 
-						ContextServiceClient.SUBSPACE_BASED_CS_TRANSFORM);
+			= new ContextServiceClient<Integer>( csIP, csPort, 
+					false, PrivacySchemes.NO_PRIVACY );
 		
 		// context service query format
 		String query = 

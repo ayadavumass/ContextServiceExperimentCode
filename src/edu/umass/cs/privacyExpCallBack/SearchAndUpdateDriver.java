@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 import edu.umass.cs.contextservice.logging.ContextServiceLogger;
 import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
@@ -166,7 +167,7 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = false;
 			userInitEnable	  = true;
 			singleRequest	  = true;
-			transformType     = ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM;
+			transformType     = PrivacySchemes.HYPERSPACE_PRIVACY.ordinal();
 		}
 		
 		
@@ -175,9 +176,21 @@ public class SearchAndUpdateDriver
 		System.out.println("Search and update client started ");
 		guidPrefix = guidPrefix+myID;
 		
-		//gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient  = new ContextServiceClient<String>( csHost, csPort,
-				transformType );
+		if( transformType == PrivacySchemes.HYPERSPACE_PRIVACY.ordinal() )
+		{
+			System.out.println("Initializing HYPERSPACE_PRIVACY");
+			csClient  = new ContextServiceClient<String>( csHost, csPort, true,
+					PrivacySchemes.HYPERSPACE_PRIVACY );
+		}
+		else if( transformType == PrivacySchemes.SUBSPACE_PRIVACY.ordinal() )
+		{
+			System.out.println("Initializing SUBSPACE_PRIVACY");
+			csClient  = new ContextServiceClient<String>( csHost, csPort, true,
+					PrivacySchemes.SUBSPACE_PRIVACY );
+		}
+		
+
+		
 		System.out.println("ContextServiceClient created");
 		// per 1 ms
 		//locationReqsPs = numUsers/granularityOfGeolocationUpdate;
@@ -188,7 +201,7 @@ public class SearchAndUpdateDriver
 			new Thread( new ReadTriggerRecvd() ).start();
 		}
 		
-		taskES = Executors.newFixedThreadPool(200);
+		taskES = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		if( userInitEnable )
 		{
 			long start 	= System.currentTimeMillis();
@@ -332,23 +345,4 @@ public class SearchAndUpdateDriver
 		}
 	}
 	
-//	public static JSONObject getUpdateJSONForCS(int userState, double userLat, 
-//	double userLong) throws JSONException
-//{
-//JSONObject attrValJSON = new JSONObject();
-//attrValJSON.put(latitudeAttrName, userLat);
-//attrValJSON.put(longitudeAttrName, userLong);
-//attrValJSON.put(userStateAttrName, userState);
-//return attrValJSON;
-//}
-
-//public static JSONObject getUpdateJSONForGNS(int userState, double userLat, 
-//	double userLong) throws JSONException
-//{
-//JSONObject attrValJSON = new JSONObject();
-//attrValJSON.put(GEO_LOCATION_CURRENT, 
-//		GeoJSON.createGeoJSONCoordinate(new GlobalCoordinate(userLat, userLong)));
-//attrValJSON.put(userStateAttrName, userState);
-//return attrValJSON;
-//}
 }

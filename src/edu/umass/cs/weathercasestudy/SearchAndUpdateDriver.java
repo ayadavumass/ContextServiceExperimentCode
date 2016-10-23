@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 import edu.umass.cs.contextservice.messages.RefreshTrigger;
 import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
@@ -217,7 +218,8 @@ public class SearchAndUpdateDriver
 			if( runSearch )
 			{
 				csClient = new ContextServiceClient<String>
-							(csHost, csPort, ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
+							(csHost, csPort, false, 
+							PrivacySchemes.NO_PRIVACY);
 				
 				weatherDataProcess = new WeatherDataProcessing();
 				for( int i=0; i<numSearchRepetitions; i++ )

@@ -24,6 +24,7 @@ import edu.umass.cs.acs.geodesy.GeodeticCalculator;
 import edu.umass.cs.acs.geodesy.GeodeticCurve;
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 import edu.umass.cs.utils.UtilFunctions;
 
 public class IssueUpdates extends AbstractRequestSendingClass
@@ -126,8 +127,8 @@ public class IssueUpdates extends AbstractRequestSendingClass
 		nextEntryToSendMap       = new HashMap<Integer, Integer>();
 		
 		if( csHost != null )
-			csClient  = new ContextServiceClient<String>(csHost, csPort, 
-						ContextServiceClient.HYPERSPACE_BASED_CS_TRANSFORM);
+			csClient  = new ContextServiceClient<String>(csHost, csPort, false,
+						PrivacySchemes.NO_PRIVACY);
 		
 		
 		

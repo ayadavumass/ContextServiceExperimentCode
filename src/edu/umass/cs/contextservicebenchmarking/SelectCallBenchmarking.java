@@ -17,6 +17,7 @@ package edu.umass.cs.contextservicebenchmarking;
  * Initial developer(s): aditya */
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 import edu.umass.cs.gnscommon.exceptions.client.ClientException;
 
 import java.security.InvalidKeyException;
@@ -128,7 +129,9 @@ public class SelectCallBenchmarking
 		/* Create the client that connects to a default reconfigurator as
 		 * specified in gigapaxos properties file. */
 		//client = new GNSClientCommands();
-		csClient = new ContextServiceClient<Integer>("serv0", 8000);
+		csClient = new ContextServiceClient<Integer>("serv0", 8000, 
+				false, PrivacySchemes.NO_PRIVACY);
+		
 		System.out.println("[Client connected to context service]\n");
 		
 		
