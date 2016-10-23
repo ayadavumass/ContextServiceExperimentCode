@@ -10,6 +10,8 @@ import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 import edu.umass.cs.gnsclient.client.util.GuidUtils;
+import edu.umass.cs.gnscommon.AclAccessType;
+import edu.umass.cs.gnscommon.GNSCommandProtocol;
 
 
 public class InitTask implements Runnable
@@ -36,6 +38,10 @@ public class InitTask implements Runnable
 					(userGUID, 
 					ContextServiceClient.SYMMETRIC_KEY_EXCHANGE_FIELD_NAME, 
 					new JSONArray()));
+			
+			// any GUID can append symmetric key information here.
+			gnsClient.execute( GNSCommand.aclAdd(AclAccessType.WRITE_WHITELIST, userGUID, 
+					ContextServiceClient.SYMMETRIC_KEY_EXCHANGE_FIELD_NAME, GNSCommandProtocol.ALL_GUIDS) );
 			
 			UserEntry userEntry = new UserEntry(userGUID);
 			
