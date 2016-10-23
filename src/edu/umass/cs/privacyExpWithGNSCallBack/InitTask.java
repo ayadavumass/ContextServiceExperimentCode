@@ -52,6 +52,7 @@ public class InitTask implements Runnable
 		}
 		catch (Exception e) 
 		{
+			System.out.println("GUID alias "+guidAlias+" couldn't be created");
 			e.printStackTrace();
 		}
 	}
