@@ -1,26 +1,25 @@
 package edu.umass.cs.privacyExp2WithGNSCallBack;
 
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
-import org.json.JSONArray;
-
-import edu.umass.cs.contextservice.client.ContextServiceClient;
-import edu.umass.cs.gnsclient.client.GNSClient;
-import edu.umass.cs.gnsclient.client.GNSCommand;
+import edu.umass.cs.contextservice.config.ContextServiceConfig;
+import edu.umass.cs.contextservice.utils.Utils;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
-import edu.umass.cs.gnsclient.client.util.GuidUtils;
-import edu.umass.cs.gnscommon.AclAccessType;
-import edu.umass.cs.gnscommon.GNSCommandProtocol;
-
 
 public class InitTask implements Runnable
 {
 	private final String guidAlias;
+	private final KeyPairGenerator kpg;
 	
 	public InitTask(String guidAlias) throws NoSuchAlgorithmException
 	{
 		this.guidAlias = guidAlias;
+		kpg = KeyPairGenerator.getInstance( ContextServiceConfig.AssymmetricEncAlgorithm );
 	}
 	
 	@Override
@@ -28,20 +27,30 @@ public class InitTask implements Runnable
 	{
 		try 
 		{
-			GNSClient gnsClient = SearchAndUpdateDriver.csClient.getGNSClient();
+			KeyPair kp0 = kpg.generateKeyPair();
+			PublicKey publicKey0 = kp0.getPublic();
+			PrivateKey privateKey0 = kp0.getPrivate();
+			byte[] publicKeyByteArray0 = publicKey0.getEncoded();
+			
+			String guid0 = Utils.convertPublicKeyToGUIDString(publicKeyByteArray0);
+			
+			GuidEntry userGUID =  new GuidEntry(guidAlias, guid0, 
+						publicKey0, privateKey0);
+				
+			//GNSClient gnsClient = SearchAndUpdateDriver.csClient.getGNSClient();
 		
-			GuidEntry userGUID = GuidUtils.lookupOrCreateAccountGuid
-				(gnsClient, guidAlias, "password");
+//			GuidEntry userGUID = GuidUtils.lookupOrCreateAccountGuid
+//				(gnsClient, guidAlias, "password");
 			
 			// resetting SYMMETRIC_KEY_EXCHANGE_FIELD_NAME field.
-			gnsClient.execute( GNSCommand.fieldReplaceOrCreateList
-					(userGUID, 
-					ContextServiceClient.SYMMETRIC_KEY_EXCHANGE_FIELD_NAME, 
-					new JSONArray()));
+//			gnsClient.execute( GNSCommand.fieldReplaceOrCreateList
+//					(userGUID, 
+//					ContextServiceClient.SYMMETRIC_KEY_EXCHANGE_FIELD_NAME, 
+//					new JSONArray()));
 			
 			// any GUID can append symmetric key information here.
-			gnsClient.execute( GNSCommand.aclAdd(AclAccessType.WRITE_WHITELIST, userGUID, 
-					ContextServiceClient.SYMMETRIC_KEY_EXCHANGE_FIELD_NAME, GNSCommandProtocol.ALL_GUIDS) );
+			//gnsClient.execute( GNSCommand.aclAdd(AclAccessType.WRITE_WHITELIST, userGUID, 
+			//		ContextServiceClient.SYMMETRIC_KEY_EXCHANGE_FIELD_NAME, GNSCommandProtocol.ALL_GUIDS) );
 			
 			UserEntry userEntry = new UserEntry(userGUID);
 			
@@ -62,4 +71,6 @@ public class InitTask implements Runnable
 			e.printStackTrace();
 		}
 	}
+	
+	
 }

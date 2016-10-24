@@ -98,13 +98,13 @@ public class SearchAndUpdateDriver
 		if( transformType == PrivacySchemes.HYPERSPACE_PRIVACY.ordinal() )
 		{
 			System.out.println("Initializing HYPERSPACE_PRIVACY");
-			csClient  = new ContextServiceClient<Integer>( csHost, csPort, true,
+			csClient  = new ContextServiceClient<Integer>( csHost, csPort, false,
 					PrivacySchemes.HYPERSPACE_PRIVACY );
 		}
 		else if( transformType == PrivacySchemes.SUBSPACE_PRIVACY.ordinal() )
 		{
 			System.out.println("Initializing SUBSPACE_PRIVACY");
-			csClient  = new ContextServiceClient<Integer>( csHost, csPort, true,
+			csClient  = new ContextServiceClient<Integer>( csHost, csPort, false,
 					PrivacySchemes.SUBSPACE_PRIVACY );
 		}
 
