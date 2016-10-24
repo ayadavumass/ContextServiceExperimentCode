@@ -87,7 +87,8 @@ public class SearchAndUpdateDriver
 		userInitEnable	   = Boolean.parseBoolean(args[10]);
 		transformType      = Integer.parseInt(args[11]);
 		predicateLength    = Double.parseDouble(args[12]);
-		
+		totalDistinctGuidsInACLs = Integer.parseInt(args[13]);
+		aclSize = Integer.parseInt(args[14]);
 		
 		usersVector = new Vector<UserEntry>();
 				
