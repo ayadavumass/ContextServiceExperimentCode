@@ -89,8 +89,8 @@ public class UserInitializationACL extends
 			
 			if( anonymizedIDList != null )
 			{
-				System.out.println( "Number of anonymized IDs created "+
-						anonymizedIDList.size() );
+//				System.out.println( "Number of anonymized IDs created "+
+//						anonymizedIDList.size() );
 			}
 			currUserEntry.setAnonymizedIDList(anonymizedIDList);
 			
