@@ -27,10 +27,11 @@ public class MeasureDatabaseSizeOnAllNodes
 	    while ( (line = reader.readLine())!= null )
 	    {
 	    	System.out.println(line);
+	    	
 	    	String[] parsed = line.split(" ");
 	    	
 	    	String sizeString = parsed[0].trim();
-	    	System.out.println(" parse[0] "+parsed[0] +" "+parsed[1]+" sizeString "+sizeString);
+	    	//System.out.println(" parse[0] "+parsed[0] +" "+parsed[1]+" sizeString "+sizeString);
 	    	if( sizeString.charAt(sizeString.length()-1) == 'M' )
 	    	{
 	    		String numericValString = sizeString.substring(0, sizeString.length()-1);
@@ -43,7 +44,7 @@ public class MeasureDatabaseSizeOnAllNodes
 	    	}
 	    }
 			
-		System.out.println("Total database size "+totalSize);
+		System.out.println("Total database size "+totalSize+" MB");
 	}
 	
 }
