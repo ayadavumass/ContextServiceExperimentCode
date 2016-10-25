@@ -16,7 +16,7 @@ public class MeasureDatabaseSizeOnAllNodes
 		for( int i=0; i < numNodes; i++ )
 		{
 			// du -h /home/mysqlDir-serv0/ | tail -1
-			String command = "ssh serv"+i+" \"/proj/MobilityFirst/ayadavDir/contextServiceScripts/mysqlSize.sh "+i+"\"";
+			String command = "/proj/MobilityFirst/ayadavDir/contextServiceScripts/mysqlSizeBash.sh";
 			System.out.println("Command "+command);
 			Process p = Runtime.getRuntime().exec(command);
 		    p.waitFor();
