@@ -153,7 +153,7 @@ public class SearchAndUpdateDriver
 		guidPrefix = guidPrefix+myID;
 		
 		//gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient  = new ContextServiceClient<String>(csHost, csPort, true, 
+		csClient  = new ContextServiceClient<String>(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 		
 		System.out.println("ContextServiceClient created");
