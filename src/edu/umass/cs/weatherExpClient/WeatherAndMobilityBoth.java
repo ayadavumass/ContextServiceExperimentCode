@@ -103,7 +103,7 @@ public class WeatherAndMobilityBoth
 	private static boolean updateEnable						= false;
 	private static boolean searchEnable						= false;
 	
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	
 	
 	
@@ -160,7 +160,7 @@ public class WeatherAndMobilityBoth
 		guidPrefix = guidPrefix+myID;
 		
 		gnsClient = new GNSClientCommands();
-		csClient = new ContextServiceClient<String>(csHost, csPort, false, 
+		csClient = new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 	
 		// per 1 ms

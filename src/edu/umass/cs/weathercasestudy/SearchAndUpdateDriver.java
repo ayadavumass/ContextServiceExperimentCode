@@ -102,7 +102,7 @@ public class SearchAndUpdateDriver
 	
 	public static boolean triggerEnabled;
 	
-	public static ContextServiceClient<String> csClient; 
+	public static ContextServiceClient csClient; 
 	public static WeatherDataProcessing weatherDataProcess;
 	public static void main( String[] args )
 									throws Exception
@@ -217,7 +217,7 @@ public class SearchAndUpdateDriver
 			
 			if( runSearch )
 			{
-				csClient = new ContextServiceClient<String>
+				csClient = new ContextServiceClient
 							(csHost, csPort, false, 
 							PrivacySchemes.NO_PRIVACY);
 				
@@ -610,8 +610,8 @@ public class SearchAndUpdateDriver
 				{
 					try 
 					{
-						RefreshTrigger<Integer> refreshTrig 
-							= new RefreshTrigger<Integer>(triggerArray.getJSONObject(i));
+						RefreshTrigger refreshTrig 
+							= new RefreshTrigger(triggerArray.getJSONObject(i));
 						long timeTakenSinceUpdate 
 							= System.currentTimeMillis() - refreshTrig.getUpdateStartTime();
 						if(timeTakenSinceUpdate <= 0)

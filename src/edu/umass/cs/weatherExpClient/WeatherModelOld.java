@@ -85,7 +85,7 @@ public class WeatherModelOld
 		
 	public static boolean useContextService						= false;
 		
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	
 		
 	public static void main(String[] args) throws Exception
@@ -104,7 +104,7 @@ public class WeatherModelOld
 		myID = Integer.parseInt(args[6]);
 		
 		gnsClient = new GNSClientCommands();
-		csClient = new ContextServiceClient<String>(csHost, csPort, false, 
+		csClient = new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 		
 		//taskES = Executors.newCachedThreadPool();

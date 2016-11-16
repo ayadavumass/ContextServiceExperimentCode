@@ -79,7 +79,7 @@ public class SelectCallBenchmarking
 	
 	// replace with your account alias
 	//public static GNSClientCommands client;
-	public static ContextServiceClient<Integer> csClient;
+	public static ContextServiceClient csClient;
 	//public static GuidEntry account_guid;
 	//private static List<GuidEntry>
 		
@@ -129,7 +129,7 @@ public class SelectCallBenchmarking
 		/* Create the client that connects to a default reconfigurator as
 		 * specified in gigapaxos properties file. */
 		//client = new GNSClientCommands();
-		csClient = new ContextServiceClient<Integer>("serv0", 8000, 
+		csClient = new ContextServiceClient("serv0", 8000, 
 				false, PrivacySchemes.NO_PRIVACY);
 		
 		System.out.println("[Client connected to context service]\n");

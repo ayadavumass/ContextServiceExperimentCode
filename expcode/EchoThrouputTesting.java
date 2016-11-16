@@ -25,7 +25,7 @@ import edu.umass.cs.nio.JSONMessenger;
 import edu.umass.cs.nio.JSONNIOTransport;
 
 
-public class EchoThrouputTesting<NodeIDType> implements InterfacePacketDemultiplexer<JSONObject>
+public class EchoThrouputTesting<Integer> implements InterfacePacketDemultiplexer<JSONObject>
 {
 	//public static final String DUMMYGUID = "0B3C3AC6E25FF553BE3DC9176889E927C14CEA2A";
 		public static final int MAX_QUERY_LEN = 10;
@@ -47,10 +47,10 @@ public class EchoThrouputTesting<NodeIDType> implements InterfacePacketDemultipl
 		//private static final HashMap<String, Double> attrValueMap					= new HashMap<String, Double>();
 		
 		// stores the current values
-		private final NodeIDType myID;
-		private final CSNodeConfig<NodeIDType> csNodeConfig;
-		private final JSONNIOTransport<NodeIDType> niot;
-		private final JSONMessenger<NodeIDType> messenger;
+		private final Integer myID;
+		private final CSNodeConfig<Integer> csNodeConfig;
+		private final JSONNIOTransport<Integer> niot;
+		private final JSONMessenger<Integer> messenger;
 		private final String sourceIP;
 		private final int sourcePort;
 		
@@ -170,7 +170,7 @@ public class EchoThrouputTesting<NodeIDType> implements InterfacePacketDemultipl
 			}
 		}
 		
-		public EchoThrouputTesting(NodeIDType id) throws Exception
+		public EchoThrouputTesting(Integer id) throws Exception
 		{
 			generalRand = new Random();
 			rand = new Random();
@@ -182,7 +182,7 @@ public class EchoThrouputTesting<NodeIDType> implements InterfacePacketDemultipl
 			
 			sourcePort = 2000+generalRand.nextInt(50000);
 			
-			csNodeConfig = new CSNodeConfig<NodeIDType>();
+			csNodeConfig = new CSNodeConfig<Integer>();
 			
 			sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 			
@@ -195,10 +195,10 @@ public class EchoThrouputTesting<NodeIDType> implements InterfacePacketDemultipl
 			ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID) +
 					" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID);
 			
-			niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+			niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 			
 			messenger = 
-				new JSONMessenger<NodeIDType>(niot);
+				new JSONMessenger<Integer>(niot);
 			
 			pd.register(ContextServicePacket.PacketType.ECHOREPLY_MESSAGE, this);
 			
@@ -337,8 +337,8 @@ public class EchoThrouputTesting<NodeIDType> implements InterfacePacketDemultipl
 			
 			private void sendEchoToContextService() throws IOException, JSONException
 			{
-				EchoMessage<NodeIDType> qmesgU 
-					= new EchoMessage<NodeIDType>(myID, "echo", sourceIP, sourcePort);
+				EchoMessage<Integer> qmesgU 
+					= new EchoMessage<Integer>(myID, "echo", sourceIP, sourcePort);
 				
 				InetSocketAddress sockAddr = getRandomNodeSock();
 				//ContextServiceLogger.getLogger().fine("Sending query to "+sockAddr);

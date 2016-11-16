@@ -52,7 +52,7 @@ public class Driver
 	public static final DateFormat dfm 					= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	public static int myID;
 	
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException
@@ -60,7 +60,7 @@ public class Driver
 		String csHost = args[0];
 		int csPort = Integer.parseInt(args[1]);
 		
-		csClient = new ContextServiceClient<String>(csHost, csPort, true, 
+		csClient = new ContextServiceClient(csHost, csPort, true, 
 				PrivacySchemes.NO_PRIVACY);
 		
 		InitializeTaxisClass initializeTaxi = new InitializeTaxisClass();

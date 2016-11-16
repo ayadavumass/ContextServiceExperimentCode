@@ -52,7 +52,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 //	public static final String longitudeAttr			= "longitude";
 	
 	
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	//public static boolean useGNS						= false;
 	
 	//public static final String nomadLogDataPath 		
@@ -129,7 +129,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		lastUpdateTimeStamp      = new HashMap<Integer, Long>();
 		
 		if( csHost != null )
-			csClient  = new ContextServiceClient<String>(csHost, csPort, false,
+			csClient  = new ContextServiceClient(csHost, csPort, false,
 						PrivacySchemes.NO_PRIVACY);
 		
 		transformRand = new Random(myID);

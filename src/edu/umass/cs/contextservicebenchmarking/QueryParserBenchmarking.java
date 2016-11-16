@@ -28,8 +28,8 @@ public class QueryParserBenchmarking
 		{
 			String searchQuery = getQueryMessageWithSmallRanges();
 			String groupGUID = Utils.getSHA1(searchQuery);
-			QueryInfo<Integer> currReq  
-				= new QueryInfo<Integer>( searchQuery, 0, groupGUID, i, 
+			QueryInfo currReq  
+				= new QueryInfo( searchQuery, 0, groupGUID, i, 
 					"127.0.0.1", 5000, 300000 );
 		}
 		long end = System.currentTimeMillis();

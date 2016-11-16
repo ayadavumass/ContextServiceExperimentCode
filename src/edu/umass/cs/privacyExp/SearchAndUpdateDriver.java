@@ -75,7 +75,7 @@ public class SearchAndUpdateDriver
 	private static boolean updateEnable							= false;
 	private static boolean searchEnable							= false;
 	
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	
 	// per sec
 	public static double initRate								= 1.0;
@@ -172,12 +172,12 @@ public class SearchAndUpdateDriver
 		
 		if( transformType == PrivacySchemes.HYPERSPACE_PRIVACY.ordinal() )
 		{
-			csClient  = new ContextServiceClient<String>( csHost, csPort, true,
+			csClient  = new ContextServiceClient( csHost, csPort, true,
 					PrivacySchemes.HYPERSPACE_PRIVACY );
 		}
 		else if( transformType == PrivacySchemes.SUBSPACE_PRIVACY.ordinal() )
 		{
-			csClient  = new ContextServiceClient<String>( csHost, csPort, true,
+			csClient  = new ContextServiceClient( csHost, csPort, true,
 					PrivacySchemes.SUBSPACE_PRIVACY );
 		}
 		
@@ -301,8 +301,8 @@ public class SearchAndUpdateDriver
 				{
 					try 
 					{
-						RefreshTrigger<Integer> refreshTrig 
-							= new RefreshTrigger<Integer>(triggerArray.getJSONObject(i));
+						RefreshTrigger refreshTrig 
+							= new RefreshTrigger(triggerArray.getJSONObject(i));
 						long timeTakenSinceUpdate 
 							= System.currentTimeMillis() - refreshTrig.getUpdateStartTime();
 						if(timeTakenSinceUpdate <= 0)

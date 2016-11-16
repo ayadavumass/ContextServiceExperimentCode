@@ -32,7 +32,7 @@ import edu.umass.cs.nio.JSONMessenger;
 import edu.umass.cs.nio.JSONNIOTransport;
 
 
-public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexer<JSONObject>
+public class JointRequestsGet<Integer> implements InterfacePacketDemultiplexer<JSONObject>
 {
 	// 1% loss tolerance
 		public static final double LOSS_TOLERANCE								= 0.01;
@@ -65,10 +65,10 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 		//private static final HashMap<String, Double> attrValueMap						= new HashMap<String, Double>();
 		
 		// stores the current values
-		private final NodeIDType myID;
-		private final CSNodeConfig<NodeIDType> csNodeConfig;
-		private final JSONNIOTransport<NodeIDType> niot;
-		private final JSONMessenger<NodeIDType> messenger;
+		private final Integer myID;
+		private final CSNodeConfig<Integer> csNodeConfig;
+		private final JSONNIOTransport<Integer> niot;
+		private final JSONMessenger<Integer> messenger;
 		private final String sourceIP;
 		private final int sourcePort;
 		
@@ -211,7 +211,7 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 			}
 		}
 		
-		public JointRequestsGet(NodeIDType id) throws Exception
+		public JointRequestsGet(Integer id) throws Exception
 		{
 			nodeList = new LinkedList<InetSocketAddress>();
 			
@@ -242,7 +242,7 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 			sourcePort = 2000+generalRand.nextInt(50000);
 			//START_PORT+Integer.parseInt(myID.toString());
 			
-			csNodeConfig = new CSNodeConfig<NodeIDType>();
+			csNodeConfig = new CSNodeConfig<Integer>();
 			
 			sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 			
@@ -255,10 +255,10 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 			ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID) +
 					" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID);
 			
-			niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+			niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 			
 			messenger = 
-				new JSONMessenger<NodeIDType>(niot);
+				new JSONMessenger<Integer>(niot);
 			
 			pd.register(ContextServicePacket.PacketType.VALUE_UPDATE_MSG_FROM_GNS_REPLY, this);
 			pd.register(ContextServicePacket.PacketType.QUERY_MSG_FROM_USER_REPLY, this);
@@ -367,10 +367,10 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 		
 		public void handleUpdateReply(JSONObject jso)
 		{
-			ValueUpdateFromGNSReply<NodeIDType> vur;
+			ValueUpdateFromGNSReply<Integer> vur;
 			try
 			{
-				vur = new ValueUpdateFromGNSReply<NodeIDType>(jso);
+				vur = new ValueUpdateFromGNSReply<Integer>(jso);
 				long currReqID = vur.getVersionNum();
 				
 				ContextServiceLogger.getLogger().fine("Update completion requestID "+currReqID+" time "+System.currentTimeMillis());
@@ -393,8 +393,8 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 		{
 			try
 			{
-				QueryMsgFromUserReply<NodeIDType> qmur;
-				qmur = new QueryMsgFromUserReply<NodeIDType>(jso);
+				QueryMsgFromUserReply<Integer> qmur;
+				qmur = new QueryMsgFromUserReply<Integer>(jso);
 				
 				long reqID = qmur.getUserReqNum();
 				int resultSize = 0;
@@ -437,8 +437,8 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 		{
 			try
 			{
-				RefreshTrigger<NodeIDType> qmur;
-				qmur = new RefreshTrigger<NodeIDType>(jso);
+				RefreshTrigger<Integer> qmur;
+				qmur = new RefreshTrigger<Integer>(jso);
 				
 				long reqID = qmur.getVersionNum();
 				
@@ -605,8 +605,8 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 			
 			private void sendQueryToContextService(String query, long userReqNum) throws IOException, JSONException
 			{
-				QueryMsgFromUser<NodeIDType> qmesgU 
-					= new QueryMsgFromUser<NodeIDType>(myID, query, sourceIP, sourcePort, userReqNum);
+				QueryMsgFromUser<Integer> qmesgU 
+					= new QueryMsgFromUser<Integer>(myID, query, sourceIP, sourcePort, userReqNum);
 				//ContextServiceLogger.getLogger().fine("QueryMsgFromUser "+qmesgU);
 				InetSocketAddress sockAddr = getRandomNodeSock();
 				//ContextServiceLogger.getLogger().fine("Sending query to "+sockAddr);
@@ -620,8 +620,8 @@ public class JointRequestsGet<NodeIDType> implements InterfacePacketDemultiplexe
 					JSONObject attrValuePair = new JSONObject();
 					attrValuePair.put(attrName, newVal);
 					
-					ValueUpdateFromGNS<NodeIDType> valUpdFromGNS = 
-							new ValueUpdateFromGNS<NodeIDType>(myID, versionNum, GUID, attrValuePair, sourceIP, sourcePort );
+					ValueUpdateFromGNS<Integer> valUpdFromGNS = 
+							new ValueUpdateFromGNS<Integer>(myID, versionNum, GUID, attrValuePair, sourceIP, sourcePort );
 					
 					niot.sendToAddress(getRandomNodeSock(), valUpdFromGNS.toJSONObject());
 				} catch (JSONException e)

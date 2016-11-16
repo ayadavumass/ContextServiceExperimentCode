@@ -29,7 +29,7 @@ import edu.umass.cs.nio.JSONMessenger;
 import edu.umass.cs.nio.JSONNIOTransport;
 
 
-public class UpdateRequestDirect<NodeIDType> implements InterfacePacketDemultiplexer<JSONObject>
+public class UpdateRequestDirect<Integer> implements InterfacePacketDemultiplexer<JSONObject>
 {
 	public static int NUMGUIDs														= 100;
 	
@@ -46,10 +46,10 @@ public class UpdateRequestDirect<NodeIDType> implements InterfacePacketDemultipl
 	//private static final HashMap<String, Double> attrValueMap						= new HashMap<String, Double>();
 	
 	// stores the current values
-	private final NodeIDType myID;
-	private final CSNodeConfig<NodeIDType> csNodeConfig;
-	private final JSONNIOTransport<NodeIDType> niot;
-	private final JSONMessenger<NodeIDType> messenger;
+	private final Integer myID;
+	private final CSNodeConfig<Integer> csNodeConfig;
+	private final JSONNIOTransport<Integer> niot;
+	private final JSONMessenger<Integer> messenger;
 	private final String sourceIP;
 	private final int sourcePort;
 	
@@ -144,7 +144,7 @@ public class UpdateRequestDirect<NodeIDType> implements InterfacePacketDemultipl
 		ContextServiceCallsSingleton.stopThis();
 	}
 	
-	public UpdateRequestDirect(NodeIDType id) throws Exception
+	public UpdateRequestDirect(Integer id) throws Exception
 	{
 		nodeList = new LinkedList<InetSocketAddress>();
 		
@@ -156,7 +156,7 @@ public class UpdateRequestDirect<NodeIDType> implements InterfacePacketDemultipl
 		
 		sourcePort = 2000+generalRand.nextInt(50000);
 		
-		csNodeConfig = new CSNodeConfig<NodeIDType>();
+		csNodeConfig = new CSNodeConfig<Integer>();
 		
 		sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 		
@@ -169,10 +169,10 @@ public class UpdateRequestDirect<NodeIDType> implements InterfacePacketDemultipl
 		ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID) +
 				" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID);
 		
-		niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+		niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 		
 		messenger = 
-			new JSONMessenger<NodeIDType>(niot);
+			new JSONMessenger<Integer>(niot);
 		
 		pd.register(ContextServicePacket.PacketType.VALUE_UPDATE_MSG_FROM_GNS_REPLY, this);
 		messenger.addPacketDemultiplexer(pd);
@@ -194,10 +194,10 @@ public class UpdateRequestDirect<NodeIDType> implements InterfacePacketDemultipl
 	
 	public void handleUpdateReply(JSONObject jso)
 	{
-		ValueUpdateFromGNSReply<NodeIDType> vur;
+		ValueUpdateFromGNSReply<Integer> vur;
 		try
 		{
-			vur = new ValueUpdateFromGNSReply<NodeIDType>(jso);
+			vur = new ValueUpdateFromGNSReply<Integer>(jso);
 			long currTime = System.currentTimeMillis();
 			long tillContextTime = vur.getContextTime() - vur.getStartTime();
 			long contextProcessTime = vur.getSendTime() - vur.getContextTime();
@@ -288,8 +288,8 @@ public class UpdateRequestDirect<NodeIDType> implements InterfacePacketDemultipl
 		{
 			try
 			{
-				ValueUpdateFromGNS<NodeIDType> valUpdFromGNS = 
-						new ValueUpdateFromGNS<NodeIDType>(myID, versionNum, GUID, attrName, oldVal, newVal, 
+				ValueUpdateFromGNS<Integer> valUpdFromGNS = 
+						new ValueUpdateFromGNS<Integer>(myID, versionNum, GUID, attrName, oldVal, newVal, 
 								new JSONObject(), sourceIP, sourcePort, System.currentTimeMillis());
 				
 				niot.sendToAddress(getRandomNodeSock(), valUpdFromGNS.toJSONObject());

@@ -81,7 +81,7 @@ public class WeatherCaseStudyClient
 	
 	private Random rand														= null;
 	
-	private ContextServiceClient<String> csClient							= null;
+	private ContextServiceClient csClient							= null;
 	
 	private int myID														= -1;
 	//private JSONObject	attrValueObject									= null;
@@ -218,7 +218,7 @@ public class WeatherCaseStudyClient
 		
 		queryGenRandom = new Random((Integer)myID);
 		
-		csClient = new ContextServiceClient<String>(csHost, csPort, false, 
+		csClient = new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
         
 		//eservice = Executors.newFixedThreadPool(1000);
@@ -345,8 +345,8 @@ public class WeatherCaseStudyClient
 //	{
 //		try
 //		{
-//			RefreshTrigger<NodeIDType> qmur;
-//			qmur = new RefreshTrigger<NodeIDType>(jso);
+//			RefreshTrigger<Integer> qmur;
+//			qmur = new RefreshTrigger<Integer>(jso);
 //			
 //			long reqID = qmur.getVersionNum();
 //			
@@ -560,8 +560,8 @@ public class WeatherCaseStudyClient
 				
 				csClient.sendUpdate(GUID, null, 
 						attrValuePair, versionNum);
-//				ValueUpdateFromGNS<NodeIDType> valUpdFromGNS = 
-//						new ValueUpdateFromGNS<NodeIDType>(myID, versionNum, GUID, attrValuePair, sourceIP, sourcePort, versionNum );
+//				ValueUpdateFromGNS<Integer> valUpdFromGNS = 
+//						new ValueUpdateFromGNS<Integer>(myID, versionNum, GUID, attrValuePair, sourceIP, sourcePort, versionNum );
 //				
 //				niot.sendToAddress(getRandomNodeSock(), valUpdFromGNS.toJSONObject());
 			} catch (JSONException e)
@@ -574,8 +574,8 @@ public class WeatherCaseStudyClient
 		{
 //			try
 //			{
-//				GetMessage<NodeIDType> getMessageObj = 
-//						new GetMessage<NodeIDType>(myID, versionNum, GUID,  sourceIP, sourcePort );
+//				GetMessage<Integer> getMessageObj = 
+//						new GetMessage<Integer>(myID, versionNum, GUID,  sourceIP, sourcePort );
 //				
 //				niot.sendToAddress(getRandomNodeSock(), getMessageObj.toJSONObject());
 //			} catch (JSONException e)
@@ -635,10 +635,10 @@ public class WeatherCaseStudyClient
 	
 	/*public void handleUpdateReply(JSONObject jso)
 	{
-		ValueUpdateFromGNSReply<NodeIDType> vur;
+		ValueUpdateFromGNSReply<Integer> vur;
 		try
 		{
-			vur = new ValueUpdateFromGNSReply<NodeIDType>(jso);
+			vur = new ValueUpdateFromGNSReply<Integer>(jso);
 			long currReqID = vur.getVersionNum();
 			
 			System.out.println("Update completion requestID "+currReqID+" time "+System.currentTimeMillis());
@@ -661,8 +661,8 @@ public class WeatherCaseStudyClient
 	{
 		try
 		{
-			QueryMsgFromUserReply<NodeIDType> qmur;
-			qmur = new QueryMsgFromUserReply<NodeIDType>(jso);
+			QueryMsgFromUserReply<Integer> qmur;
+			qmur = new QueryMsgFromUserReply<Integer>(jso);
 			
 			long reqID = qmur.getUserReqNum();
 			int resultSize = qmur.getReplySize();
@@ -693,7 +693,7 @@ public class WeatherCaseStudyClient
 	{
 		try
 		{
-			GetReplyMessage<NodeIDType> getReply= new GetReplyMessage<NodeIDType>(jso);
+			GetReplyMessage<Integer> getReply= new GetReplyMessage<Integer>(jso);
 			
 			long reqID = getReply.getReqID();
 			

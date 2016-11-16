@@ -68,7 +68,7 @@ public class SearchAndUpdateDriver
 	private static boolean updateEnable							= false;
 	private static boolean searchEnable							= false;
 	
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	
 	// per sec
 	public static double initRate								= 1.0;
@@ -153,7 +153,7 @@ public class SearchAndUpdateDriver
 		guidPrefix = guidPrefix+myID;
 		
 		//gnsClient = new UniversalTcpClient(gnsHost, gnsPort, true);
-		csClient  = new ContextServiceClient<String>(csHost, csPort, false, 
+		csClient  = new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 		
 		System.out.println("ContextServiceClient created");
@@ -294,8 +294,8 @@ public class SearchAndUpdateDriver
 				{
 					try 
 					{
-						RefreshTrigger<Integer> refreshTrig 
-							= new RefreshTrigger<Integer>(triggerArray.getJSONObject(i));
+						RefreshTrigger refreshTrig 
+							= new RefreshTrigger(triggerArray.getJSONObject(i));
 						long timeTakenSinceUpdate 
 							= System.currentTimeMillis() - refreshTrig.getUpdateStartTime();
 						if(timeTakenSinceUpdate <= 0)

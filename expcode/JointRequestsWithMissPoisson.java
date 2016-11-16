@@ -28,7 +28,7 @@ import edu.umass.cs.msocket.gns.DefaultGNSClient;
 import edu.umass.cs.msocket.gns.GNSCalls;
 
 
-public class JointRequestsWithMissPoisson<NodeIDType> implements InterfacePacketDemultiplexer
+public class JointRequestsWithMissPoisson<Integer> implements InterfacePacketDemultiplexer
 {
 	    // 100 seconds, experiment runs for 100 seconds
 		public static final int EXPERIMENT_TIME									= 100000;
@@ -51,10 +51,10 @@ public class JointRequestsWithMissPoisson<NodeIDType> implements InterfacePacket
 		private static final HashMap<String, Double> attrValueMap				= new HashMap<String, Double>();
 		
 		// stores the current values
-		private final NodeIDType myID;
-		private final CSNodeConfig<NodeIDType> csNodeConfig;
-		private final JSONNIOTransport<NodeIDType> niot;
-		private final JSONMessenger<NodeIDType> messenger;
+		private final Integer myID;
+		private final CSNodeConfig<Integer> csNodeConfig;
+		private final JSONNIOTransport<Integer> niot;
+		private final JSONMessenger<Integer> messenger;
 		private final String sourceIP;
 		private final int sourcePort;
 		
@@ -197,7 +197,7 @@ public class JointRequestsWithMissPoisson<NodeIDType> implements InterfacePacket
 			ContextServiceCallsSingleton.stopThis();
 		}
 		
-		public JointRequestsWithMissPoisson(NodeIDType id) throws Exception
+		public JointRequestsWithMissPoisson(Integer id) throws Exception
 		{
 			myID = id;
 			
@@ -224,7 +224,7 @@ public class JointRequestsWithMissPoisson<NodeIDType> implements InterfacePacket
 			sourcePort = 2000+generalRand.nextInt(50000);
 			//START_PORT+Integer.parseInt(myID.toString());
 			
-			csNodeConfig = new CSNodeConfig<NodeIDType>();
+			csNodeConfig = new CSNodeConfig<Integer>();
 			
 			sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 			
@@ -237,10 +237,10 @@ public class JointRequestsWithMissPoisson<NodeIDType> implements InterfacePacket
 			ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID) +
 					" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID);
 			
-			niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+			niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 			
 			messenger = 
-				new JSONMessenger<NodeIDType>(niot.enableStampSenderInfo());
+				new JSONMessenger<Integer>(niot.enableStampSenderInfo());
 			
 			pd.register(ContextServicePacket.PacketType.VALUE_UPDATE_MSG_FROM_GNS_REPLY, this);
 			messenger.addPacketDemultiplexer(pd);
@@ -292,10 +292,10 @@ public class JointRequestsWithMissPoisson<NodeIDType> implements InterfacePacket
 		
 		public void handleUpdateReply(JSONObject jso)
 		{
-			ValueUpdateFromGNSReply<NodeIDType> vur;
+			ValueUpdateFromGNSReply<Integer> vur;
 			try
 			{
-				vur = new ValueUpdateFromGNSReply<NodeIDType>(jso);
+				vur = new ValueUpdateFromGNSReply<Integer>(jso);
 				long currTime = System.currentTimeMillis();
 				long tillContextTime = vur.getContextTime() - vur.getStartTime();
 				long contextProcessTime = vur.getSendTime() - vur.getContextTime();

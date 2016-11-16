@@ -128,12 +128,11 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		System.out.println("UserInit eventual sending rate "+sendingRate);
 		
 		waitForFinish();
-		//Thread.sleep(WAIT_TIME);
+		
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
 		System.out.println("UserInit result:Goodput "+sysThrput);	
-		//System.exit(0);
 	}
 	
 	@Override

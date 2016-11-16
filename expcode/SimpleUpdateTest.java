@@ -21,7 +21,7 @@ import edu.umass.cs.msocket.geocast.Utils;
 import edu.umass.cs.msocket.gns.GNSCalls;
 
 
-public class SimpleUpdateTest<NodeIDType> implements InterfacePacketDemultiplexer
+public class SimpleUpdateTest<Integer> implements InterfacePacketDemultiplexer
 {
 		//public static String csServerName 										= "ananas.cs.umass.edu";
 		//public static int csPort 													= 5000;
@@ -44,9 +44,9 @@ public class SimpleUpdateTest<NodeIDType> implements InterfacePacketDemultiplexe
 		// prefix for client GUIDs clientGUID1, client GUID2, ...
 		
 		// stores the current values
-		private final NodeIDType myID;
-		private final CSNodeConfig<NodeIDType> csNodeConfig;
-		private final JSONNIOTransport<NodeIDType> niot;
+		private final Integer myID;
+		private final CSNodeConfig<Integer> csNodeConfig;
+		private final JSONNIOTransport<Integer> niot;
 		private final String sourceIP;
 		private final int sourcePort;
 		
@@ -61,7 +61,7 @@ public class SimpleUpdateTest<NodeIDType> implements InterfacePacketDemultiplexe
 		public static final String CONTEXT_ATTR_PREFIX							= "context";
 		public static final String REPLY_ADDR_KEY								= "ReplyAddress";
 		
-		public SimpleUpdateTest(NodeIDType id) throws Exception
+		public SimpleUpdateTest(Integer id) throws Exception
 		{
 			myID = id;
 			
@@ -71,7 +71,7 @@ public class SimpleUpdateTest<NodeIDType> implements InterfacePacketDemultiplexe
 			sourcePort = 2000+rand.nextInt(50000);
 			//START_PORT+Integer.parseInt(myID.toString());
 			
-			csNodeConfig = new CSNodeConfig<NodeIDType>();
+			csNodeConfig = new CSNodeConfig<Integer>();
 			
 			sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 			
@@ -84,10 +84,10 @@ public class SimpleUpdateTest<NodeIDType> implements InterfacePacketDemultiplexe
 			ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID)+
 					" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID);
 			
-			niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+			niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 			
-			JSONMessenger<NodeIDType> messenger = 
-				new JSONMessenger<NodeIDType>(niot.enableStampSenderInfo());
+			JSONMessenger<Integer> messenger = 
+				new JSONMessenger<Integer>(niot.enableStampSenderInfo());
 			
 			pd.register(ContextServicePacket.PacketType.VALUE_UPDATE_MSG_FROM_GNS_REPLY, this);
 			messenger.addPacketDemultiplexer(pd);
@@ -109,10 +109,10 @@ public class SimpleUpdateTest<NodeIDType> implements InterfacePacketDemultiplexe
 		public void handleUpdateReply(JSONObject jso)
 		{
 			//long time = System.currentTimeMillis();
-			ValueUpdateFromGNSReply<NodeIDType> vur;
+			ValueUpdateFromGNSReply<Integer> vur;
 			try 
 			{
-				vur = new ValueUpdateFromGNSReply<NodeIDType>(jso);
+				vur = new ValueUpdateFromGNSReply<Integer>(jso);
 				long currTime = System.currentTimeMillis();
 				long tillContextTime = vur.getContextTime() - vur.getStartTime();
 				long contextProcessTime = vur.getSendTime() - vur.getContextTime();
@@ -182,7 +182,7 @@ public class SimpleUpdateTest<NodeIDType> implements InterfacePacketDemultiplexe
 					//ContextServiceLogger.getLogger().fine("doAttributeUpdates called "+i+" key "+key);
 					allAttr.put(key, attrValueMap.get(key));
 				}*/
-				//ValueUpdateFromGNS<NodeIDType> valMsg = new ValueUpdateFromGNS<NodeIDType>(myID, versionNum++, guidString, attName, 
+				//ValueUpdateFromGNS<Integer> valMsg = new ValueUpdateFromGNS<Integer>(myID, versionNum++, guidString, attName, 
 				//		oldValue+"", nextVal+"", allAttr, sourceIP, listenPort);
 				//ContextServiceLogger.getLogger().fine("CONTEXTSERVICE EXPERIMENT: UPDATEFROMUSER REQUEST ID "
 				//		+ valMsg.getVersionNum() +" AT "+System.currentTimeMillis());

@@ -90,7 +90,7 @@ public class MobilityModelOld
 	public static boolean useContextService					= false;
 	private static boolean justInitialize					= false;
 	
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	
 	
 	public static void main(String[] args) throws Exception
@@ -112,7 +112,7 @@ public class MobilityModelOld
 		guidPrefix = guidPrefix+myID;
 		
 		gnsClient = new GNSClientCommands();
-		csClient = new ContextServiceClient<String>(csHost, csPort, false, 
+		csClient = new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 	
 		// per 1 ms

@@ -34,7 +34,7 @@ import edu.umass.cs.gns.nio.JSONNIOTransport;
  * It is basic because it takes input from the user, doesn't use any workload.
  * @author adipc
  */
-public class BasicContextQuerySendExp<NodeIDType> implements InterfacePacketDemultiplexer
+public class BasicContextQuerySendExp<Integer> implements InterfacePacketDemultiplexer
 {
 	public static final String configFileName						= "nodesInfo.txt";
 	
@@ -49,9 +49,9 @@ public class BasicContextQuerySendExp<NodeIDType> implements InterfacePacketDemu
 	//public static final int QUERY_MSG_FROM_USER 		= 2;
 	//private enum Keys {QUERY};
 	
-	private final NodeIDType myID;
-	private final CSNodeConfig<NodeIDType> csNodeConfig;
-	private final JSONNIOTransport<NodeIDType> niot;
+	private final Integer myID;
+	private final CSNodeConfig<Integer> csNodeConfig;
+	private final JSONNIOTransport<Integer> niot;
 	private final String sourceIP;
 	private final int listenPort;
 	
@@ -59,14 +59,14 @@ public class BasicContextQuerySendExp<NodeIDType> implements InterfacePacketDemu
 	
 	public static int QUERY_RATE										= 5000;
 	
-	public BasicContextQuerySendExp(NodeIDType id) throws IOException
+	public BasicContextQuerySendExp(Integer id) throws IOException
 	{
 		readNodeInfo();
 		
 		myID = id;
 		listenPort = START_PORT+Integer.parseInt(myID.toString());
 		
-		csNodeConfig = new CSNodeConfig<NodeIDType>();
+		csNodeConfig = new CSNodeConfig<Integer>();
 		
 		sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 		
@@ -80,10 +80,10 @@ public class BasicContextQuerySendExp<NodeIDType> implements InterfacePacketDemu
 		ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID)+
 				" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID);
 		
-		niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+		niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 		
-		JSONMessenger<NodeIDType> messenger = 
-			new JSONMessenger<NodeIDType>(niot.enableStampSenderInfo());
+		JSONMessenger<Integer> messenger = 
+			new JSONMessenger<Integer>(niot.enableStampSenderInfo());
 		
 		pd.register(ContextServicePacket.PacketType.QUERY_MSG_FROM_USER_REPLY, this);
 		messenger.addPacketDemultiplexer(pd);
@@ -103,8 +103,8 @@ public class BasicContextQuerySendExp<NodeIDType> implements InterfacePacketDemu
 					+ userReqNum +" NUMATTR "+numAttr+" AT "+System.currentTimeMillis()
 					+" "+"contextATT0"+" QueryStart "+System.currentTimeMillis());
 			
-			QueryMsgFromUser<NodeIDType> qmesgU 
-				= new QueryMsgFromUser<NodeIDType>(myID, query, sourceIP, listenPort, userReqNum);
+			QueryMsgFromUser<Integer> qmesgU 
+				= new QueryMsgFromUser<Integer>(myID, query, sourceIP, listenPort, userReqNum);
 			
 			Set<Integer> keySet= nodeMap.keySet();
 			
@@ -133,8 +133,8 @@ public class BasicContextQuerySendExp<NodeIDType> implements InterfacePacketDemu
 		try
 		{
 			long time = System.currentTimeMillis();
-			QueryMsgFromUserReply<NodeIDType> qmur;
-			qmur = new QueryMsgFromUserReply<NodeIDType>(jso);
+			QueryMsgFromUserReply<Integer> qmur;
+			qmur = new QueryMsgFromUserReply<Integer>(jso);
 			ContextServiceLogger.getLogger().fine("CONTEXTSERVICE EXPERIMENT: QUERYFROMUSERREPLY REQUEST ID "
 					+qmur.getUserReqNum()+" NUMATTR "+0+" AT "+time+" EndTime "
 					+time+ " QUERY ANSWER "+qmur.getResultGUIDs());

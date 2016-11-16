@@ -20,7 +20,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 //	private static String csHost;
 //	private static int csPort;
 	
-	public static ContextServiceClient<String> csClient;
+	public static ContextServiceClient csClient;
 	public static boolean useGNS							= false;
 	
 	
@@ -46,7 +46,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	
 	private Object numSentLock								= new Object();
 	
-	public IssueSearches( ContextServiceClient<String> csclient, 
+	public IssueSearches( ContextServiceClient csclient, 
 			int searchId, WeatherDataProcessing weatherDataProcess) throws NoSuchAlgorithmException, IOException
 	{
 		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE, SearchAndUpdateDriver.WAIT_TIME );

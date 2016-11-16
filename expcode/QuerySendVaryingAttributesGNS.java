@@ -25,9 +25,9 @@ public class QuerySendVaryingAttributesGNS
 	//public static final int QUERY_MSG_FROM_USER 		= 2;
 	//private enum Keys {QUERY};
 	
-	//private final NodeIDType myID;
-	//private final CSNodeConfig<NodeIDType> csNodeConfig;
-	//private final JSONNIOTransport<NodeIDType> niot;
+	//private final Integer myID;
+	//private final CSNodeConfig<Integer> csNodeConfig;
+	//private final JSONNIOTransport<Integer> niot;
 	//private final String sourceIP;
 	//private final int listenPort;
 	
@@ -50,7 +50,7 @@ public class QuerySendVaryingAttributesGNS
 		//myID = id;
 		//listenPort = START_PORT+Integer.parseInt(myID.toString());
 		
-		//csNodeConfig = new CSNodeConfig<NodeIDType>();
+		//csNodeConfig = new CSNodeConfig<Integer>();
 		
 		//sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 		
@@ -64,10 +64,10 @@ public class QuerySendVaryingAttributesGNS
 		//ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID)+
 	    //			" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID);
 		
-		//niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+		//niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 		
-		//JSONMessenger<NodeIDType> messenger = 
-		//	new JSONMessenger<NodeIDType>(niot.enableStampSenderInfo());
+		//JSONMessenger<Integer> messenger = 
+		//	new JSONMessenger<Integer>(niot.enableStampSenderInfo());
 		
 		//pd.register(ContextServicePacket.PacketType.QUERY_MSG_FROM_USER_REPLY, this);
 		//messenger.addPacketDemultiplexer(pd);
@@ -78,8 +78,8 @@ public class QuerySendVaryingAttributesGNS
 		try
 		{
 			long time = System.currentTimeMillis();
-			QueryMsgFromUserReply<NodeIDType> qmur;
-			qmur = new QueryMsgFromUserReply<NodeIDType>(jso);
+			QueryMsgFromUserReply<Integer> qmur;
+			qmur = new QueryMsgFromUserReply<Integer>(jso);
 			ContextServiceLogger.getLogger().fine("CONTEXTSERVICE EXPERIMENT: QUERYFROMUSERREPLY REQUEST ID "
 					+qmur.getUserReqNum()+" NUMATTR "+0+" AT "+time+" EndTime "
 					+time+ " QUERY ANSWER "+qmur.getResultGUIDs());
@@ -189,8 +189,8 @@ public class QuerySendVaryingAttributesGNS
 				
 				ContextServiceLogger.getLogger().fine("CONTEXTSERVICE EXPERIMENT: QUERYTIME NUMATTR "+numAttr+" TIME "+(endTime-startTime));
 				
-				/*QueryMsgFromUser<NodeIDType> qmesgU 
-					= new QueryMsgFromUser<NodeIDType>(myID, query, sourceIP, listenPort, userReqNum);
+				/*QueryMsgFromUser<Integer> qmesgU 
+					= new QueryMsgFromUser<Integer>(myID, query, sourceIP, listenPort, userReqNum);
 				Set<Integer> keySet= nodeMap.keySet();
 				int randIndex = rand.nextInt(keySet.size());
 				InetSocketAddress toMe = nodeMap.get(keySet.toArray()[randIndex]);	

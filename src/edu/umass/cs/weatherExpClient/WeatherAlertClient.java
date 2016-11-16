@@ -67,7 +67,7 @@ public class WeatherAlertClient
 	public static final String coordinatesField     	 = "coordinates";
 	
 	
-	private final ContextServiceClient<String> csClient;
+	private final ContextServiceClient csClient;
 	private final GNSClientCommands gnsClient;
 	
 	private final Timer clockTimer;
@@ -80,7 +80,7 @@ public class WeatherAlertClient
 	public WeatherAlertClient(String gnsHost, int gnsPort, String csHost, int csPort) 
 											throws IOException, ParseException, NoSuchAlgorithmException
 	{
-		csClient = new ContextServiceClient<String>(csHost, csPort, false,
+		csClient = new ContextServiceClient(csHost, csPort, false,
 				PrivacySchemes.NO_PRIVACY);
 		clockTimer = new Timer();
 		 

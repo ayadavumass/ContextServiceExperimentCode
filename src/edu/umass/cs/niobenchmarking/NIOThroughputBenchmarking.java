@@ -27,7 +27,7 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 	public static final int SENDER								= 1;
 	public static final int RECIEVER							= 2;
 	
-	private final CSNodeConfig<Integer> clientNodeConfig;
+	private final CSNodeConfig clientNodeConfig;
 	private final JSONNIOTransport<Integer> niot;
 	private final JSONMessenger<Integer> messenger;
 	private final String sourceIP;
@@ -55,7 +55,7 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 		this.destPort = destPort;
 		waitTimer = new Timer();
 		
-		clientNodeConfig =  new CSNodeConfig<Integer>();
+		clientNodeConfig =  new CSNodeConfig();
 		int id = 0;
 		clientNodeConfig.add(id, new InetSocketAddress(sourceIP, sourcePort));
         
@@ -96,10 +96,10 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 			}else if( message.getInt(ContextServicePacket.PACKET_TYPE) 
 					== ContextServicePacket.PacketType.NOOP_MEESAGE.getInt() )
 			{
-				NoopMessage<Integer> noopMesg = new NoopMessage<Integer>(message);
+				NoopMessage noopMesg = new NoopMessage(message);
 				String sourceIP = noopMesg.getSourceIP();
 				int sourcePort = noopMesg.getSourcePort();
-				NoopReplyMessage<Integer> noopRepMesg = new NoopReplyMessage<Integer>(0);
+				NoopReplyMessage noopRepMesg = new NoopReplyMessage(0);
 				
 				try 
 				{
@@ -206,7 +206,7 @@ public class NIOThroughputBenchmarking implements PacketDemultiplexer<JSONObject
 	private void sendNoopMessage()
 	{
 		try {
-			NoopMessage<Integer> noopMesg = new NoopMessage<Integer>(0, sourceIP, sourcePort, 
+			NoopMessage noopMesg = new NoopMessage(0, sourceIP, sourcePort, 
 					payloadStr);
 			messenger.sendToAddress(new InetSocketAddress(destIpAddress, destPort), 
 					noopMesg.toJSONObject());

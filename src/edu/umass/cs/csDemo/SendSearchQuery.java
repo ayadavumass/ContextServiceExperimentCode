@@ -18,8 +18,8 @@ public class SendSearchQuery
 		String csIP = parsed[0];
 		int csPort = Integer.parseInt(parsed[1]);
 		
-		ContextServiceClient<Integer> csClient 
-			= new ContextServiceClient<Integer>( csIP, csPort, 
+		ContextServiceClient csClient 
+			= new ContextServiceClient( csIP, csPort, 
 					false, PrivacySchemes.NO_PRIVACY );
 		
 		// context service query format

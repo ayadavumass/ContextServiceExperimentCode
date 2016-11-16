@@ -26,7 +26,7 @@ import edu.umass.cs.nio.JSONMessenger;
 import edu.umass.cs.nio.JSONNIOTransport;
 
 
-public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultiplexer<JSONObject>
+public class WriterAndMonitorNode<Integer> implements InterfacePacketDemultiplexer<JSONObject>
 {	
 	public static final int MAX_QUERY_LEN = 10;
 	
@@ -46,10 +46,10 @@ public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultip
 	//private static final HashMap<String, Double> attrValueMap					= new HashMap<String, Double>();
 	
 	// stores the current values
-	private final NodeIDType myID;
-	private final CSNodeConfig<NodeIDType> csNodeConfig;
-	private final JSONNIOTransport<NodeIDType> niot;
-	private final JSONMessenger<NodeIDType> messenger;
+	private final Integer myID;
+	private final CSNodeConfig<Integer> csNodeConfig;
+	private final JSONNIOTransport<Integer> niot;
+	private final JSONMessenger<Integer> messenger;
 	private final String sourceIP;
 	private final int sourcePort;
 	
@@ -91,7 +91,7 @@ public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultip
 		System.exit(0);
 	}
 	
-	public WriterAndMonitorNode(NodeIDType id) throws Exception
+	public WriterAndMonitorNode(Integer id) throws Exception
 	{
 		
 		rand = new Random(System.currentTimeMillis());
@@ -108,7 +108,7 @@ public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultip
 		sourcePort = 5000;
 		//START_PORT+Integer.parseInt(myID.toString());
 		
-		csNodeConfig = new CSNodeConfig<NodeIDType>();
+		csNodeConfig = new CSNodeConfig<Integer>();
 		
 		sourceIP =  Utils.getActiveInterfaceInetAddresses().get(0).getHostAddress();
 		
@@ -121,10 +121,10 @@ public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultip
 		ContextServiceLogger.getLogger().fine("\n\n node IP "+csNodeConfig.getNodeAddress(this.myID) +
 				" node Port "+csNodeConfig.getNodePort(this.myID)+" nodeID "+this.myID+" nodeList "+nodeList.size());
 		
-		niot = new JSONNIOTransport<NodeIDType>(this.myID,  csNodeConfig, pd , true);
+		niot = new JSONNIOTransport<Integer>(this.myID,  csNodeConfig, pd , true);
 		
 		messenger = 
-			new JSONMessenger<NodeIDType>(niot);
+			new JSONMessenger<Integer>(niot);
 		
 		//pd.register(ContextServicePacket.PacketType.VALUE_UPDATE_MSG_FROM_GNS_REPLY, this);
 		pd.register(ContextServicePacket.PacketType.QUERY_MSG_FROM_USER_REPLY, this);
@@ -140,7 +140,7 @@ public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultip
 	{
 		try
 		{
-			ValueUpdateFromGNS<NodeIDType> valupdate = new ValueUpdateFromGNS<NodeIDType>(jsonObject);
+			ValueUpdateFromGNS<Integer> valupdate = new ValueUpdateFromGNS<Integer>(jsonObject);
 			ContextServiceLogger.getLogger().fine("Value update recvd updID "+valupdate.getVersionNum()+" time "+System.currentTimeMillis());
 		} catch (JSONException e)
 		{
@@ -152,7 +152,7 @@ public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultip
 	{
 		try 
 		{
-			RefreshTrigger<NodeIDType> refTrig = new RefreshTrigger<NodeIDType>(jsonObject);
+			RefreshTrigger<Integer> refTrig = new RefreshTrigger<Integer>(jsonObject);
 			ContextServiceLogger.getLogger().fine("Refresh trigger recvd updID "+refTrig.getVersionNum()+" time "+System.currentTimeMillis());
 		} catch (JSONException e) 
 		{
@@ -291,8 +291,8 @@ public class WriterAndMonitorNode<NodeIDType> implements InterfacePacketDemultip
 		
 		private void sendQueryToContextService(String query, long userReqNum) throws IOException, JSONException
 		{
-			QueryMsgFromUser<NodeIDType> qmesgU 
-				= new QueryMsgFromUser<NodeIDType>(myID, query, sourceIP, sourcePort, userReqNum);
+			QueryMsgFromUser<Integer> qmesgU 
+				= new QueryMsgFromUser<Integer>(myID, query, sourceIP, sourcePort, userReqNum);
 			
 			InetSocketAddress sockAddr = getRandomNodeSock();
 			//ContextServiceLogger.getLogger().fine("Sending query to "+sockAddr);
