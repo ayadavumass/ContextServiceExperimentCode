@@ -22,18 +22,17 @@ public class DataSource
     
     public DataSource(int nodeId) throws IOException, SQLException, PropertyVetoException
     {
-    	portNum = 6000+nodeId;
-    	//int portNum = 3306;
-    	dirName = "mysqlDir-serv"+nodeId;
+    	portNum = 6000;
     	
-    	dbName = "contextDB"+nodeId;
-    	//dropDB();
-    	//createDB();
+    	dirName = "mysqlDir-serv";
+    	
+    	dbName = "contextDB";
+    	
     	
         cpds = new ComboPooledDataSource();
         cpds.setDriverClass("com.mysql.jdbc.Driver"); //loads the jdbc driver
         cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/"+dbName+"?socket=/home/"+dirName+"/thesock");
-        //cpds.setJdbcUrl("jdbc:mysql://localhost:"+portNum+"/contextDB0");
+        
         cpds.setUser("root");
         cpds.setPassword("aditya");
         

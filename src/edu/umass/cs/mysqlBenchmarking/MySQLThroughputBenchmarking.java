@@ -289,9 +289,9 @@ public class MySQLThroughputBenchmarking
 	
 	public static void main( String[] args )
 	{
-		nodeId 			 = Integer.parseInt(args[0]);
-		numGuids 		 = Integer.parseInt(args[1]);
-		numAttrs 		 = Integer.parseInt(args[2]);
+		nodeId 			   = Integer.parseInt(args[0]);
+		numGuids 		   = Integer.parseInt(args[1]);
+		numAttrs 		   = Integer.parseInt(args[2]);
 		
 		requestType        = Integer.parseInt(args[3]);
 		requestsps         = Integer.parseInt(args[4]);
