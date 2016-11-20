@@ -56,7 +56,7 @@ public class SQLiteThroughputBenchmarking
 	public static final int ATTR_MIN							= 1;
 	public static final int ATTR_DEFAULT						= 0;
 	
-	public static final int numAttrsInQuery						= 4;
+	public static final int numAttrsInQuery						= 2;
 	
 	public static DataSource dsInst;
 	//private Random valueRand;
