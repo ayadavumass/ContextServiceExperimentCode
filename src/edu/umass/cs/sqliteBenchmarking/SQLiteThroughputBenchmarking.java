@@ -141,7 +141,7 @@ public class SQLiteThroughputBenchmarking
 				String attrName = "attr"+i;
 				
 				newTableCommand = newTableCommand +" , "+ attrName+" DOUBLE NOT NULL";
-						//+ "INDEX USING BTREE ("+attrName+")";
+				//		+ " , INDEX ("+attrName+")";
 			}
 			
 			newTableCommand = newTableCommand +" ) ";
@@ -151,18 +151,17 @@ public class SQLiteThroughputBenchmarking
 //					+ " INDEX USING BTREE (value1), INDEX USING BTREE (value2) )";
 			stmt.executeUpdate(newTableCommand);
 			
-			newTableCommand = "drop table "+triggerTableName;
 			
-			try
+			for( int i=0; i<numAttrs; i++ )
 			{
-				stmt.executeUpdate(newTableCommand);
-			}
-			catch(Exception ex)
-			{
-				System.out.println("Table delete exception");
+				String attrName = "attr"+i;
+				String indexName = attrName+"Index";
+				
+				newTableCommand = "CREATE INDEX "+indexName+" ON "+dataTableName
+						+" ("+attrName+")";
+				//		+ " , INDEX ("+attrName+")";
 			}
 			
-			//createTablesForTriggers(stmt);
 		}
 		catch ( SQLException e )
 		{
@@ -211,80 +210,6 @@ public class SQLiteThroughputBenchmarking
         }
         String returnGUID = sb.toString();
         return returnGUID.substring(0, 40);
-	}
-	
-	/**
-	 * creates one dimensional subspaces and query storage tables for triggers
-	 * @throws SQLException 
-	 */
-	private static void createTablesForTriggers(Statement stmt) throws SQLException
-	{
-		//String tableName = "subspaceId"+subspaceId+"TriggerDataInfo";
-		String newTableCommand = "create table "+triggerTableName+" ( groupGUID BINARY(20) NOT NULL , "
-				+ "userIP Binary(4) NOT NULL ,  userPort INTEGER NOT NULL , expiryTime BIGINT NOT NULL ";
-		newTableCommand = getPartitionInfoStorageString(newTableCommand);
-		
-		newTableCommand = newTableCommand 
-				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
-				+ " INDEX USING HASH(groupGUID) )";
-		System.out.println("newTableCommand "+newTableCommand);
-		
-		stmt.executeUpdate(newTableCommand);
-		
-	}
-	
-	private static String getPartitionInfoStorageString(String newTableCommand)
-	{
-		// query and default value mechanics
-		//Attr specified in query but not set in GUID                  Do Not return GUID
-		//Attr specified in query and  set in GUID                     Return GUID if possible
-		
-		//Attr not specified in query but  set in GUID                 Return GUID if possible 
-		//Attr not specified in query and not set in GUID              Return GUID if possible as no privacy leak
-		
-		// creating for all attributes rather 
-		// than just the attributes of the subspace for better mataching
-		for( int i=0; i<numAttrs; i++ )
-		{
-			String attrName = "attr"+i;
-			String lowerAttrName = "lower"+attrName;
-			String upperAttrName = "upper"+attrName;
-			
-			String queryMinDefault = ATTR_DEFAULT+"";
-			String queryMaxDefault = ATTR_MAX+"";
-			
-			// changed it to min max for lower and upper value instead of default 
-			// because we want a query to match for attributes that are not specified 
-			// in the query, as those basically are don't care.
-			newTableCommand = newTableCommand + " , "+lowerAttrName+" DOUBLE "
-					+ " DEFAULT "+ queryMinDefault 
-					+ " , "+upperAttrName+" DOUBLE DEFAULT "
-					+ queryMaxDefault 
-					+ " , INDEX USING BTREE("+lowerAttrName+" , "+upperAttrName+")"
-					+ " , INDEX USING HASH("+lowerAttrName+")";
-		}
-		/*newTableCommand = newTableCommand +" , INDEX USING BTREE( ";
-		for(int i=0; i<numAttrs; i++)
-		{
-			if(i >= 8)
-				break;
-			String attrName = "attr"+i;
-			String lowerAttrName = "lower"+attrName;
-			String upperAttrName = "upper"+attrName;
-			
-			if(i == 0)
-			{
-				newTableCommand = newTableCommand+ lowerAttrName+" , "+upperAttrName;
-			}
-			else
-			{
-				newTableCommand = newTableCommand+ " , "+lowerAttrName+" , "+upperAttrName;
-			}
-			
-		}
-		newTableCommand = newTableCommand+ " ) ";*/
-		
-		return newTableCommand;
 	}
 	
 	public static void main( String[] args )
