@@ -87,7 +87,7 @@ public class SQLiteThroughputBenchmarking
 		{
 			taskES = Executors.newFixedThreadPool(PoolSize);
 			//valueRand = new Random();
-			dsInst = new DataSource(nodeId);
+			dsInst = new DataSource();
 			createTable();
 			
 //			myConn = dsInst.getConnection();
@@ -117,7 +117,7 @@ public class SQLiteThroughputBenchmarking
 		
 		try
 		{
-			myConn = dsInst.getConnection();
+			myConn = dsInst.getConnection(DataSource.UPDATE_POOL);
 			stmt = myConn.createStatement();
 			
 			String newTableCommand = "drop table "+dataTableName;
@@ -214,17 +214,18 @@ public class SQLiteThroughputBenchmarking
 	
 	public static void main( String[] args )
 	{
-		nodeId 			   = Integer.parseInt(args[0]);
-		numGuids 		   = Integer.parseInt(args[1]);
-		numAttrs 		   = Integer.parseInt(args[2]);
+		numGuids 		   = Integer.parseInt(args[0]);
+		numAttrs 		   = Integer.parseInt(args[1]);
 		
-		requestType        = Integer.parseInt(args[3]);
-		requestsps         = Integer.parseInt(args[4]);
-		PoolSize  		   = Integer.parseInt(args[5]);
-		predicateLength    = Double.parseDouble(args[6]);
+		requestType        = Integer.parseInt(args[2]);
+		requestsps         = Integer.parseInt(args[3]);
+		PoolSize  		   = Integer.parseInt(args[4]);
+		predicateLength    = Double.parseDouble(args[5]);
 		
 		SQLiteThroughputBenchmarking mysqlBech 
 								= new SQLiteThroughputBenchmarking();
+		
+		
 		
 		long start = System.currentTimeMillis();
 		InitializeClass initClass = new InitializeClass();
@@ -234,14 +235,7 @@ public class SQLiteThroughputBenchmarking
 		System.out.println(numGuids+" records inserted in "
 									+(System.currentTimeMillis()-start));
 		
-		try
-		{
-			Thread.sleep(10000);
-		} 
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
+		
 		
 //		public static final int RUN_UPDATE							= 1;
 //		public static final int RUN_SEARCH							= 2;

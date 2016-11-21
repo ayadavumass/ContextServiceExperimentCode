@@ -46,7 +46,7 @@ public class IndexReadUpdateClass extends AbstractRequestSendingClass
 		
 		try
 		{
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.UPDATE_POOL);
 			stmt = myConn.createStatement();
 			
 			for( int i=0; i<SQLiteThroughputBenchmarking.NUM_SUBSPACES; i++ )

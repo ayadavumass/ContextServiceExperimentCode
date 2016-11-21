@@ -57,7 +57,7 @@ public class TriggerUpdateTask implements Runnable
 		
 		try 
 		{
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.UPDATE_POOL);
 			stmt = (Statement) myConn.createStatement();
 			
 			ResultSet rs = stmt.executeQuery(removedGroupQuery);

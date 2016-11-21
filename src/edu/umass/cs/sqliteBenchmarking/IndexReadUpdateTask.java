@@ -44,7 +44,7 @@ public class IndexReadUpdateTask implements Runnable
 		
 		try
 		{	
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.UPDATE_POOL);
 			stmt = myConn.createStatement();
 			
 			ResultSet rs = stmt.executeQuery(searchQuery);

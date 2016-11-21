@@ -43,7 +43,7 @@ public class GetTask implements Runnable
 					+ SQLiteThroughputBenchmarking.dataTableName 
 					+ " WHERE nodeGUID = X'"+guid+"'";
 			
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.SEARCH_POOL);
 			statement = (Statement) myConn.createStatement();
 			ResultSet rs = statement.executeQuery(selectTableSQL);
 			int numEntries = 0;

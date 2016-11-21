@@ -24,7 +24,7 @@ public class TriggerSearchTask implements Runnable
 		
 		try
 		{	
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.SEARCH_POOL);
 			stmt = myConn.createStatement();
 			
 			long start = System.currentTimeMillis();

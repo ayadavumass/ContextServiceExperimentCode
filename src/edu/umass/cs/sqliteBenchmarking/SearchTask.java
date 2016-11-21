@@ -53,7 +53,7 @@ public class SearchTask implements Runnable
 //			+ "( value1 >= "+queryMin1 +" AND value1 < "+queryMax1+" AND "
 //					+ " value2 >= "+queryMin2 +" AND value2 < "+queryMax2+" )";
 			
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.SEARCH_POOL);
 			stmt = myConn.createStatement();
 			
 			ResultSet rs = stmt.executeQuery(searchQuery);

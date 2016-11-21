@@ -37,7 +37,7 @@ public class DeleteTask implements Runnable
 		
 		try
 		{
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.UPDATE_POOL);
 			
 			String deleteSQL = "DELETE FROM "+SQLiteThroughputBenchmarking.dataTableName 
 					+" WHERE nodeGUID=X'"+guid+"'";

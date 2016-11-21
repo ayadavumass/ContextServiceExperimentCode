@@ -91,7 +91,7 @@ public class UpdateTask implements Runnable
 //			String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.tableName+
 //					" SET value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
 
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.UPDATE_POOL);
 			statement = (Statement) myConn.createStatement();
 			
 			statement.executeUpdate(updateTableSQL);

@@ -44,7 +44,7 @@ public class InitializeTask implements Runnable
 		
 		try
 		{
-			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection();
+			myConn = SQLiteThroughputBenchmarking.dsInst.getConnection(DataSource.UPDATE_POOL);
 			
 //			String insertTableSQL = "INSERT INTO "+MySQLBenchmarking.tableName 
 //					+" (value1, value2, nodeGUID, versionNum) " + "VALUES"
