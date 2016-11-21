@@ -152,17 +152,17 @@ public class SQLiteThroughputBenchmarking
 			stmt.executeUpdate(newTableCommand);
 			
 			
-			for( int i=0; i<numAttrs; i++ )
-			{
-				String attrName = "attr"+i;
-				String indexName = attrName+"Index";
-				
-				newTableCommand = "CREATE INDEX "+indexName+" ON "+dataTableName
-						+" ("+attrName+")";
-				
-				stmt.executeUpdate(newTableCommand);
-				//		+ " , INDEX ("+attrName+")";
-			}
+//			for( int i=0; i<numAttrs; i++ )
+//			{
+//				String attrName = "attr"+i;
+//				String indexName = attrName+"Index";
+//				
+//				newTableCommand = "CREATE INDEX "+indexName+" ON "+dataTableName
+//						+" ("+attrName+")";
+//				
+//				stmt.executeUpdate(newTableCommand);
+//				//		+ " , INDEX ("+attrName+")";
+//			}
 			
 		}
 		catch ( SQLException e )
