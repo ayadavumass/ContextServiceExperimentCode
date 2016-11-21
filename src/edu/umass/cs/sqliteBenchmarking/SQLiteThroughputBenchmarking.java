@@ -159,6 +159,8 @@ public class SQLiteThroughputBenchmarking
 				
 				newTableCommand = "CREATE INDEX "+indexName+" ON "+dataTableName
 						+" ("+attrName+")";
+				
+				stmt.executeUpdate(newTableCommand);
 				//		+ " , INDEX ("+attrName+")";
 			}
 			
