@@ -122,7 +122,6 @@ public class SkewedWorkloadGenerator
 		}
 	}
 	
-	
 	private String createSearchQuery()
 	{
 //		String searchQuery
