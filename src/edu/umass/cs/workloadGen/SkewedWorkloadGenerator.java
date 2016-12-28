@@ -285,6 +285,7 @@ public class SkewedWorkloadGenerator
 				attrNum = attrNum -1 ;
 			}
 			
+			assert(attrNum >= 0 && attrNum < NUM_ATTRs);
 			String attrName = "attr"+attrNum;
 			return attrName;
 		}
@@ -305,6 +306,7 @@ public class SkewedWorkloadGenerator
 				attrNum = attrNum -1 ;	
 			}
 			
+			assert(attrNum >= 0 && attrNum < NUM_ATTRs);
 			String attrName = "attr"+attrNum;
 			
 			return attrName;
@@ -312,10 +314,11 @@ public class SkewedWorkloadGenerator
 	}
 	
 	
-	private double convertGuassianIntoValInRange(double guassionRandVal)
+	public static double convertGuassianIntoValInRange(double guassionRandVal)
 	{
 		double valInRange = 0;
 		double midpoint = ((ATTR_MAX+ATTR_MIN)/2.0);
+		
 		
 		if( guassionRandVal >= 0 )
 		{
@@ -323,8 +326,11 @@ public class SkewedWorkloadGenerator
 			{
 				guassionRandVal = 2;
 			}
+			double remRange = ATTR_MAX - midpoint;
+			valInRange = midpoint + (guassionRandVal*remRange)/2.0;
 			
-			valInRange = midpoint + (guassionRandVal*midpoint)/2.0;
+			assert(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX);
+			
 			return valInRange;
 		}
 		else
@@ -336,7 +342,9 @@ public class SkewedWorkloadGenerator
 				guassionRandVal = 2;
 			}
 			
-			valInRange = (guassionRandVal*midpoint)/2.0;
+			double remRange = midpoint - ATTR_MIN;
+			valInRange = ATTR_MIN+(guassionRandVal*remRange)/2.0;
+			assert(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX);
 			return valInRange;
 		}
 	}

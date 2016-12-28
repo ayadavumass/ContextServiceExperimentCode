@@ -44,7 +44,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(guidNum, userGUID);
 		
-		System.out.println("Attr JSON "+attrValJSON);
+		//System.out.println("Attr JSON "+attrValJSON);
 		
 		SearchAndUpdateDriver.csClient.sendUpdateWithCallBack
 							(userGUID, null, attrValJSON, -1, updateRep, this.getCallBack());
