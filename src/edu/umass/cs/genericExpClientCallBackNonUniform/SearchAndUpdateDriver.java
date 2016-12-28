@@ -328,14 +328,15 @@ public class SearchAndUpdateDriver
 		double valInRange = 0;
 		double midpoint = ((ATTR_MAX+ATTR_MIN)/2.0);
 		
+		
 		if( guassionRandVal >= 0 )
 		{
 			if( guassionRandVal > 2 )
 			{
 				guassionRandVal = 2;
 			}
-			
-			valInRange = midpoint + (guassionRandVal*midpoint)/2.0;
+			double remRange = ATTR_MAX - midpoint;
+			valInRange = midpoint + (guassionRandVal*remRange)/2.0;
 			return valInRange;
 		}
 		else
@@ -347,7 +348,8 @@ public class SearchAndUpdateDriver
 				guassionRandVal = 2;
 			}
 			
-			valInRange = (guassionRandVal*midpoint)/2.0;
+			double remRange = midpoint - ATTR_MIN;
+			valInRange = ATTR_MIN+(guassionRandVal*remRange)/2.0;
 			return valInRange;
 		}
 	}
