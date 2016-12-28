@@ -41,6 +41,7 @@ public class BothSearchAndUpdate extends
 		searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
 	}
 	
+	
 	@Override
 	public void run()
 	{
@@ -178,11 +179,8 @@ public class BothSearchAndUpdate extends
 	
 	private void sendSingleSearch()
 	{
-		String searchQuery
-			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
-//		+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
-//		+ " AND "
-//		+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+		String searchQuery = "";
+		
 		int randAttrNum = -1;
 		for( int i=0;i<SearchAndUpdateDriver.numAttrsInQuery;i++)
 		{
@@ -200,13 +198,12 @@ public class BothSearchAndUpdate extends
 			double attrMin 
 				= SearchAndUpdateDriver.ATTR_MIN
 				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
-		
+			
 			double predLength 
 				= (searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN));
-		
+			
 			double attrMax = attrMin + predLength;
-			//		double latitudeMax = latitudeMin 
-			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
+			
 			// making it curcular
 			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
 			{
@@ -260,11 +257,7 @@ public class BothSearchAndUpdate extends
 	
 	private void sendQueryMessage(long reqIdNum)
 	{
-		String searchQuery
-			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
-//			+ "geoLocationCurrentLat >= "+latitudeMin +" AND geoLocationCurrentLat <= "+latitudeMax 
-//			+ " AND "
-//			+ "geoLocationCurrentLong >= "+longitudeMin+" AND geoLocationCurrentLong <= "+longitudeMax;
+		String searchQuery = "";
 		
 		int randAttrNum = -1;
 		for( int i=0; i<SearchAndUpdateDriver.numAttrsInQuery; i++)
@@ -320,8 +313,7 @@ public class BothSearchAndUpdate extends
 	
 	private void sendQueryMessageWithSmallRanges(long reqIdNum)
 	{
-		String searchQuery
-			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
+		String searchQuery = "";
 		
 		HashMap<String, Boolean> distinctAttrMap 
 			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
@@ -368,6 +360,7 @@ public class BothSearchAndUpdate extends
 		SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
 			( searchQuery, SearchAndUpdateDriver.queryExpiryTime, searchRep, this.getCallBack() );
 	}
+	
 	
 	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
 			int totalAttrs, Random randGen )
@@ -446,7 +439,6 @@ public class BothSearchAndUpdate extends
 		return this.numUpdatesRecvd;
 	}
 	
-	
 	public long getNumSearchesRecvd()
 	{
 		return this.numSearchesRecvd;
@@ -460,8 +452,7 @@ public class BothSearchAndUpdate extends
 		{
 			numRecvd++;
 			this.numUpdatesRecvd++;
-//			System.out.println("LocUpd reply recvd "+userGUID+" time taken "+timeTaken+
-//					" numSent "+numSent+" numRecvd "+numRecvd);
+			
 			//if(currNumReplyRecvd == currNumReqSent)
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
@@ -480,9 +471,7 @@ public class BothSearchAndUpdate extends
 			numRecvd++;
 			this.numSearchesRecvd++;
 			sumResultSize = sumResultSize + resultSize;
-//			System.out.println("Search reply recvd size "+resultSize+" time taken "
-//					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
-			//if(currNumReplyRecvd == currNumReqSent)
+			
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{

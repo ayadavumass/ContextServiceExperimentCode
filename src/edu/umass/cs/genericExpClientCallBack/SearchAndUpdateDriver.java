@@ -245,8 +245,7 @@ public class SearchAndUpdateDriver
 					+" avgSearchLatency "+avgSearchLatency
 					+" numUpdates "+numUpdates
 					+" numSearches "+numSearches);
-			csClient.printTriggerStats();
-			
+			csClient.printTriggerStats();	
 		}
 		System.exit(0);
 	}
@@ -276,6 +275,7 @@ public class SearchAndUpdateDriver
        String returnGUID = sb.toString();
        return returnGUID.substring(0, 40);
 	}
+	
 	
 	public static class ReadTriggerRecvd implements Runnable
 	{

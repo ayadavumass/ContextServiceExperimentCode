@@ -65,11 +65,11 @@ public class Driver
 		
 		InitializeTaxisClass initializeTaxi = new InitializeTaxisClass();
 		
-		try 
+		try
 		{
 			initializeTaxi.initializaRateControlledRequestSender();
-		} 
-		catch (Exception e) 
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -106,11 +106,10 @@ public class Driver
 	{
 		public ClockThread()
 		{
-			
 		}
 		
 		@Override
-		public void run() 
+		public void run()
 		{
 //			while()
 //			{

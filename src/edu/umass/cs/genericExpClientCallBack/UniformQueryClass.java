@@ -90,8 +90,7 @@ public class UniformQueryClass extends AbstractRequestSendingClass implements Ru
 	
 	private void sendQueryMessage(long reqIdNum)
 	{
-		String searchQuery
-			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
+		String searchQuery = "";
 		
 		HashMap<String, Boolean> distinctAttrMap 
 			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
