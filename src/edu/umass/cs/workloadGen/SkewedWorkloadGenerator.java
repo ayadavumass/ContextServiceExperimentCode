@@ -36,10 +36,10 @@ public class SkewedWorkloadGenerator
 	public static final int NUM_GUIDs					= 100;
 	
 	// that is range from 650-850 has 70% prob
-	public static final double RANGE_STD_DEV			= 100.0;
+	public static final double RANGE_STD_DEV			= 300.0;
 
 	// that is attr8, attr9 attr10   has 70% prob
-	public static final double ATTR_STD_DEV				= 1.0;
+	public static final double ATTR_STD_DEV				= 4.0;
 	
 	
 	private final Random randGen;
@@ -246,7 +246,8 @@ public class SkewedWorkloadGenerator
 	{
 		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
 		
-		for(int i=0; i<numAttrsToPick; i++)
+		while(hashMap.size() != numAttrsToPick)
+		//for(int i=0; i<numAttrsToPick; i++)
 		{
 			String attrName = pickAttrUsingGaussian(randGen);
 			hashMap.put(attrName, true);
