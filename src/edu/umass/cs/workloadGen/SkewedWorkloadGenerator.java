@@ -36,10 +36,10 @@ public class SkewedWorkloadGenerator
 	public static final int NUM_GUIDs					= 100;
 	
 	// that is range from 650-850 has 70% prob
-	public static final double RANGE_STD_DEV			= 300.0;
+	public static final double RANGE_STD_DEV			= 200.0;
 
 	// that is attr8, attr9 attr10   has 70% prob
-	public static final double ATTR_STD_DEV				= 4.0;
+	public static final double ATTR_STD_DEV				= 3.0;
 	
 	
 	private final Random randGen;
