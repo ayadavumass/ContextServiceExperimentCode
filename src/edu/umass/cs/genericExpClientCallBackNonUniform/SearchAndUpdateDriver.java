@@ -37,10 +37,10 @@ public class SearchAndUpdateDriver
 	public static final double ATTR_MAX 						= 1500.0;
 	
 	// that is range from 650-850 has 70% prob
-	public static final double RANGE_STD_DEV					= 250.0;
+	public static final double RANGE_STD_DEV					= 150.0;
 
 	// that is attr8, attr9 attr10   has 70% prob
-	public static final double ATTR_STD_DEV						= 3.0;
+	public static final double ATTR_STD_DEV						= 2.0;
 	
 	public static final String attrPrefix						= "attr";
 	
