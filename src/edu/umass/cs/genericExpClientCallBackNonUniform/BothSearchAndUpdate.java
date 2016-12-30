@@ -298,7 +298,8 @@ public class BothSearchAndUpdate extends
 		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
 		int currAttrNum = 0;
 		
-		for(int i=0; i<numAttrsToPick; i++)
+		while(hashMap.size() != numAttrsToPick)
+		//for(int i=0; i<numAttrsToPick; i++)
 		{
 			if( SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery )
 			{
