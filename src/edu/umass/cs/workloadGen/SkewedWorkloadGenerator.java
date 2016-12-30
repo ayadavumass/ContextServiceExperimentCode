@@ -35,6 +35,13 @@ public class SkewedWorkloadGenerator
 	
 	public static final int NUM_GUIDs					= 100;
 	
+	// that is range from 650-850 has 70% prob
+	public static final double RANGE_STD_DEV			= 100.0;
+
+	// that is attr8, attr9 attr10   has 70% prob
+	public static final double ATTR_STD_DEV				= 1.0;
+	
+	
 	private final Random randGen;
 	
 	private final HashMap<String, JSONObject> guidAttrMap;
@@ -123,14 +130,11 @@ public class SkewedWorkloadGenerator
 	}
 	
 	private String createSearchQuery()
-	{
-//		String searchQuery
-//			= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE ";
-		
+	{	
 		String searchQuery = "";
 		
 		HashMap<String, Boolean> distinctAttrMap 
-			= pickDistinctAttrs( NUM_QUERY_ATTRs, NUM_ATTRs );
+			= pickDistinctAttrs( NUM_QUERY_ATTRs, randGen );
 		
 		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
 		
@@ -138,7 +142,7 @@ public class SkewedWorkloadGenerator
 		{
 			String attrName = attrIter.next();
 			
-			double attrMin = convertGuassianIntoValInRange(randGen.nextGaussian());
+			double attrMin = convertGuassianIntoValInRange(randGen);
 			
 			// querying 10 % of domain
 			double predLength 
@@ -171,9 +175,9 @@ public class SkewedWorkloadGenerator
 		
 		JSONObject attrValJSON = guidAttrMap.get(userGUID);
 		
-		String uAttrName = pickAttrUsingGaussian();
+		String uAttrName = pickAttrUsingGaussian(randGen);
 		
-		double uAttrVal = convertGuassianIntoValInRange(randGen.nextGaussian());
+		double uAttrVal = convertGuassianIntoValInRange(randGen);
 		
 		// GUID and new attrName and value.
 		String str = userGUID+","+uAttrName+","+uAttrVal;
@@ -222,7 +226,7 @@ public class SkewedWorkloadGenerator
 			for(int j=0; j<NUM_ATTRs; j++)
 			{
 				String attrName = "attr"+j;
-				double attrVal = convertGuassianIntoValInRange(randGen.nextGaussian());
+				double attrVal = convertGuassianIntoValInRange(randGen);
 				
 				try 
 				{
@@ -238,114 +242,96 @@ public class SkewedWorkloadGenerator
 	}
 	
 	
-	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
-			int totalAttrs )
+	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, Random randGen)
 	{
 		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
-		int currAttrNum = 0;
 		
-		while(hashMap.size() != numAttrsToPick)
+		for(int i=0; i<numAttrsToPick; i++)
 		{
-			if( NUM_ATTRs == NUM_QUERY_ATTRs )
-			{
-				String attrName = "attr"+currAttrNum;
-				hashMap.put(attrName, true);
-				currAttrNum++;
-			}
-			else
-			{
-				String attrName = pickAttrUsingGaussian();
-				//currAttrNum = randGen.nextInt(NUM_ATTRs);
-				//String attrName = "attr"+currAttrNum;
-				hashMap.put(attrName, true);
-			}
+			String attrName = pickAttrUsingGaussian(randGen);
+			hashMap.put(attrName, true);
 		}
 		return hashMap;
 	}
 	
 	
-	private String pickAttrUsingGaussian()
+	private String pickAttrUsingGaussian(Random randGen)
 	{
-		// between -2 and 2.
-		double gaussianRandVal = randGen.nextGaussian();
-		double midPoint = NUM_ATTRs/2.0;	
-		
-		if( gaussianRandVal >= 0 )
+		while(true)
 		{
-			if( gaussianRandVal > 2 )
-			{
-				gaussianRandVal = 2;
+			double gaussianRandVal = randGen.nextGaussian();
+			
+			int midpointAttrNum = NUM_ATTRs/2 -1;
+					
+			if( gaussianRandVal >= 0 )
+			{	
+				int attrNum =  midpointAttrNum+(int) Math.round(gaussianRandVal*ATTR_STD_DEV);
+				
+				if(attrNum >= 0 && attrNum < NUM_ATTRs)
+				{
+					String attrName = "attr"+attrNum;
+					return attrName;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+attrNum);
+				}
 			}
-			
-			int attrNum = (int) Math.ceil(midPoint + (gaussianRandVal*midPoint)/2.0);
-			
-			// because attr are numbered from 0 to NUM_ATTRs-1
-			if( attrNum >= 1)
+			else
 			{
-				attrNum = attrNum -1 ;
+				gaussianRandVal = -gaussianRandVal;
+				int attrNum =  midpointAttrNum-(int) Math.round(gaussianRandVal*ATTR_STD_DEV);
+				
+				if(attrNum >= 0 && attrNum < NUM_ATTRs)
+				{
+					String attrName = "attr"+attrNum;
+					return attrName;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+attrNum);
+				}
 			}
-			
-			assert(attrNum >= 0 && attrNum < NUM_ATTRs);
-			String attrName = "attr"+attrNum;
-			return attrName;
-		}
-		else
-		{
-			gaussianRandVal = -gaussianRandVal;
-			
-			if( gaussianRandVal > 2 )
-			{
-				gaussianRandVal = 2;
-			}
-			
-			int attrNum = (int) Math.ceil((gaussianRandVal*midPoint)/2.0);
-			
-			// because attr are numbered from 0 to NUM_ATTRs-1
-			if( attrNum >= 1)
-			{
-				attrNum = attrNum -1 ;	
-			}
-			
-			assert(attrNum >= 0 && attrNum < NUM_ATTRs);
-			String attrName = "attr"+attrNum;
-			
-			return attrName;
 		}
 	}
 	
 	
-	public static double convertGuassianIntoValInRange(double guassionRandVal)
+	public static double convertGuassianIntoValInRange(Random randGen)
 	{
 		double valInRange = 0;
 		double midpoint = ((ATTR_MAX+ATTR_MIN)/2.0);
 		
-		
-		if( guassionRandVal >= 0 )
+		while(true)
 		{
-			if( guassionRandVal > 2 )
+			double guassionRandVal = randGen.nextGaussian();
+			
+			if( guassionRandVal >= 0 )
 			{
-				guassionRandVal = 2;
+				valInRange = midpoint + (guassionRandVal*RANGE_STD_DEV);
+				
+				if(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX)
+				{
+					return valInRange;
+				}
+				else
+				{
+					System.out.println("Out of range generation val"+valInRange);
+				}
 			}
-			double remRange = ATTR_MAX - midpoint;
-			valInRange = midpoint + (guassionRandVal*remRange)/2.0;
-			
-			assert(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX);
-			
-			return valInRange;
-		}
-		else
-		{
-			guassionRandVal = -guassionRandVal;
-			
-			if( guassionRandVal > 2 )
+			else
 			{
-				guassionRandVal = 2;
+				guassionRandVal = -guassionRandVal;
+				valInRange = midpoint - (guassionRandVal*RANGE_STD_DEV);
+				
+				if(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX)
+				{
+					return valInRange;
+				}
+				else
+				{
+					System.out.println("Out of range generation val"+valInRange);
+				}
 			}
-			
-			double remRange = midpoint - ATTR_MIN;
-			valInRange = ATTR_MIN+(guassionRandVal*remRange)/2.0;
-			assert(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX);
-			return valInRange;
 		}
 	}
 	

@@ -27,7 +27,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		{
 			String attrName = SearchAndUpdateDriver.attrPrefix+i;
 			double attrVal  = 
-					SearchAndUpdateDriver.convertGuassianIntoValInRange(initRand.nextGaussian());
+					SearchAndUpdateDriver.convertGuassianIntoValInRange(initRand);
 			
 			attrValJSON.put(attrName, attrVal);
 		}

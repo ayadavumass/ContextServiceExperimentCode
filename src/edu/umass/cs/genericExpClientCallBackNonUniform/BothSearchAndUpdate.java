@@ -258,8 +258,8 @@ public class BothSearchAndUpdate extends
 		
 		
 		HashMap<String, Boolean> distinctAttrMap 
-			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery,
-					SearchAndUpdateDriver.numAttrs, searchQueryRand );
+			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery
+					, searchQueryRand );
 		
 		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
 		
@@ -268,7 +268,7 @@ public class BothSearchAndUpdate extends
 			String attrName = attrIter.next();
 			
 			double attrMin = SearchAndUpdateDriver.convertGuassianIntoValInRange
-							(searchQueryRand.nextGaussian());
+							(searchQueryRand);
 			
 			// querying 10 % of domain
 			double predLength 
@@ -293,13 +293,12 @@ public class BothSearchAndUpdate extends
 	}
 	
 	
-	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
-			int totalAttrs, Random randGen )
+	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, Random randGen )
 	{
 		HashMap<String, Boolean> hashMap = new HashMap<String, Boolean>();
 		int currAttrNum = 0;
 		
-		while(hashMap.size() != numAttrsToPick)
+		for(int i=0; i<numAttrsToPick; i++)
 		{
 			if( SearchAndUpdateDriver.numAttrs == SearchAndUpdateDriver.numAttrsInQuery )
 			{
@@ -309,58 +308,11 @@ public class BothSearchAndUpdate extends
 			}
 			else
 			{
-				String attrName = pickAttrUsingGaussian(randGen);
+				String attrName = SearchAndUpdateDriver.pickAttrUsingGaussian(randGen);
 				hashMap.put(attrName, true);
 			}
 		}
 		return hashMap;
-	}
-	
-	private String pickAttrUsingGaussian(Random randGen)
-	{
-		// between -2 and 2.
-		double gaussianRandVal = randGen.nextGaussian();
-		double midPoint = SearchAndUpdateDriver.numAttrs/2.0;	
-		
-		if( gaussianRandVal >= 0 )
-		{
-			if( gaussianRandVal > 2 )
-			{
-				gaussianRandVal = 2;
-			}
-			
-			int attrNum = (int) Math.ceil(midPoint + (gaussianRandVal*midPoint)/2.0);
-			
-			// because attr are numbered from 0 to NUM_ATTRs-1
-	 		if( attrNum >= 1)
-			{
-				attrNum = attrNum -1 ;
-			}
-			
-			String attrName = "attr"+attrNum;
-			return attrName;
-		}
-		else
-		{
-			gaussianRandVal = -gaussianRandVal;
-			
-			if( gaussianRandVal > 2 )
-			{
-				gaussianRandVal = 2;
-			}
-			
-			int attrNum = (int) Math.ceil((gaussianRandVal*midPoint)/2.0);
-			
-			// because attr are numbered from 0 to NUM_ATTRs-1
-			if( attrNum >= 1)
-			{
-				attrNum = attrNum -1 ;	
-			}
-			
-			String attrName = "attr"+attrNum;
-			
-			return attrName;
-		}
 	}
 	
 	
@@ -369,10 +321,10 @@ public class BothSearchAndUpdate extends
 		String userGUID = SearchAndUpdateDriver.getSHA1
 				(SearchAndUpdateDriver.guidPrefix+currUserGuidNum);
 		
-		String uAttrName = pickAttrUsingGaussian(updateRand);
+		String uAttrName = SearchAndUpdateDriver.pickAttrUsingGaussian(updateRand);
 		
 		double uAttrVal = SearchAndUpdateDriver.convertGuassianIntoValInRange
-											(updateRand.nextGaussian());
+											(updateRand);
 		
 		
 		JSONObject attrValJSON = new JSONObject();

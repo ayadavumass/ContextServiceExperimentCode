@@ -2,6 +2,7 @@ package edu.umass.cs.genericExpClientCallBackNonUniform;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -34,6 +35,12 @@ public class SearchAndUpdateDriver
 	
 	public static final double ATTR_MIN 						= 1.0;
 	public static final double ATTR_MAX 						= 1500.0;
+	
+	// that is range from 650-850 has 70% prob
+	public static final double RANGE_STD_DEV					= 100.0;
+
+	// that is attr8, attr9 attr10   has 70% prob
+	public static final double ATTR_STD_DEV						= 1.0;
 	
 	public static final String attrPrefix						= "attr";
 	
@@ -323,54 +330,82 @@ public class SearchAndUpdateDriver
 	}
 	
 	
-	public static double convertGuassianIntoValInRange(double guassionRandVal)
+	public static  double convertGuassianIntoValInRange(Random randGen)
 	{
 		double valInRange = 0;
 		double midpoint = ((ATTR_MAX+ATTR_MIN)/2.0);
 		
-		
-		if( guassionRandVal >= 0 )
+		while(true)
 		{
-			if( guassionRandVal > 2 )
-			{
-				guassionRandVal = 2;
-			}
-			double remRange = ATTR_MAX - midpoint;
-			valInRange = midpoint + (guassionRandVal*remRange)/2.0;
-			return valInRange;
-		}
-		else
-		{
-			guassionRandVal = -guassionRandVal;
+			double guassionRandVal = randGen.nextGaussian();
 			
-			if( guassionRandVal > 2 )
+			if( guassionRandVal >= 0 )
 			{
-				guassionRandVal = 2;
+				valInRange = midpoint + (guassionRandVal*RANGE_STD_DEV);
+				
+				if(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX)
+				{
+					return valInRange;
+				}
+				else
+				{
+					System.out.println("Out of range generation val"+valInRange);
+				}
 			}
-			
-			double remRange = midpoint - ATTR_MIN;
-			valInRange = ATTR_MIN+(guassionRandVal*remRange)/2.0;
-			return valInRange;
+			else
+			{
+				guassionRandVal = -guassionRandVal;
+				valInRange = midpoint - (guassionRandVal*RANGE_STD_DEV);
+				
+				if(valInRange >= ATTR_MIN && valInRange <= ATTR_MAX)
+				{
+					return valInRange;
+				}
+				else
+				{
+					System.out.println("Out of range generation val"+valInRange);
+				}
+			}
 		}
 	}
 	
-//	public static JSONObject getUpdateJSONForCS(int userState, double userLat, 
-//	double userLong) throws JSONException
-//{
-//JSONObject attrValJSON = new JSONObject();
-//attrValJSON.put(latitudeAttrName, userLat);
-//attrValJSON.put(longitudeAttrName, userLong);
-//attrValJSON.put(userStateAttrName, userState);
-//return attrValJSON;
-//}
-
-//public static JSONObject getUpdateJSONForGNS(int userState, double userLat, 
-//	double userLong) throws JSONException
-//{
-//JSONObject attrValJSON = new JSONObject();
-//attrValJSON.put(GEO_LOCATION_CURRENT, 
-//		GeoJSON.createGeoJSONCoordinate(new GlobalCoordinate(userLat, userLong)));
-//attrValJSON.put(userStateAttrName, userState);
-//return attrValJSON;
-//}
+	public static String pickAttrUsingGaussian(Random randGen)
+	{
+		while(true)
+		{
+			double gaussianRandVal = randGen.nextGaussian();
+			
+			int midpointAttrNum = numAttrs/2 -1;
+					
+			if( gaussianRandVal >= 0 )
+			{	
+				int attrNum =  midpointAttrNum+(int) Math.round(gaussianRandVal*ATTR_STD_DEV);
+				
+				if(attrNum >= 0 && attrNum < numAttrs)
+				{
+					String attrName = "attr"+attrNum;
+					return attrName;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+attrNum);
+				}
+			}
+			else
+			{
+				gaussianRandVal = -gaussianRandVal;
+				int attrNum =  midpointAttrNum-(int) Math.round(gaussianRandVal*ATTR_STD_DEV);
+				
+				if(attrNum >= 0 && attrNum < numAttrs)
+				{
+					String attrName = "attr"+attrNum;
+					return attrName;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+attrNum);
+				}
+			}
+		}
+	}
 }
