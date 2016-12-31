@@ -42,6 +42,10 @@ public class SearchAndUpdateDriver
 	// that is attr8, attr9 attr10   has 70% prob
 	public static final double ATTR_STD_DEV						= 2.0;
 	
+	
+	public static final double GUID_STD_DEV						= 1500.0;
+	
+	
 	public static final String attrPrefix						= "attr";
 	
 	// every 1000 msec, 0 is immidiate reading
@@ -324,6 +328,47 @@ public class SearchAndUpdateDriver
 				} catch (InterruptedException e)
 				{
 					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	
+	public static String pickGUIDUsingGaussian(Random randGen)
+	{
+		while(true)
+		{
+			double gaussianRandVal = randGen.nextGaussian();
+			
+			int midpointGuidNum = (int) (numUsers/2 -1);
+					
+			if( gaussianRandVal >= 0 )
+			{	
+				int guidNum =  midpointGuidNum+(int) Math.round(gaussianRandVal*GUID_STD_DEV);
+				
+				if(guidNum >= 0 && guidNum < numUsers)
+				{
+					String userGUID = getSHA1(guidPrefix+guidNum);
+					return userGUID;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+guidNum);
+				}
+			}
+			else
+			{
+				gaussianRandVal = -gaussianRandVal;
+				int guidNum =  midpointGuidNum-(int) Math.round(gaussianRandVal*GUID_STD_DEV);
+				
+				if(guidNum >= 0 && guidNum < numUsers)
+				{
+					String userGUID = getSHA1(guidPrefix+guidNum);
+					return userGUID;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+guidNum);
 				}
 			}
 		}

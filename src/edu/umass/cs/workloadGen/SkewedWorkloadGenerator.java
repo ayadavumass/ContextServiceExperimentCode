@@ -33,13 +33,17 @@ public class SkewedWorkloadGenerator
 	
 	public static final String GUID_PREFIX				= "GUID_PREFIX";
 	
-	public static final int NUM_GUIDs					= 100;
+	public static final int NUM_GUIDs					= 10000;
 	
 	// that is range from 650-850 has 70% prob
 	public static final double RANGE_STD_DEV			= 150.0;
 
 	// that is attr8, attr9 attr10   has 70% prob
 	public static final double ATTR_STD_DEV				= 2.0;
+	
+	
+	public static final double GUID_STD_DEV				= 1500.0;
+	
 	
 	
 	private final Random randGen;
@@ -168,10 +172,7 @@ public class SkewedWorkloadGenerator
 	
 	private String createUpdateMessage()
 	{
-		String userGUID = "";
-		
-		int guidNum = randGen.nextInt(NUM_GUIDs);
-		userGUID = getSHA1(GUID_PREFIX+guidNum);
+		String userGUID = pickGUIDUsingGaussian(randGen);
 		
 		JSONObject attrValJSON = guidAttrMap.get(userGUID);
 		
@@ -291,6 +292,47 @@ public class SkewedWorkloadGenerator
 				else
 				{
 					System.out.println("Out of range generation attr"+attrNum);
+				}
+			}
+		}
+	}
+
+	
+	private String pickGUIDUsingGaussian(Random randGen)
+	{
+		while(true)
+		{
+			double gaussianRandVal = randGen.nextGaussian();
+			
+			int midpointGuidNum = NUM_GUIDs/2 -1;
+					
+			if( gaussianRandVal >= 0 )
+			{	
+				int guidNum =  midpointGuidNum+(int) Math.round(gaussianRandVal*GUID_STD_DEV);
+				
+				if(guidNum >= 0 && guidNum < NUM_GUIDs)
+				{
+					String userGUID = getSHA1(GUID_PREFIX+guidNum);
+					return userGUID;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+guidNum);
+				}
+			}
+			else
+			{
+				gaussianRandVal = -gaussianRandVal;
+				int guidNum =  midpointGuidNum-(int) Math.round(gaussianRandVal*GUID_STD_DEV);
+				
+				if(guidNum >= 0 && guidNum < NUM_GUIDs)
+				{
+					String userGUID = getSHA1(GUID_PREFIX+guidNum);
+					return userGUID;
+				}
+				else
+				{
+					System.out.println("Out of range generation attr"+guidNum);
 				}
 			}
 		}
