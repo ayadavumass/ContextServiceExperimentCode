@@ -42,8 +42,7 @@ public class SearchAndUpdateDriver
 	// that is attr8, attr9 attr10   has 70% prob
 	public static final double ATTR_STD_DEV						= 2.0;
 	
-	
-	public static final double GUID_STD_DEV						= 1500.0;
+	//public static final double GUID_STD_DEV					= 1500.0;
 	
 	
 	public static final String attrPrefix						= "attr";
@@ -332,9 +331,9 @@ public class SearchAndUpdateDriver
 			}
 		}
 	}
-
 	
-	public static String pickGUIDUsingGaussian1(Random randGen)
+	
+	/*public static String pickGUIDUsingGaussian1(Random randGen)
 	{
 		while(true)
 		{
@@ -344,7 +343,8 @@ public class SearchAndUpdateDriver
 					
 			if( gaussianRandVal >= 0 )
 			{	
-				int guidNum =  midpointGuidNum+(int) Math.round(gaussianRandVal*GUID_STD_DEV);
+				int guidNum =  midpointGuidNum+
+						(int) Math.round(gaussianRandVal*GUID_STD_DEV);
 				
 				if(guidNum >= 0 && guidNum < numUsers)
 				{
@@ -359,7 +359,8 @@ public class SearchAndUpdateDriver
 			else
 			{
 				gaussianRandVal = -gaussianRandVal;
-				int guidNum =  midpointGuidNum-(int) Math.round(gaussianRandVal*GUID_STD_DEV);
+				int guidNum =  midpointGuidNum-
+						(int) Math.round(gaussianRandVal*GUID_STD_DEV);
 				
 				if(guidNum >= 0 && guidNum < numUsers)
 				{
@@ -372,7 +373,7 @@ public class SearchAndUpdateDriver
 				}
 			}
 		}
-	}
+	}*/
 	
 	
 	public static  double convertGuassianIntoValInRange(Random randGen)

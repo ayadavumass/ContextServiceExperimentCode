@@ -42,7 +42,7 @@ public class SkewedWorkloadGenerator
 	public static final double ATTR_STD_DEV				= 2.0;
 	
 	
-	public static final double GUID_STD_DEV				= 1500.0;
+	//public static final double GUID_STD_DEV				= 1500.0;
 	
 	
 	
@@ -133,6 +133,7 @@ public class SkewedWorkloadGenerator
 		}
 	}
 	
+	
 	private String createSearchQuery()
 	{	
 		String searchQuery = "";
@@ -172,7 +173,8 @@ public class SkewedWorkloadGenerator
 	
 	private String createUpdateMessage()
 	{
-		String userGUID = pickGUIDUsingGaussian(randGen);
+		//String userGUID = pickGUIDUsingGaussian(randGen);
+		String userGUID = getSHA1(GUID_PREFIX+randGen.nextInt(NUM_GUIDs));
 		
 		JSONObject attrValJSON = guidAttrMap.get(userGUID);
 		
@@ -183,6 +185,7 @@ public class SkewedWorkloadGenerator
 		// GUID and new attrName and value.
 		String str = userGUID+","+uAttrName+","+uAttrVal;
 		
+		@SuppressWarnings("unchecked")
 		Iterator<String> attrIter = attrValJSON.keys();
 		
 		// old values for this GUID.
@@ -208,8 +211,7 @@ public class SkewedWorkloadGenerator
 		catch (JSONException e) 
 		{
 			e.printStackTrace();
-		}
-		
+		}	
 		return str;
 	}
 	
@@ -296,9 +298,9 @@ public class SkewedWorkloadGenerator
 			}
 		}
 	}
-
 	
-	private String pickGUIDUsingGaussian(Random randGen)
+	
+	/*private String pickGUIDUsingGaussian(Random randGen)
 	{
 		while(true)
 		{
@@ -336,7 +338,7 @@ public class SkewedWorkloadGenerator
 				}
 			}
 		}
-	}
+	}*/
 	
 	
 	public static double convertGuassianIntoValInRange(Random randGen)

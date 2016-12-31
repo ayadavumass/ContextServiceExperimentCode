@@ -32,7 +32,6 @@ public class BothSearchAndUpdate extends
 		searchQueryRand = new Random(SearchAndUpdateDriver.myID*200);
 	}
 	
-	
 	@Override
 	public void run()
 	{
