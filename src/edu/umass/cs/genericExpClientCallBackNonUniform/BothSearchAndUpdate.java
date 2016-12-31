@@ -199,7 +199,11 @@ public class BothSearchAndUpdate extends
 	
 	private void sendALocMessage( long reqIdNum )
 	{
-		String userGUID = SearchAndUpdateDriver.pickGUIDUsingGaussian(updateRand);
+//		String userGUID = SearchAndUpdateDriver.pickGUIDUsingGaussian(updateRand);
+		
+		int guidNum = generalRand.nextInt((int)SearchAndUpdateDriver.numUsers);
+		
+		String userGUID = SearchAndUpdateDriver.getSHA1(SearchAndUpdateDriver.guidPrefix+guidNum);
 		
 		String uAttrName = SearchAndUpdateDriver.pickAttrUsingGaussian(updateRand);
 		

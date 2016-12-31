@@ -334,7 +334,7 @@ public class SearchAndUpdateDriver
 	}
 
 	
-	public static String pickGUIDUsingGaussian(Random randGen)
+	public static String pickGUIDUsingGaussian1(Random randGen)
 	{
 		while(true)
 		{
