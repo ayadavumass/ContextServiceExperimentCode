@@ -154,17 +154,17 @@ public class BothSearchAndUpdate extends
 		userGUID = SearchAndUpdateDriver.getSHA1
 					(SearchAndUpdateDriver.guidPrefix+currUserGuidNum);
 		
-		
 		int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
+		
 		double randVal = SearchAndUpdateDriver.ATTR_MIN 
 				+updateRand.nextDouble()*
 				(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
 		
 		JSONObject attrValJSON = new JSONObject();
 		try
-		{			
+		{
 			attrValJSON.put(SearchAndUpdateDriver.attrPrefix+randomAttrNum, randVal);
-		} 
+		}
 		catch (JSONException e)
 		{
 			e.printStackTrace();
@@ -325,22 +325,25 @@ public class BothSearchAndUpdate extends
 		{
 			String attrName = attrIter.next();
 			double attrMin = SearchAndUpdateDriver.ATTR_MIN
-					+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
-		
+					+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX 
+									- SearchAndUpdateDriver.ATTR_MIN);
+			
 			// querying 10 % of domain
 			double predLength 
 				= (SearchAndUpdateDriver.predicateLength
 						*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
 		
-			double attrMax = attrMin + predLength;
+			double attrMax = Math.min(attrMin + predLength, 
+									SearchAndUpdateDriver.ATTR_MAX);
+			
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 			// making it curcular
-			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
-			{
-				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
-				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
-			}
+//			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
+//			{
+//				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
+//				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+//			}
 			// last so no AND
 			if( !attrIter.hasNext() )
 			{
