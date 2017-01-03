@@ -332,18 +332,20 @@ public class BothSearchAndUpdate extends
 			double predLength 
 				= (SearchAndUpdateDriver.predicateLength
 						*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
-		
-			double attrMax = Math.min(attrMin + predLength, 
-									SearchAndUpdateDriver.ATTR_MAX);
+			
+//			double attrMax = Math.min(attrMin + predLength, 
+//									SearchAndUpdateDriver.ATTR_MAX);
+			
+			double attrMax = attrMin + predLength;
 			
 			//		double latitudeMax = latitudeMin 
 			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
 			// making it curcular
-//			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
-//			{
-//				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
-//				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
-//			}
+			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
+			{
+				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
+				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+			}
 			// last so no AND
 			if( !attrIter.hasNext() )
 			{
