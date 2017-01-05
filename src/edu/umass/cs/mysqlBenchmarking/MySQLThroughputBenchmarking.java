@@ -109,7 +109,6 @@ public class MySQLThroughputBenchmarking
 		}
 	}
 	
-	
 	private void createTable()
 	{
 		Connection myConn 	= null;
@@ -144,7 +143,7 @@ public class MySQLThroughputBenchmarking
 						+ "INDEX USING BTREE ("+attrName+")";
 			}
 			
-			newTableCommand = newTableCommand +" ) ";
+			newTableCommand = newTableCommand +" ) ENGINE = MEMORY";
 			
 //			String newTableCommand = "create table "+tableName+" ( "
 //					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
@@ -226,7 +225,7 @@ public class MySQLThroughputBenchmarking
 		
 		newTableCommand = newTableCommand 
 				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
-				+ " INDEX USING HASH(groupGUID) )";
+				+ " INDEX USING HASH(groupGUID) ) ENGINE = MEMORY";
 		System.out.println("newTableCommand "+newTableCommand);
 		
 		stmt.executeUpdate(newTableCommand);

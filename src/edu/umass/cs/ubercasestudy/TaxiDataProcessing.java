@@ -25,8 +25,7 @@ public class TaxiDataProcessing
 	}
 	
 	public void processData()
-	{
-		
+	{	
 	}
 	
 	public void readTheTaxiFile()
