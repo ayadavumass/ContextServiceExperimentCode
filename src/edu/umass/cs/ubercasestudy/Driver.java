@@ -1,9 +1,7 @@
 package edu.umass.cs.ubercasestudy;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,29 +11,28 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
-import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 public class Driver
 {
 	// this is approximately similar to taxis in nyc, which is around 13000.
-	public static int NUMBER_TAXIS						= 10000;
+	public static int NUMBER_TAXIS							= 10000;
 	
 	// indexes start from 1. so In the parsed array they should be 
 	// made -1
-	public static final int PICKUP_LAT_INDEX			= 7;
-	public static final int PICKUP_LONG_INDEX			= 6;
-	public static final int DROPOFF_LAT_INDEX			= 11;
-	public static final int DROPOFF_LONG_INDEX			= 10;
-	public static final int PICKUP_DATETIME_INDEX		= 2;
-	public static final int DROPOFF_DATETIME_INDEX		= 3;
+	public static final int PICKUP_LAT_INDEX				= 7;
+	public static final int PICKUP_LONG_INDEX				= 6;
+	public static final int DROPOFF_LAT_INDEX				= 11;
+	public static final int DROPOFF_LONG_INDEX				= 10;
+	public static final int PICKUP_DATETIME_INDEX			= 2;
+	public static final int DROPOFF_DATETIME_INDEX			= 3;
 	
 	
 	//NYC lat 40.7128, long -74.0059
-	public static final double MIN_LAT					= 40.0;
-	public static final double MAX_LAT					= 42.0;
+	public static final double MIN_LAT						= 40.0;
+	public static final double MAX_LAT						= 42.0;
 	
-	public static final double MIN_LONG					= -76.0;
-	public static final double MAX_LONG					= -73.0;
+	public static final double MIN_LONG						= -76.0;
+	public static final double MAX_LONG						= -73.0;
 	
 	
 	public static final String ONE_DAY_TRACE_PATH
@@ -44,25 +41,31 @@ public class Driver
 	public static final String TAXI_DATA_PATH 
 					= "/home/ayadav/Documents/Data/NYCTaxiData/yellow_tripdata_2016-02.csv";
 	
-	public static final String DATE_TO_SAMPLE 			= "2016-02-13";
+	public static final String DATE_TO_SAMPLE 				= "2016-02-13";
 	
-	public static final String LAT_ATTR					= "latitude";
-	public static final String LONG_ATTR				= "longitude";
-	public static final String STATUS_ATTR				= "status";
+	public static final String LAT_ATTR						= "latitude";
+	public static final String LONG_ATTR					= "longitude";
+	public static final String STATUS_ATTR					= "status";
 	
-	public static final int FREE_TAXI_STATUS			= 0;
-	public static final int INUSE_TAXI_STATUS			= 1;
+	public static final int FREE_TAXI_STATUS				= 0;
+	public static final int INUSE_TAXI_STATUS				= 1;
 	
-	public static final String GUID_PREFIX				= "TAXIGUID";
+	public static final String GUID_PREFIX					= "TAXIGUID";
 	
-	public static final DateFormat dfm 					= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static final DateFormat dfm 						= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	public static double startUnixTimeInSec				= -1;
-	public static double currUnixTimeInSec				= -1;
+	public static double startUnixTimeInSec					= -1;
+	public static double currUnixTimeInSec					= -1;
 	public static ContextServiceClient csClient;
 	
 	public static final double SLEEP_TIME					= 100; //100ms;
 	public static final double TIME_CONTRACTION_FACTOR		= 96.0; // 96 means running 1 day trace in 15 mins
+	
+	// 0.5 means 50% of trace will be sent. so 50% users got taxis.
+	public static final double REQUEST_ISSUE_PROB			= 0.5;
+	
+	// 0.2 on each side, like search at 40 would be from 38.8 to 40.2
+	public static final double SEARCH_AREA_RANGE			= 0.2;
 	
 	public static int myID;
 	
@@ -193,12 +196,9 @@ public class Driver
 				}
 				
 				double increment = (SLEEP_TIME/1000.0)*TIME_CONTRACTION_FACTOR;
-				currUnixTimeInSec = currUnixTimeInSec + increment;
-				
-				
-				
-				
+				currUnixTimeInSec = currUnixTimeInSec + increment;	
 			}
 		}
 	}
+	
 }
