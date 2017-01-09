@@ -29,6 +29,6 @@ public class ExperimentCallBack implements CallBackInterface
 	{
 		long timeTaken = ((ExperimentUpdateReply)updateRep).getCompletionTime();
 		String guid = ((ExperimentUpdateReply)updateRep).getGuid();
-		reqSendClass.incrementUpdateNumRecvd(guid, timeTaken);
+		//reqSendClass.incrementUpdateNumRecvd(guid, timeTaken);
 	}
 }

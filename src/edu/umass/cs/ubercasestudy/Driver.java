@@ -14,6 +14,9 @@ import edu.umass.cs.contextservice.client.ContextServiceClient;
 
 public class Driver
 {
+	public static final double LOSS_TOLERANCE				= 0.5;
+	public static final double WAIT_TIME					= 100000; // 100 sec
+	
 	// this is approximately similar to taxis in nyc, which is around 13000.
 	public static int NUMBER_TAXIS							= 10000;
 	
@@ -69,6 +72,10 @@ public class Driver
 	
 	public static int myID;
 	
+	// request sender waits 
+	public static final Object TIME_WAIT_LOCK				= new Object();
+	
+	
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, ParseException
 	{		
 		long startUnixTimeInSec = findMinimumTimeFromTrace();
@@ -90,6 +97,11 @@ public class Driver
 //		{
 //			e.printStackTrace();
 //		}
+	}
+	
+	public static double getCurrUnixTime()
+	{
+		return currUnixTimeInSec;
 	}
 	
 	public static String getSHA1(String stringToHash)
@@ -197,6 +209,12 @@ public class Driver
 				
 				double increment = (SLEEP_TIME/1000.0)*TIME_CONTRACTION_FACTOR;
 				currUnixTimeInSec = currUnixTimeInSec + increment;	
+				
+				synchronized(TIME_WAIT_LOCK)
+				{
+					TIME_WAIT_LOCK.notify();
+				}
+				
 			}
 		}
 	}

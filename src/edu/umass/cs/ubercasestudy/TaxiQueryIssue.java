@@ -8,7 +8,8 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Random;
 
-public class TaxiQueryIssue
+
+public class TaxiQueryIssue extends AbstractRequestSendingClass
 {
 	private double minLat						= 8000;
 	private double maxLat						= -8000;
@@ -19,10 +20,12 @@ public class TaxiQueryIssue
 	private final Random randGen;
 	
 	private final PriorityQueue<TaxiRideInfo> ongoingTaxiRides; 
-			
+	
+	private final long requestNum				= 0;
     //new PriorityQueue<String>(10, comparator);
 	public TaxiQueryIssue()
 	{
+		super(Driver.LOSS_TOLERANCE, (long) Driver.WAIT_TIME);
 		randGen = new Random();
 		Comparator<TaxiRideInfo> comparator = new TaxiRideInfo("", -1);
 		ongoingTaxiRides = new PriorityQueue<TaxiRideInfo>(10,comparator );
@@ -161,6 +164,21 @@ public class TaxiQueryIssue
 					long pickupTime = Driver.dfm.parse(pickDateTimeString).getTime()/1000;
 					long dropOffTime = Driver.dfm.parse(dropDateTimeString).getTime()/1000;
 					
+					synchronized(Driver.TIME_WAIT_LOCK)
+					{
+						while(pickupTime < Driver.getCurrUnixTime())
+						{
+							try 
+							{
+								Driver.TIME_WAIT_LOCK.wait();
+							} catch (InterruptedException e) 
+							{
+								e.printStackTrace();
+							}
+						}
+					}
+					// now issue the query.
+					
 					
 					
 					double pickupLat  
@@ -249,7 +267,7 @@ public class TaxiQueryIssue
 	
 	
 	private void sendOutTaxiRequest(double pickupLat, double pickupLong, 
-						double dropOffLat, double dropOffLong)
+						double dropOffLat, double dropOffLong, long currReqNum)
 	{
 		double latMin = Math.max(pickupLat - Driver.SEARCH_AREA_RANGE, Driver.MIN_LAT);
 		double latMax = Math.min(pickupLat+Driver.SEARCH_AREA_RANGE, Driver.MAX_LAT);
@@ -257,13 +275,40 @@ public class TaxiQueryIssue
 		double longMin = Math.max(pickupLong - Driver.SEARCH_AREA_RANGE, Driver.MIN_LONG);
 		double longMax = Math.min(pickupLong+Driver.SEARCH_AREA_RANGE, Driver.MAX_LONG);
 		
-		String searchQuery = Driver.LAT_ATTR;
+		String searchQuery = Driver.LAT_ATTR +" >= "+latMin
+				+" AND "+Driver.LAT_ATTR+" <= "+latMax
+				+" AND "+Driver.LONG_ATTR +" >= "+longMin
+				+" AND "+Driver.LONG_ATTR+" <= "+longMax;
 		
+		ExperimentSearchReply searchRep 
+				= new ExperimentSearchReply(currReqNum);
+		
+		Driver.csClient.sendSearchQueryWithCallBack
+						(searchQuery, 300000, searchRep, this.getCallBack());
 	}
+	
 	
 	public static void main( String[] args )
 	{
 		TaxiQueryIssue taxObj = new TaxiQueryIssue();
 		taxObj.computeLatLongBounds();
+	}
+
+//	@Override
+//	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+//	{
+//		
+//	}
+
+	@Override
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	{
+		//taxi reply has come back. so choose randomly one taxi and update its GUID and location.	
+	}
+
+
+	@Override
+	public void incrementUpdateNumRecvd(ExperimentSearchReply expSearchReply) 
+	{	
 	}
 }

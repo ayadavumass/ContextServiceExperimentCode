@@ -142,6 +142,7 @@ public class TaxiDataProcessing
 		}
 	}
 	
+	
 	private boolean checkLatRange(double latToCheck)
 	{
 		if( (latToCheck >= Driver.MIN_LAT) && (latToCheck <= Driver.MAX_LAT) )
@@ -153,6 +154,7 @@ public class TaxiDataProcessing
 			return false;
 		}
 	}
+	
 	
 	private boolean checkLongRange(double longToCheck)
 	{

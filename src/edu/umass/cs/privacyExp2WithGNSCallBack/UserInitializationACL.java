@@ -65,7 +65,8 @@ public class UserInitializationACL extends
 			UserEntry currUserEntry 
 						= SearchAndUpdateDriver.usersVector.get(i);
 			
-			List<ACLEntry> distinctGuidInACLsList = getTotalDistinctGuidsForAUser();
+			List<ACLEntry> distinctGuidInACLsList 
+						= getTotalDistinctGuidsForAUser();
 			
 			// generate ACLs
 			HashMap<String, List<ACLEntry>> aclMap 
@@ -142,7 +143,8 @@ public class UserInitializationACL extends
 			distnctGuidsList.add(distinctGuidMap.get( guidIter.next()) );
 		}
 		
-		assert( distnctGuidsList.size() == SearchAndUpdateDriver.totalDistinctGuidsInACLs );
+		assert( distnctGuidsList.size() 
+					== SearchAndUpdateDriver.totalDistinctGuidsInACLs );
 		
 		return distnctGuidsList;
 	}

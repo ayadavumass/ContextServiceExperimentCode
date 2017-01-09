@@ -110,6 +110,7 @@ public abstract class AbstractRequestSendingClass
 		}
 	}
 	
+	
 	public CallBackInterface getCallBack()
 	{
 		return this.expCallback;
@@ -128,6 +129,6 @@ public abstract class AbstractRequestSendingClass
 		return completion;
 	}
 	
-	public abstract void incrementUpdateNumRecvd(String userGUID, long timeTaken);
+	public abstract void incrementUpdateNumRecvd(ExperimentSearchReply expSearchReply);
 	public abstract void incrementSearchNumRecvd(int resultSize, long timeTaken);
 }

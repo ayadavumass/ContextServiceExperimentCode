@@ -71,6 +71,4 @@ public class InitTask implements Runnable
 			e.printStackTrace();
 		}
 	}
-	
-	
 }

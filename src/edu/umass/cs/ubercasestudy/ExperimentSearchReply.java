@@ -10,6 +10,7 @@ public class ExperimentSearchReply implements SearchReplyInterface
 	private JSONArray replyArray;
 	private int replySize;
 	private final long startTime;
+	private  long finishTime;
 	
 	public ExperimentSearchReply( long callerReqID )
 	{
@@ -47,13 +48,14 @@ public class ExperimentSearchReply implements SearchReplyInterface
 		return replyArray;
 	}
 	
+	public void setCompletionTime()
+	{
+		finishTime = System.currentTimeMillis();
+	}
+	
+	
 	public long getCompletionTime()
 	{
-		long timeTaken = (System.currentTimeMillis()-startTime);
-		return timeTaken;
-		
-//		System.out.println("Search completion time reqID "+callerReqID
-//				+ " time taken "+(System.currentTimeMillis()-startTime)
-//				+" replySize "+replySize);
+		return finishTime-startTime;
 	}
 }

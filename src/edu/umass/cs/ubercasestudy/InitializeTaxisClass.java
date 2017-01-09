@@ -4,8 +4,6 @@ import java.util.Random;
 
 import org.json.JSONObject;
 
-import edu.umass.cs.genericExpClientCallBack.ExperimentUpdateReply;
-import edu.umass.cs.genericExpClientCallBack.SearchAndUpdateDriver;
 
 public class InitializeTaxisClass extends AbstractRequestSendingClass
 {
@@ -46,7 +44,7 @@ public class InitializeTaxisClass extends AbstractRequestSendingClass
 		
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(guidNum, guid);
 		
-		SearchAndUpdateDriver.csClient.sendUpdateWithCallBack
+		Driver.csClient.sendUpdateWithCallBack
 										( guid, null, 
 										attrValJSON, -1, updateRep, this.getCallBack() );	
 	}
@@ -122,24 +120,29 @@ public class InitializeTaxisClass extends AbstractRequestSendingClass
 	}
 	
 	
-	@Override
-	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
-	{
-		synchronized(waitLock)
-		{
-			numRecvd++;
-			System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
-			
-			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
-			{
-				waitLock.notify();
-			}
-		}
-	}
+//	@Override
+//	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+//	{
+//		synchronized(waitLock)
+//		{
+//			numRecvd++;
+//			System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
+//					" numSent "+numSent+" numRecvd "+numRecvd);
+//			
+//			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
+//			{
+//				waitLock.notify();
+//			}
+//		}
+//	}
 	
 	@Override
 	public void incrementSearchNumRecvd( int resultSize, long timeTaken )
+	{
+	}
+
+	@Override
+	public void incrementUpdateNumRecvd(ExperimentSearchReply expSearchReply) 
 	{
 	}
 }
