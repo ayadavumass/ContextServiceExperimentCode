@@ -143,7 +143,8 @@ public class MySQLThroughputBenchmarking
 						+ "INDEX USING BTREE ("+attrName+")";
 			}
 			
-			newTableCommand = newTableCommand +" ) ENGINE = MEMORY";
+			//newTableCommand = newTableCommand +" ) ENGINE = MEMORY";
+			newTableCommand = newTableCommand +" )";
 			
 //			String newTableCommand = "create table "+tableName+" ( "
 //					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
@@ -223,9 +224,14 @@ public class MySQLThroughputBenchmarking
 				+ "userIP Binary(4) NOT NULL ,  userPort INTEGER NOT NULL , expiryTime BIGINT NOT NULL ";
 		newTableCommand = getPartitionInfoStorageString(newTableCommand);
 		
+//		newTableCommand = newTableCommand 
+//				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
+//				+ " INDEX USING HASH(groupGUID) ) ENGINE = MEMORY";
+		
 		newTableCommand = newTableCommand 
 				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
-				+ " INDEX USING HASH(groupGUID) ) ENGINE = MEMORY";
+				+ " INDEX USING HASH(groupGUID) ) ";
+		
 		System.out.println("newTableCommand "+newTableCommand);
 		
 		stmt.executeUpdate(newTableCommand);
