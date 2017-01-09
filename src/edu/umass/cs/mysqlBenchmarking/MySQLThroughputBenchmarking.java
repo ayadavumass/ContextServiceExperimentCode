@@ -81,6 +81,9 @@ public class MySQLThroughputBenchmarking
 	
 	public static ExecutorService	 taskES						= null;
 	
+	// 1 if in memory is true and 0 otherwise.
+	public static int inMemory;
+	
 	public MySQLThroughputBenchmarking()
 	{
 		try
@@ -143,8 +146,15 @@ public class MySQLThroughputBenchmarking
 						+ "INDEX USING BTREE ("+attrName+")";
 			}
 			
-			//newTableCommand = newTableCommand +" ) ENGINE = MEMORY";
-			newTableCommand = newTableCommand +" )";
+			if(inMemory == 1)
+			{
+				newTableCommand = newTableCommand +" ) ENGINE = MEMORY";
+			}
+			else
+			{
+				newTableCommand = newTableCommand +" )";
+			}
+			
 			
 //			String newTableCommand = "create table "+tableName+" ( "
 //					+ "   value1 DOUBLE NOT NULL, value2 DOUBLE NOT NULL, nodeGUID CHAR(100) PRIMARY KEY, versionNum INT NOT NULL,"
@@ -224,18 +234,22 @@ public class MySQLThroughputBenchmarking
 				+ "userIP Binary(4) NOT NULL ,  userPort INTEGER NOT NULL , expiryTime BIGINT NOT NULL ";
 		newTableCommand = getPartitionInfoStorageString(newTableCommand);
 		
-//		newTableCommand = newTableCommand 
-//				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
-//				+ " INDEX USING HASH(groupGUID) ) ENGINE = MEMORY";
-		
-		newTableCommand = newTableCommand 
+		if(inMemory == 1)
+		{
+			newTableCommand = newTableCommand 
 				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
-				+ " INDEX USING HASH(groupGUID) ) ";
+				+ " INDEX USING HASH(groupGUID) ) ENGINE = MEMORY";
+		}
+		else
+		{
+			newTableCommand = newTableCommand 
+					+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
+					+ " INDEX USING HASH(groupGUID) ) ";
+		}
 		
 		System.out.println("newTableCommand "+newTableCommand);
 		
 		stmt.executeUpdate(newTableCommand);
-		
 	}
 	
 	private static String getPartitionInfoStorageString(String newTableCommand)
@@ -302,6 +316,7 @@ public class MySQLThroughputBenchmarking
 		requestsps         = Integer.parseInt(args[4]);
 		PoolSize  		   = Integer.parseInt(args[5]);
 		predicateLength    = Double.parseDouble(args[6]);
+		inMemory           = Integer.parseInt(args[7]);
 		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
