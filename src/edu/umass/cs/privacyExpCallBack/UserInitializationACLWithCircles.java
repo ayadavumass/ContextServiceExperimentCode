@@ -125,7 +125,7 @@ public class UserInitializationACLWithCircles extends
 				circlenum = circlenum%SearchAndUpdateDriver.numCircles; 
 			}
 			
-			// probablistically add each guid to one more circle
+			// Probabilistically add each guid to one more circle
 			while( guidMapIter.hasNext() )
 			{
 				circlenum = circleRand.nextInt(SearchAndUpdateDriver.numCircles);

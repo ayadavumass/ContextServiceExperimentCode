@@ -201,7 +201,7 @@ public class SearchAndUpdateDriver
 			new Thread( new ReadTriggerRecvd() ).start();
 		}
 		
-		taskES = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		taskES = Executors.newFixedThreadPool(10);
 		if( userInitEnable )
 		{
 			long start 	= System.currentTimeMillis();
