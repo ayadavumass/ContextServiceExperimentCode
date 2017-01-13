@@ -161,7 +161,7 @@ public class SearchAndUpdateDriver
 			searchUpdateSeparate = false;
 			userInitEnable	  = true;
 			singleRequest	  = true;
-			transformType     = PrivacySchemes.HYPERSPACE_PRIVACY.ordinal();
+			transformType     = PrivacySchemes.PRIVACY.ordinal();
 		}
 		
 		
@@ -170,16 +170,16 @@ public class SearchAndUpdateDriver
 		System.out.println("Search and update client started ");
 		guidPrefix = guidPrefix+myID;
 		
-		if( transformType == PrivacySchemes.HYPERSPACE_PRIVACY.ordinal() )
+		if( transformType == PrivacySchemes.PRIVACY.ordinal() )
 		{
 			csClient  = new ContextServiceClient( csHost, csPort, true,
-					PrivacySchemes.HYPERSPACE_PRIVACY );
+					PrivacySchemes.PRIVACY );
 		}
-		else if( transformType == PrivacySchemes.SUBSPACE_PRIVACY.ordinal() )
-		{
-			csClient  = new ContextServiceClient( csHost, csPort, true,
-					PrivacySchemes.SUBSPACE_PRIVACY );
-		}
+//		else if( transformType == PrivacySchemes.SUBSPACE_PRIVACY.ordinal() )
+//		{
+//			csClient  = new ContextServiceClient( csHost, csPort, true,
+//					PrivacySchemes.SUBSPACE_PRIVACY );
+//		}
 		
 		System.out.println("ContextServiceClient created");
 		// per 1 ms
