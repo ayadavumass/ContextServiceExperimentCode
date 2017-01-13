@@ -287,9 +287,6 @@ public class SearchAndUpdateDriver
 				JSONArray triggerArray = new JSONArray();
 				csClient.getQueryUpdateTriggers(triggerArray);
 				
-//				System.out.println("Reading triggers num read "
-//												+triggerArray.length());
-				
 				for( int i=0;i<triggerArray.length();i++ )
 				{
 					try 

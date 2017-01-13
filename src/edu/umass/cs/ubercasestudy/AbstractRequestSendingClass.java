@@ -129,6 +129,6 @@ public abstract class AbstractRequestSendingClass
 		return completion;
 	}
 	
-	public abstract void incrementUpdateNumRecvd(ExperimentSearchReply expSearchReply);
-	public abstract void incrementSearchNumRecvd(int resultSize, long timeTaken);
+	public abstract void incrementUpdateNumRecvd(ExperimentUpdateReply expUpdateReply);
+	public abstract void incrementSearchNumRecvd(ExperimentSearchReply expSearchReply);
 }

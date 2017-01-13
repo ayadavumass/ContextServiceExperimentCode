@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Random;
 
+import org.json.JSONArray;
+
 
 public class TaxiQueryIssue extends AbstractRequestSendingClass
 {
@@ -22,12 +24,14 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	private final PriorityQueue<TaxiRideInfo> ongoingTaxiRides; 
 	
 	private final long requestNum				= 0;
+	
     //new PriorityQueue<String>(10, comparator);
 	public TaxiQueryIssue()
 	{
 		super(Driver.LOSS_TOLERANCE, (long) Driver.WAIT_TIME);
 		randGen = new Random();
-		Comparator<TaxiRideInfo> comparator = new TaxiRideInfo("", -1);
+		Comparator<TaxiRideInfo> comparator = new TaxiRideInfo(-1, -1, -1, 
+																	-1, -1);
 		ongoingTaxiRides = new PriorityQueue<TaxiRideInfo>(10,comparator );
 	}
 	
@@ -40,7 +44,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader(Driver.ONE_DAY_TRACE_PATH));
+			br = new BufferedReader(new FileReader
+									(Driver.ONE_DAY_TRACE_PATH));
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
@@ -110,7 +115,6 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				{
 					maxLong = dropOffLong;
 				}
-				
 			}
 		} 
 		catch (IOException e) 
@@ -247,10 +251,10 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				
 			}
 		} 
-		catch (IOException e) 
+		catch (IOException e)
 		{
 			e.printStackTrace();
-		} 
+		}
 		finally
 		{
 			try
@@ -267,7 +271,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	
 	
 	private void sendOutTaxiRequest(double pickupLat, double pickupLong, 
-						double dropOffLat, double dropOffLong, long currReqNum)
+						double dropOffLat, double dropOffLong, long currReqNum, 
+						long dropOffTime)
 	{
 		double latMin = Math.max(pickupLat - Driver.SEARCH_AREA_RANGE, Driver.MIN_LAT);
 		double latMax = Math.min(pickupLat+Driver.SEARCH_AREA_RANGE, Driver.MAX_LAT);
@@ -279,6 +284,11 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				+" AND "+Driver.LAT_ATTR+" <= "+latMax
 				+" AND "+Driver.LONG_ATTR +" >= "+longMin
 				+" AND "+Driver.LONG_ATTR+" <= "+longMax;
+		
+//		TaxiRideInfo taxiRideInfo = new TaxiRideInfo();
+		
+//		long taxiRideEndTimeStamp, double pickUpLat, 
+//		double pickUpLong, double dropOffLat, double dropOffLong
 		
 		ExperimentSearchReply searchRep 
 				= new ExperimentSearchReply(currReqNum);
@@ -294,21 +304,40 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		taxObj.computeLatLongBounds();
 	}
 
+
+	@Override
+	public void incrementUpdateNumRecvd(ExperimentUpdateReply expUpdateReply) 
+	{
+		
+		
+	}
+
+	@Override
+	public void incrementSearchNumRecvd(ExperimentSearchReply expSearchReply)
+	{
+		// taxi reply has come back. so choose randomly one taxi 
+		// and update its GUID and location.
+		JSONArray taxiGUIDArray = expSearchReply.getSearchReplyArray();
+		
+		
+		
+	}
+	
+	/**
+	 * FIXME: Right this is very simple.
+	 * A user randomly selects a taxi and updates its location
+	 * So multiple user might select same taxi and cause conflicts.
+	 * So, later on we will have to add some support in CNS
+	 * so that a user can atomically book a taxi.
+	 */
+	private void processATaxiSearch(JSONArray taxiGUIDArray)
+	{
+		
+		
+	}
+
 //	@Override
 //	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 //	{
-//		
 //	}
-
-	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
-	{
-		//taxi reply has come back. so choose randomly one taxi and update its GUID and location.	
-	}
-
-
-	@Override
-	public void incrementUpdateNumRecvd(ExperimentSearchReply expSearchReply) 
-	{	
-	}
 }

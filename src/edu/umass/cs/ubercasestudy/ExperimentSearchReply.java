@@ -6,24 +6,25 @@ import edu.umass.cs.contextservice.client.callback.interfaces.SearchReplyInterfa
 
 public class ExperimentSearchReply implements SearchReplyInterface
 {
-	private final long callerReqID;
+	// used to demultiples when a reply comes back
+	private final long taxiReqID;
 	private JSONArray replyArray;
 	private int replySize;
 	private final long startTime;
 	private  long finishTime;
 	
-	public ExperimentSearchReply( long callerReqID )
+	public ExperimentSearchReply( long taxiReqID )
 	{
-		this.callerReqID = callerReqID;
+		this.taxiReqID = taxiReqID;
 		startTime = System.currentTimeMillis();
 	}
 	
 	@Override
 	public long getCallerReqId()
 	{
-		return callerReqID;
+		return taxiReqID;
 	}
-
+	
 	@Override
 	public void setSearchReplyArray(JSONArray replyArray)
 	{
@@ -52,7 +53,6 @@ public class ExperimentSearchReply implements SearchReplyInterface
 	{
 		finishTime = System.currentTimeMillis();
 	}
-	
 	
 	public long getCompletionTime()
 	{

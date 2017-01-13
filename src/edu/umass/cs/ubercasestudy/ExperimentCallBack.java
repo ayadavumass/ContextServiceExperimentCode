@@ -17,18 +17,18 @@ public class ExperimentCallBack implements CallBackInterface
 		this.reqSendClass = reqSendClass;
 	}
 	
-	@Override
+	
 	public void searchCompletion(SearchReplyInterface searchRep)
 	{
-		long timeTaken = ((ExperimentSearchReply)searchRep).getCompletionTime();
-		reqSendClass.incrementSearchNumRecvd(searchRep.getReplySize(), timeTaken);
+		//long timeTaken = ((ExperimentSearchReply)searchRep).getCompletionTime();
+		reqSendClass.incrementSearchNumRecvd((ExperimentSearchReply)searchRep);
 	}
 	
-	@Override
+	
 	public void updateCompletion(UpdateReplyInterface updateRep)
 	{
-		long timeTaken = ((ExperimentUpdateReply)updateRep).getCompletionTime();
-		String guid = ((ExperimentUpdateReply)updateRep).getGuid();
-		//reqSendClass.incrementUpdateNumRecvd(guid, timeTaken);
+//		long timeTaken = ((ExperimentUpdateReply)updateRep).getCompletionTime();
+//		String guid = ((ExperimentUpdateReply)updateRep).getGuid();
+		reqSendClass.incrementUpdateNumRecvd((ExperimentUpdateReply)updateRep);
 	}
 }

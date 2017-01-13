@@ -120,6 +120,19 @@ public class InitializeTaxisClass extends AbstractRequestSendingClass
 	}
 	
 	
+	@Override
+	public void incrementUpdateNumRecvd(ExperimentUpdateReply expUpdateReply) 
+	{
+		
+	}
+
+	@Override
+	public void incrementSearchNumRecvd(ExperimentSearchReply expSearchReply) 
+	{
+		
+	}
+	
+	
 //	@Override
 //	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
 //	{
@@ -135,14 +148,4 @@ public class InitializeTaxisClass extends AbstractRequestSendingClass
 //			}
 //		}
 //	}
-	
-	@Override
-	public void incrementSearchNumRecvd( int resultSize, long timeTaken )
-	{
-	}
-
-	@Override
-	public void incrementUpdateNumRecvd(ExperimentSearchReply expSearchReply) 
-	{
-	}
 }
