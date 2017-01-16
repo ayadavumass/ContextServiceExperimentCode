@@ -32,6 +32,8 @@ public class BothSearchAndUpdate extends
 	// the beginning.
 	//private long numberSearchesSent		= 0;
 	
+	
+	
 	public BothSearchAndUpdate()
 	{
 		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );

@@ -43,6 +43,12 @@ public class TaxiRideInfo implements Comparator<TaxiRideInfo>
 	{
 		return taxiGUID;
 	}
+	
+	
+	public void setTaxiGUID(String taxiGUID)
+	{
+		this.taxiGUID = taxiGUID;
+	}
 
 	public double getDropOffLat()
 	{
@@ -67,5 +73,14 @@ public class TaxiRideInfo implements Comparator<TaxiRideInfo>
 	public long getRideEndTimeStamp()
 	{
 		return taxiRideEndTimeStamp;
+	}
+	
+	public String toString()
+	{
+		String str = "taxiGUID="+taxiGUID+" , pickUpLat="+pickUpLat
+				+" , pickUpLong="+pickUpLong+" , dropOffLat="+dropOffLat
+				+" , dropOffLong="+dropOffLong+" , taxiRideEndTimeStamp="+taxiRideEndTimeStamp;
+		
+		return str;
 	}
 }

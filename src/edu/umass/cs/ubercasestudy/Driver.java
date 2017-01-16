@@ -9,8 +9,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
+import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 public class Driver
 {
@@ -18,7 +20,7 @@ public class Driver
 	public static final double WAIT_TIME					= 100000; // 100 sec
 	
 	// this is approximately similar to taxis in nyc, which is around 13000.
-	public static int NUMBER_TAXIS							= 10000;
+	public static int NUMBER_TAXIS							= 100;
 	
 	// indexes start from 1. so In the parsed array they should be 
 	// made -1
@@ -38,7 +40,7 @@ public class Driver
 	public static final double MAX_LONG						= -73.0;
 	
 	
-	public static final String ONE_DAY_TRACE_PATH
+	public static   String ONE_DAY_TRACE_PATH
 					= "/home/ayadav/Documents/Data/NYCTaxiData/13FebTrace.csv";
 	
 	public static final String TAXI_DATA_PATH 
@@ -50,8 +52,8 @@ public class Driver
 	public static final String LONG_ATTR					= "longitude";
 	public static final String STATUS_ATTR					= "status";
 	
-	public static final int FREE_TAXI_STATUS				= 0;
-	public static final int INUSE_TAXI_STATUS				= 1;
+	public static final double FREE_TAXI_STATUS				= 0.1;
+	public static final double INUSE_TAXI_STATUS			= 1.5;
 	
 	public static final String GUID_PREFIX					= "TAXIGUID";
 	
@@ -62,7 +64,7 @@ public class Driver
 	public static ContextServiceClient csClient;
 	
 	public static final double SLEEP_TIME					= 100; //100ms;
-	public static final double TIME_CONTRACTION_FACTOR		= 96.0; // 96 means running 1 day trace in 15 mins
+	public static final double TIME_CONTRACTION_FACTOR		= 720.0; // 96 means running 1 day trace in 15 mins
 	
 	// 0.5 means 50% of trace will be sent. so 50% users got taxis.
 	public static final double REQUEST_ISSUE_PROB			= 0.5;
@@ -75,28 +77,47 @@ public class Driver
 	// request sender waits 
 	public static final Object TIME_WAIT_LOCK				= new Object();
 	
+	// key is taxi GUID, Boolean is true if taxi is free , false if not.
+	public static final HashMap<String, Boolean> taxiFreeMap		
+															= new HashMap<String, Boolean>();
+	
 	
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, ParseException
-	{		
+	{	
+		String csHost = args[0];
+		int csPort = Integer.parseInt(args[1]);
+		
+		ONE_DAY_TRACE_PATH = args[2];
+		
+		
 		long startUnixTimeInSec = findMinimumTimeFromTrace();
 		currUnixTimeInSec = startUnixTimeInSec;
 		System.out.println("minTime "+startUnixTimeInSec+new Date(startUnixTimeInSec*1000));
-//		String csHost = args[0];
-//		int csPort = Integer.parseInt(args[1]);
-//		
-//		csClient = new ContextServiceClient(csHost, csPort, true, 
-//				PrivacySchemes.NO_PRIVACY);
-//		
-//		InitializeTaxisClass initializeTaxi = new InitializeTaxisClass();
-//		
-//		try
-//		{
-//			initializeTaxi.initializaRateControlledRequestSender();
-//		}
-//		catch (Exception e)
-//		{
-//			e.printStackTrace();
-//		}
+		
+		
+		csClient = new ContextServiceClient(csHost, csPort, false, 
+				PrivacySchemes.NO_PRIVACY);
+		
+		InitializeTaxisClass initializeTaxi = new InitializeTaxisClass();
+		
+		try
+		{
+			initializeTaxi.initializaRateControlledRequestSender();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		ClockThread clkThred = new ClockThread();
+		new Thread(clkThred).start();
+		
+		
+		TaxiQueryIssue  tqi = new TaxiQueryIssue();
+		tqi.startIssuingQueries();
+		
+		System.out.println("Experiment comeplete");
+		System.exit(0);
 	}
 	
 	public static double getCurrUnixTime()
@@ -196,11 +217,13 @@ public class Driver
 		@Override
 		public void run()
 		{
+			double printSum = 0;
 			while(true)
 			{
 				try 
 				{
 					Thread.sleep((int)SLEEP_TIME);
+					printSum = printSum + SLEEP_TIME;
 				} 
 				catch (InterruptedException e) 
 				{
@@ -212,9 +235,13 @@ public class Driver
 				
 				synchronized(TIME_WAIT_LOCK)
 				{
-					TIME_WAIT_LOCK.notify();
+					TIME_WAIT_LOCK.notifyAll();
 				}
-				
+				if(printSum%(50*SLEEP_TIME) == 0)
+				{
+					printSum = 0;
+					System.out.println("Curr time "+new Date((long) (currUnixTimeInSec*1000)));
+				}
 			}
 		}
 	}

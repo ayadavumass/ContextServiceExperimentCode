@@ -44,7 +44,7 @@ public abstract class AbstractRequestSendingClass
 		
 		synchronized(waitLock)
 		{
-			while( !checkForCompletionWithLossTolerance(numSent, numRecvd) )
+			while( !checkForCompletionWithLossTolerance() )
 			{
 				try
 				{
@@ -116,8 +116,7 @@ public abstract class AbstractRequestSendingClass
 		return this.expCallback;
 	}
 	
-	protected boolean checkForCompletionWithLossTolerance
-											(double numSent, double numRecvd)
+	protected boolean checkForCompletionWithLossTolerance()
 	{
 		boolean completion = false;
 		

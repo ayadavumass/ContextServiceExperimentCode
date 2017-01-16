@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -28,7 +29,7 @@ public class TaxiDataProcessing
 	{	
 	}
 	
-	public void readTheTaxiFile()
+	public void readTheTaxiFile() throws ParseException
 	{
 		BufferedReader br = null;
 		BufferedWriter bw = null;
@@ -70,7 +71,8 @@ public class TaxiDataProcessing
 					{
 						if( filterDataPoints(sCurrentLine) )
 						{
-							bw.write(sCurrentLine+"\n");
+							bw.write(sCurrentLine+","+
+										Driver.dfm.parse(pickupDateTime).getTime()+"\n");
 						}
 					}
 				}
@@ -169,7 +171,7 @@ public class TaxiDataProcessing
 	}
 	
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws ParseException
 	{
 		TaxiDataProcessing taxiData = new TaxiDataProcessing();
 		taxiData.readTheTaxiFile();	

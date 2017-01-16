@@ -121,7 +121,6 @@ public class SearchAndUpdateDriver
 			userInitEnable	  = Boolean.parseBoolean(args[17]);
 			singleRequest     = Boolean.parseBoolean(args[18]);
 			
-			
 			predicateLength   = Double.parseDouble(args[19]);
 			queryExpiryTime   = Long.parseLong(args[20]);
 			EXPERIMENT_TIME   = Long.parseLong(args[21]);
