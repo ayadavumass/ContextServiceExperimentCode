@@ -101,7 +101,9 @@ public class Driver
 		REQUEST_ISSUE_PROB = Double.parseDouble(args[4]);
 		SEARCH_AREA_RANGE = Double.parseDouble(args[5]);
 		int numThreads = Integer.parseInt(args[6]);
-		ONE_DAY_TRACE_PATH = args[7];
+		Driver.myID = Integer.parseInt(args[7]);
+		ONE_DAY_TRACE_PATH = args[8];
+		
 		
 		
 		execServ = Executors.newFixedThreadPool(numThreads);

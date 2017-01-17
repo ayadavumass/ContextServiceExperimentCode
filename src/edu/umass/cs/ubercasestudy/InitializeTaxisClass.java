@@ -40,7 +40,7 @@ public class InitializeTaxisClass extends AbstractRequestSendingClass
 		attrValJSON.put( Driver.STATUS_ATTR, freeRand );
 		
 		
-		String accountAlias = Driver.GUID_PREFIX+guidNum+"@gmail.com";
+		String accountAlias = Driver.GUID_PREFIX+Driver.myID+guidNum+"@gmail.com";
 		
 		String guid = Driver.getSHA1(accountAlias);
 		
