@@ -303,18 +303,17 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		// and update its GUID and location.
 		
 		JSONArray taxiGUIDArray = expSearchReply.getSearchReplyArray();
-		
+		System.out.println("taxiGUIDArray len "+taxiGUIDArray);
 		
 		assert(taxiGUIDArray != null);
-		
-//		System.out.println("Reply recvd "+taxiRideInfo.toString()
-//										+" "+taxiGUIDArray.length());
 		
 		String taxiGUID = "";
 		
 		if(taxiGUIDArray.length() > 0)
 		{
 			taxiGUID = pickAFreeTaxi(taxiGUIDArray);
+			
+			System.out.println("taxiGUID "+taxiGUID);
 			
 			if(taxiGUID.length() > 0)
 			{
@@ -421,7 +420,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	{
 		JSONObject attrValJSON = new JSONObject();			
 			
-		try 
+		try
 		{
 			attrValJSON.put( Driver.LAT_ATTR, latitude );
 			attrValJSON.put( Driver.LONG_ATTR, longitude );
