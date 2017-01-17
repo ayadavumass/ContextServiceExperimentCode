@@ -91,6 +91,11 @@ public class Driver
 		REQUEST_ISSUE_PROB = Double.parseDouble(args[4]);
 		ONE_DAY_TRACE_PATH = args[5];
 		
+		System.out.println("Input parameters NUMBER_TAXIS="+NUMBER_TAXIS
+				+" TIME_CONTRACTION_FACTOR="+TIME_CONTRACTION_FACTOR
+				+" REQUEST_ISSUE_PROB="+REQUEST_ISSUE_PROB
+				+" ONE_DAY_TRACE_PATH="+ONE_DAY_TRACE_PATH);
+		
 		
 		long startUnixTimeInSec = findMinimumTimeFromTrace();
 		currUnixTimeInSec = startUnixTimeInSec;
