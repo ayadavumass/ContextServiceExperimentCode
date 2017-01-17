@@ -248,6 +248,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				+" AND "+Driver.LAT_ATTR+" <= "+latMax
 				+" AND "+Driver.LONG_ATTR +" >= "+longMin
 				+" AND "+Driver.LONG_ATTR+" <= "+longMax
+				+" AND "+Driver.STATUS_ATTR+" >= "+Driver.MIN_STATUS
 				+" AND "+Driver.STATUS_ATTR+" <= "+Driver.FREE_INUSE_BOUNDARY;
 		
 		TaxiRideInfo taxiRideInfo = new TaxiRideInfo(dropOffTime, pickupLat, 

@@ -21,7 +21,8 @@ public class ExperimentCallBack implements CallBackInterface
 	public void searchCompletion(SearchReplyInterface searchRep)
 	{
 		//long timeTaken = ((ExperimentSearchReply)searchRep).getCompletionTime();
-		reqSendClass.incrementSearchNumRecvd((ExperimentSearchReply)searchRep);
+		//reqSendClass.incrementSearchNumRecvd((ExperimentSearchReply)searchRep);
+		Driver.execServ.execute(new SearchReplyThread((ExperimentSearchReply)searchRep));
 	}
 	
 	
@@ -30,5 +31,30 @@ public class ExperimentCallBack implements CallBackInterface
 //		long timeTaken = ((ExperimentUpdateReply)updateRep).getCompletionTime();
 //		String guid = ((ExperimentUpdateReply)updateRep).getGuid();
 		reqSendClass.incrementUpdateNumRecvd((ExperimentUpdateReply)updateRep);
+	}
+	
+	
+	public class SearchReplyThread implements Runnable
+	{
+		ExperimentSearchReply searchRep;
+		public SearchReplyThread(ExperimentSearchReply searchRep)
+		{
+			this.searchRep = searchRep;
+		}
+		@Override
+		public void run() 
+		{
+			reqSendClass.incrementSearchNumRecvd(searchRep);
+		}
+	}
+	
+	public class UpdateReplyThread implements Runnable
+	{
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			
+		}	
 	}
 }

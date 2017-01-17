@@ -10,6 +10,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
@@ -88,6 +90,8 @@ public class Driver
 															= new HashMap<String, Boolean>();
 	
 	
+	public static ExecutorService execServ;;
+	
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, ParseException
 	{
 		String csHost = args[0];
@@ -96,12 +100,17 @@ public class Driver
 		TIME_CONTRACTION_FACTOR = Double.parseDouble(args[3]);
 		REQUEST_ISSUE_PROB = Double.parseDouble(args[4]);
 		SEARCH_AREA_RANGE = Double.parseDouble(args[5]);
-		ONE_DAY_TRACE_PATH = args[6];
+		int numThreads = Integer.parseInt(args[6]);
+		ONE_DAY_TRACE_PATH = args[7];
+		
+		
+		execServ = Executors.newFixedThreadPool(numThreads);
 		
 		System.out.println("Input parameters NUMBER_TAXIS="+NUMBER_TAXIS
 				+" TIME_CONTRACTION_FACTOR="+TIME_CONTRACTION_FACTOR
 				+" REQUEST_ISSUE_PROB="+REQUEST_ISSUE_PROB
 				+" SEARCH_AREA_RANGE="+SEARCH_AREA_RANGE
+				+" numThreads="+numThreads
 				+" ONE_DAY_TRACE_PATH="+ONE_DAY_TRACE_PATH);
 		
 		

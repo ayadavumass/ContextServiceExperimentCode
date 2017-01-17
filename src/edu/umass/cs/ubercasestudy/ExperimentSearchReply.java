@@ -11,13 +11,15 @@ public class ExperimentSearchReply implements SearchReplyInterface
 {
 	// used to demultiples when a reply comes back
 	private final long requestNum;
-	private JSONArray replyArray;
+	private JSONArray csReplyArray;
 	private int replySize;
 	private final long startTime;
 	private  long finishTime;
 	
 	private final TaxiRideInfo taxiRideInfo;
 	private final double searchRange;
+	
+	private JSONArray resultGUIDs;
 	
 	public ExperimentSearchReply( long requestNum, TaxiRideInfo taxiRideInfo, 
 										double searchRange)
@@ -37,7 +39,12 @@ public class ExperimentSearchReply implements SearchReplyInterface
 	@Override
 	public void setSearchReplyArray(JSONArray csReplyArray)
 	{
-		this.replyArray = new JSONArray();
+		this.csReplyArray = csReplyArray;
+	}
+	
+	private void convertCSRepliesIntoGUIDs()
+	{
+		this.resultGUIDs = new JSONArray();
 		for( int i=0; i<csReplyArray.length(); i++ )
 		{
 			try
@@ -48,13 +55,14 @@ public class ExperimentSearchReply implements SearchReplyInterface
 					JSONObject searchRepJSON = jsoArr1.getJSONObject(j);
 					SearchReplyGUIDRepresentationJSON searchRepObj 
 							= SearchReplyGUIDRepresentationJSON.fromJSONObject(searchRepJSON);
-					replyArray.put(searchRepObj.getID());
+					resultGUIDs.put(searchRepObj.getID());
 				}
 			} catch ( JSONException e )
 			{
 				e.printStackTrace();
 			}
 		}
+		
 	}
 	
 	@Override
@@ -72,7 +80,11 @@ public class ExperimentSearchReply implements SearchReplyInterface
 	@Override
 	public JSONArray getSearchReplyArray()
 	{
-		return replyArray;
+		if(resultGUIDs == null)
+			convertCSRepliesIntoGUIDs();
+		
+		
+		return this.resultGUIDs;
 	}
 	
 	public void setCompletionTime()
