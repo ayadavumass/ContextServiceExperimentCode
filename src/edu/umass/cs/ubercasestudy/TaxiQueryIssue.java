@@ -145,6 +145,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			}
 		}
 		
+		double sendRate = (numSent*1000.0)/(System.currentTimeMillis()- startTime);
+		System.out.println("Eventual sending rate "+sendRate);
 		this.waitForFinish();
 		
 		if(numSearch > 0)
