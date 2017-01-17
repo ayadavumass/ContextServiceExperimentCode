@@ -14,7 +14,7 @@ public abstract class AbstractRequestSendingClass
 	protected long numSent;
 	protected long numRecvd;
 	
-	private boolean timeout = false;
+	protected boolean timeout = false;
 	// 1% loss tolerance
 	private final double lossTolerance;
 	

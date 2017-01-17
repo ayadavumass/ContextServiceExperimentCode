@@ -49,6 +49,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	// this function will be called from a thread.
 	public void startIssuingQueries()
 	{
+		long startTime = System.currentTimeMillis();
+		
 		DropOffThread dpt = new DropOffThread();
 		new Thread(dpt).start();
 		
@@ -143,6 +145,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		}
 		
 		this.waitForFinish();
+		
 		if(numSearch > 0)
 		{
 			System.out.println("Average search time "+(this.sumSearchTime/numSearch)
@@ -155,6 +158,11 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			System.out.println("Average update time "+(this.sumUpdateTime/numUpdate)
 					+" numUpdate "+numUpdate);
 		}
+		double thpt = (numSent*1000.0)/(System.currentTimeMillis()- startTime);
+		if(this.timeout)
+			System.out.println("TimeOut: Goodput="+thpt);
+		else
+			System.out.println("Successfull: Goodput="+thpt);
 	}
 	
 	// this function will also be called from a thread.
