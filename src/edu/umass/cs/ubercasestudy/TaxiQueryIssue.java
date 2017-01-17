@@ -150,20 +150,20 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		if(numSearch > 0)
 		{
 			System.out.println("Average search time "+(this.sumSearchTime/numSearch)
-					+" numSearch "+numSearch+" numSearchReply "
+					+" numSearchReqs "+numSearch+" SearchReplySize "
 					+this.sumSearchReply/numSearch +" noTaxiFoundFullSearch "+noTaxiFound);
 		}
 		
 		if(numUpdate > 0)
 		{
 			System.out.println("Average update time "+(this.sumUpdateTime/numUpdate)
-					+" numUpdate "+numUpdate);
+					+" numUpdateReqs "+numUpdate);
 		}
 		double thpt = (numSent*1000.0)/(System.currentTimeMillis()- startTime);
 		if(this.timeout)
-			System.out.println("TimeOut: Goodput="+thpt);
+			System.out.println("TimeOut: Goodput="+thpt+" numSent="+numSent+" numRecvd="+numRecvd);
 		else
-			System.out.println("Successfull: Goodput="+thpt);
+			System.out.println("Successfull: Goodput="+thpt+" numSent="+numSent+" numRecvd="+numRecvd);
 	}
 	
 	// this function will also be called from a thread.
