@@ -141,7 +141,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			}
 		}
 		
-		this.waitForFinish();
+		this.waitForThreadFinish();
 		if(numSearch > 0)
 		{
 			System.out.println("Average search time "+(this.sumSearchTime/numSearch)
@@ -303,7 +303,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		// and update its GUID and location.
 		
 		JSONArray taxiGUIDArray = expSearchReply.getSearchReplyArray();
-		System.out.println("taxiGUIDArray len "+taxiGUIDArray);
+		System.out.println("taxiGUIDArray len "+taxiGUIDArray.length());
 		
 		assert(taxiGUIDArray != null);
 		
@@ -401,7 +401,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		
 		assert(taxiRideInfo != null);
 		
-		System.out.println("ongoingTaxiRides size "+ongoingTaxiRides.size());
+		//System.out.println("ongoingTaxiRides size "+ongoingTaxiRides.size());
 		
 		// put taxiRideInfo in drop-off priority queue
 		// taxi ride has started, the taxi ride will be removed

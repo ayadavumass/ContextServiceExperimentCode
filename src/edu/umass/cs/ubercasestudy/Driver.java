@@ -70,7 +70,7 @@ public class Driver
 	public static double REQUEST_ISSUE_PROB					= 0.5;
 	
 	// 0.2 on each side, like search at 40 would be from 38.8 to 40.2
-	public static final double SEARCH_AREA_RANGE			= 0.2;
+	public static double SEARCH_AREA_RANGE					= 0.2;
 	
 	public static int myID;
 	
@@ -89,11 +89,13 @@ public class Driver
 		NUMBER_TAXIS = Integer.parseInt(args[2]);
 		TIME_CONTRACTION_FACTOR = Double.parseDouble(args[3]);
 		REQUEST_ISSUE_PROB = Double.parseDouble(args[4]);
-		ONE_DAY_TRACE_PATH = args[5];
+		SEARCH_AREA_RANGE = Double.parseDouble(args[5]);
+		ONE_DAY_TRACE_PATH = args[6];
 		
 		System.out.println("Input parameters NUMBER_TAXIS="+NUMBER_TAXIS
 				+" TIME_CONTRACTION_FACTOR="+TIME_CONTRACTION_FACTOR
 				+" REQUEST_ISSUE_PROB="+REQUEST_ISSUE_PROB
+				+" SEARCH_AREA_RANGE="+SEARCH_AREA_RANGE
 				+" ONE_DAY_TRACE_PATH="+ONE_DAY_TRACE_PATH);
 		
 		

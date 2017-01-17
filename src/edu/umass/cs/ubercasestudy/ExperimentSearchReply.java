@@ -38,7 +38,6 @@ public class ExperimentSearchReply implements SearchReplyInterface
 	public void setSearchReplyArray(JSONArray csReplyArray)
 	{
 		this.replyArray = new JSONArray();
-		System.out.println("csReplyArray "+csReplyArray);
 		for( int i=0; i<csReplyArray.length(); i++ )
 		{
 			try
