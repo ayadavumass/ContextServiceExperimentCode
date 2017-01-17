@@ -52,7 +52,7 @@ public class Driver
 	public static final String LONG_ATTR					= "longitude";
 	public static final String STATUS_ATTR					= "status";
 	
-	public static final double FREE_TAXI_STATUS				= 0.1;
+	public static final double FREE_TAXI_STATUS				= 0.5;
 	public static final double INUSE_TAXI_STATUS			= 1.5;
 	
 	public static final String GUID_PREFIX					= "TAXIGUID";
@@ -64,10 +64,10 @@ public class Driver
 	public static ContextServiceClient csClient;
 	
 	public static final double SLEEP_TIME					= 100; //100ms;
-	public static final double TIME_CONTRACTION_FACTOR		= 720.0; // 96 means running 1 day trace in 15 mins
+	public static double TIME_CONTRACTION_FACTOR			= 720.0; // 96 means running 1 day trace in 15 mins
 	
 	// 0.5 means 50% of trace will be sent. so 50% users got taxis.
-	public static final double REQUEST_ISSUE_PROB			= 0.5;
+	public static double REQUEST_ISSUE_PROB					= 0.5;
 	
 	// 0.2 on each side, like search at 40 would be from 38.8 to 40.2
 	public static final double SEARCH_AREA_RANGE			= 0.2;
@@ -83,11 +83,13 @@ public class Driver
 	
 	
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, ParseException
-	{	
+	{
 		String csHost = args[0];
 		int csPort = Integer.parseInt(args[1]);
-		
-		ONE_DAY_TRACE_PATH = args[2];
+		NUMBER_TAXIS = Integer.parseInt(args[2]);
+		TIME_CONTRACTION_FACTOR = Double.parseDouble(args[3]);
+		REQUEST_ISSUE_PROB = Double.parseDouble(args[4]);
+		ONE_DAY_TRACE_PATH = args[5];
 		
 		
 		long startUnixTimeInSec = findMinimumTimeFromTrace();
@@ -210,7 +212,6 @@ public class Driver
 		System.out.println("max time "+maxTime+" "+new Date(maxTime*1000));
 		return minTime;
 	}
-	
 	
 	public static class ClockThread implements Runnable
 	{	
