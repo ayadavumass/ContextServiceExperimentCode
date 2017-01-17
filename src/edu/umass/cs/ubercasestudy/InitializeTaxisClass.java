@@ -34,7 +34,10 @@ public class InitializeTaxisClass extends AbstractRequestSendingClass
 		
 		attrValJSON.put( Driver.LAT_ATTR, latVal );
 		attrValJSON.put( Driver.LONG_ATTR, longVal );
-		attrValJSON.put( Driver.STATUS_ATTR, Driver.FREE_TAXI_STATUS );
+		
+		double freeRand = initRand.nextDouble()* Driver.FREE_INUSE_BOUNDARY;
+		
+		attrValJSON.put( Driver.STATUS_ATTR, freeRand );
 		
 		
 		String accountAlias = Driver.GUID_PREFIX+guidNum+"@gmail.com";

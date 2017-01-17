@@ -39,6 +39,9 @@ public class Driver
 	public static final double MIN_LONG						= -76.0;
 	public static final double MAX_LONG						= -73.0;
 	
+	public static final double MIN_STATUS					= 0.0;
+	public static final double MAX_STATUS					= 1.0;
+	
 	
 	public static   String ONE_DAY_TRACE_PATH
 					= "/home/ayadav/Documents/Data/NYCTaxiData/13FebTrace.csv";
@@ -52,8 +55,11 @@ public class Driver
 	public static final String LONG_ATTR					= "longitude";
 	public static final String STATUS_ATTR					= "status";
 	
-	public static final double FREE_TAXI_STATUS				= 0.5;
-	public static final double INUSE_TAXI_STATUS			= 1.5;
+//	public static final double FREE_TAXI_STATUS				= 0.5;
+//	public static final double INUSE_TAXI_STATUS			= 1.5;
+	
+	// < 0.5 free, >= 0.5 in use
+	public static final double FREE_INUSE_BOUNDARY			= 0.5;
 	
 	public static final String GUID_PREFIX					= "TAXIGUID";
 	

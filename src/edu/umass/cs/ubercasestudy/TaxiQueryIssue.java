@@ -205,7 +205,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				double dropOffLat = taxiRideInfo.getDropOffLat();
 				double dropOffLong = taxiRideInfo.getDropOffLong();
 				
-				updateTaxiGUID(taxiGUID, dropOffLat, dropOffLong, Driver.FREE_TAXI_STATUS);
+				double freeRand = randGen.nextDouble()* Driver.FREE_INUSE_BOUNDARY;
+				updateTaxiGUID(taxiGUID, dropOffLat, dropOffLong, freeRand);
 				
 				synchronized(Driver.taxiFreeMap)
 				{
@@ -247,7 +248,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				+" AND "+Driver.LAT_ATTR+" <= "+latMax
 				+" AND "+Driver.LONG_ATTR +" >= "+longMin
 				+" AND "+Driver.LONG_ATTR+" <= "+longMax
-				+" AND "+Driver.STATUS_ATTR+" = "+Driver.FREE_TAXI_STATUS;
+				+" AND "+Driver.STATUS_ATTR+" < "+Driver.FREE_INUSE_BOUNDARY;
 		
 		TaxiRideInfo taxiRideInfo = new TaxiRideInfo(dropOffTime, pickupLat, 
 				pickupLong, dropOffLat, dropOffLong);
@@ -413,9 +414,11 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		double pickUpLat = taxiRideInfo.getPickUpLat();
 		double pickUpLong = taxiRideInfo.getPickUpLong();
 		
+		double inUseRand = Driver.MAX_STATUS- 
+						(randGen.nextDouble()* Driver.FREE_INUSE_BOUNDARY);
 		// update location
 		updateTaxiGUID(taxiGUID, pickUpLat, 
-				pickUpLong, Driver.INUSE_TAXI_STATUS);		
+				pickUpLong, inUseRand);		
 		
 		assert(taxiRideInfo != null);
 		
