@@ -35,6 +35,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	private long numSearch						= 0;
 	private long numUpdate						= 0;
 	
+	private long noTaxiFound					= 0;
 	
     //new PriorityQueue<String>(10, comparator);
 	public TaxiQueryIssue()
@@ -150,7 +151,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		{
 			System.out.println("Average search time "+(this.sumSearchTime/numSearch)
 					+" numSearch "+numSearch+" numSearchReply "
-					+this.sumSearchReply/numSearch);
+					+this.sumSearchReply/numSearch +" noTaxiFoundFullSearch "+noTaxiFound);
 		}
 		
 		if(numUpdate > 0)
@@ -294,8 +295,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			
 			numRecvd++;
 			
-			System.out.println("Update recvd numSent "+ numSent+" numRecvd "+numRecvd
-					 +" numUpdate "+numUpdate);
+			//System.out.println("Update recvd numSent "+ numSent+" numRecvd "+numRecvd
+			//		 +" numUpdate "+numUpdate);
 			if( checkForCompletionWithLossTolerance() )
 			{
 				waitLock.notify();
@@ -313,7 +314,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		// and update its GUID and location.
 		
 		JSONArray taxiGUIDArray = expSearchReply.getSearchReplyArray();
-		System.out.println("taxiGUIDArray len "+taxiGUIDArray.length());
+		//System.out.println("taxiGUIDArray len "+taxiGUIDArray.length());
 		
 		assert(taxiGUIDArray != null);
 		
@@ -323,7 +324,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		{
 			taxiGUID = pickAFreeTaxi(taxiGUIDArray);
 			
-			System.out.println("taxiGUID "+taxiGUID);
+			//System.out.println("taxiGUID "+taxiGUID);
 			
 			if(taxiGUID.length() > 0)
 			{
@@ -331,12 +332,14 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			}
 		}
 		
+		boolean noTaxiFoundFullSearch = false;
 		if(taxiGUID.length()<= 0)
 		{
 			// send query again with bigger search range
 			if(expSearchReply.isFullRangeQuery())
 			{
-				System.out.println("No taxi found even for full range query");
+				//System.out.println("No taxi found even for full range query");
+				noTaxiFoundFullSearch = true;
 			}
 			else
 			{
@@ -354,9 +357,14 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			this.sumSearchTime = this.sumSearchTime + expSearchReply.getCompletionTime();
 			this.sumSearchReply = this.sumSearchReply + taxiGUIDArray.length();
 			
+			if(noTaxiFoundFullSearch)
+			{
+				this.noTaxiFound++;
+			}
+			
 			numRecvd++;
-			System.out.println("Search recvd numSent "+ numSent+" numRecvd "+numRecvd
-					 +" numSearch "+numSearch);
+			//System.out.println("Search recvd numSent "+ numSent+" numRecvd "+numRecvd
+			//		 +" numSearch "+numSearch);
 			
 			if( checkForCompletionWithLossTolerance() )
 			{
