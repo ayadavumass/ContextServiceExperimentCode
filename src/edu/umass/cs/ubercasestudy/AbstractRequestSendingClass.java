@@ -13,9 +13,8 @@ public abstract class AbstractRequestSendingClass
 	protected final Object waitLock = new Object();
 	protected long numSent;
 	protected long numRecvd;
-	protected boolean threadFinished;
-	protected final Object threadFinishLock = new Object();
 	
+	private boolean timeout = false;
 	// 1% loss tolerance
 	private final double lossTolerance;
 	
@@ -25,7 +24,6 @@ public abstract class AbstractRequestSendingClass
 	public AbstractRequestSendingClass( double lossTolerance, long waitTime )
 	{
 		expCallback =  new ExperimentCallBack(this);
-		threadFinished = false;
 		this.lossTolerance = lossTolerance;
 		this.waitTime = waitTime;
 		numSent = 0;
@@ -44,7 +42,7 @@ public abstract class AbstractRequestSendingClass
 		
 		synchronized(waitLock)
 		{
-			while( !checkForCompletionWithLossTolerance() )
+			while( !checkForCompletionWithLossTolerance() && !timeout)
 			{
 				try
 				{
@@ -59,29 +57,7 @@ public abstract class AbstractRequestSendingClass
 		//stopThis();	
 		waitTimer.cancel();
 		
-		threadFinished = true;
-		synchronized( threadFinishLock )
-		{
-			threadFinishLock.notify();
-		}
 		//System.exit(0);
-	}
-	
-	public void waitForThreadFinish()
-	{
-		synchronized( threadFinishLock )
-		{
-			while( !threadFinished )
-			{
-				try 
-				{
-					threadFinishLock.wait();
-				} catch (InterruptedException e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 	
 	public class WaitTimerTask extends TimerTask
@@ -101,10 +77,10 @@ public abstract class AbstractRequestSendingClass
 			waitTimer.cancel();
 			// just terminate the JVM
 			//System.exit(0);
-			threadFinished = true;
-			synchronized( threadFinishLock )
+			synchronized( waitLock )
 			{
-				threadFinishLock.notify();
+				timeout = true;
+				waitLock.notify();
 			}
 			//System.exit(0);
 		}

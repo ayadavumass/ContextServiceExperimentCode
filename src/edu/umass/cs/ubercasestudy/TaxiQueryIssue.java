@@ -142,7 +142,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			}
 		}
 		
-		this.waitForThreadFinish();
+		this.waitForFinish();
 		if(numSearch > 0)
 		{
 			System.out.println("Average search time "+(this.sumSearchTime/numSearch)
