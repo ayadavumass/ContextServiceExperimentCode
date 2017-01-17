@@ -389,12 +389,15 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				{
 					//System.out.println("currGUID "+currGUID);
 					// taxi is free
-					if(Driver.taxiFreeMap.get(currGUID))
+					if(Driver.taxiFreeMap.containsKey(currGUID))
 					{
-						// taxi busy.
-						Driver.taxiFreeMap.put(currGUID, false);
-						taxiGUID = currGUID;
-						break;
+						if(Driver.taxiFreeMap.get(currGUID))
+						{
+							// taxi busy.
+							Driver.taxiFreeMap.put(currGUID, false);
+							taxiGUID = currGUID;
+							break;
+						}
 					}
 				}
 			} 
