@@ -116,7 +116,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 					}
 
 					sendOutTaxiRequest(pickupLat, pickupLong, 
-							dropOffLat, dropOffLong, requestNum++, dropOffTime, Driver.SEARCH_AREA_RANGE);
+							dropOffLat, dropOffLong, requestNum++, dropOffTime, 
+							Driver.SEARCH_AREA_RANGE);
 					
 				}
 				catch (ParseException e) 
@@ -236,7 +237,8 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		String searchQuery = Driver.LAT_ATTR +" >= "+latMin
 				+" AND "+Driver.LAT_ATTR+" <= "+latMax
 				+" AND "+Driver.LONG_ATTR +" >= "+longMin
-				+" AND "+Driver.LONG_ATTR+" <= "+longMax;
+				+" AND "+Driver.LONG_ATTR+" <= "+longMax
+				+" AND "+Driver.STATUS_ATTR+" = "+Driver.FREE_TAXI_STATUS;
 		
 		TaxiRideInfo taxiRideInfo = new TaxiRideInfo(dropOffTime, pickupLat, 
 				pickupLong, dropOffLat, dropOffLong);

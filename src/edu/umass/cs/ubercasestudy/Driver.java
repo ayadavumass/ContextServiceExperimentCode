@@ -125,7 +125,7 @@ public class Driver
 		TaxiQueryIssue  tqi = new TaxiQueryIssue();
 		tqi.startIssuingQueries();
 		
-		System.out.println("Experiment comeplete");
+		System.out.println("Experiment complete");
 		System.exit(0);
 	}
 	
