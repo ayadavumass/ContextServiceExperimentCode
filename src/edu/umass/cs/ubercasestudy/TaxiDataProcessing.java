@@ -48,16 +48,16 @@ public class TaxiDataProcessing
 				
 				String[] lineParsed = sCurrentLine.split(",");
 				String pickupDateTimeString = lineParsed[Driver.PICKUP_DATETIME_INDEX-1];
-				//String dropOffDateTimeString = lineParsed[Driver.DROPOFF_DATETIME_INDEX-1];
+				String dropOffDateTimeString = lineParsed[Driver.DROPOFF_DATETIME_INDEX-1];
 				
 				Date pickUpDate = Driver.dfm.parse(pickupDateTimeString);
-				//Date dropOffDate = Driver.dfm.parse(dropOffDateTimeString);
+				Date dropOffDate = Driver.dfm.parse(dropOffDateTimeString);
 				
 				String[] pickUpDateParsed = pickupDateTimeString.split(" ");
-				//String[] dropOffDateParsed = dropOffDateTimeString.split(" ");
+				String[] dropOffDateParsed = dropOffDateTimeString.split(" ");
 				
 				String pickUpDateString = pickUpDateParsed[0];
-				//String dropOffDateString = dropOffDateParsed[0];
+				String dropOffDateString = dropOffDateParsed[0];
 				
 				
 				if( perDayTaxiPickUps.containsKey(pickUpDateString) )
@@ -71,13 +71,16 @@ public class TaxiDataProcessing
 					perDayTaxiPickUps.put(pickUpDateString, new Long(1));
 				}
 				
-				if( pickUpDate.getDate() >= Driver.MIN_DATE 
-								&& pickUpDate.getDate() <= Driver.MAX_DATE )
+				if(dropOffDate.getDate() <= Driver.MAX_DATE)
 				{
-					if( filterDataPoints(sCurrentLine) )
+					if( pickUpDate.getDate() >= Driver.MIN_DATE 
+									&& pickUpDate.getDate() <= Driver.MAX_DATE )
 					{
-						bw.write(sCurrentLine+","+
-								pickUpDate.getTime()+"\n");
+						if( filterDataPoints(sCurrentLine) )
+						{
+							bw.write(sCurrentLine+","+
+									pickUpDate.getTime()+"\n");
+						}
 					}
 				}
 				
