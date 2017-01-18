@@ -32,8 +32,11 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	private long sumSearchReply					= 0;
 	private long sumUpdateTime					= 0;
 	
-	private long numSearch						= 0;
-	private long numUpdate						= 0;
+	private long numSearchSent					= 0;
+	private long numUpdateSent					= 0;
+	
+	private long numSearchRecvd					= 0;
+	private long numUpdateRecvd					= 0;
 	
 	private long noTaxiFound					= 0;
 	
@@ -157,19 +160,23 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		
 		this.waitForFinish();
 		
-		if(numSearch > 0)
+		if(numSearchRecvd > 0)
 		{
-			System.out.println("Average search time "+(this.sumSearchTime/numSearch)
-					+" numSearchReqs "+numSearch+" SearchReplySize "
-					+this.sumSearchReply/numSearch +" noTaxiFoundFullSearch "+noTaxiFound);
+			System.out.println("Average search time "+(this.sumSearchTime/numSearchRecvd)
+					+" numSearchReqsSent "+numSearchSent
+					+" numSearchReqsRecvd "+numSearchRecvd
+					+" SearchReplySize "+this.sumSearchReply/numSearchRecvd 
+					+" noTaxiFoundFullSearch "+noTaxiFound);
 		}
 		
-		if(numUpdate > 0)
+		if(numUpdateRecvd > 0)
 		{
-			System.out.println("Average update time "+(this.sumUpdateTime/numUpdate)
-					+" numUpdateReqs "+numUpdate);
+			System.out.println("Average update time "+(this.sumUpdateTime/numUpdateRecvd)
+					+" numUpdateReqsSent "+numUpdateSent
+					+" numUpdateReqsRecvd "+numUpdateRecvd);
 		}
-		double thpt = (numSent*1000.0)/(System.currentTimeMillis()- startTime);
+		
+		double thpt = (numRecvd*1000.0)/(System.currentTimeMillis()- startTime);
 		if(this.timeout)
 			System.out.println("TimeOut: Goodput="+thpt+" numSent="+numSent+" numRecvd="+numRecvd);
 		else
@@ -278,7 +285,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numSent++;
-			numSearch++;
+			numSearchSent++;
 		}
 		
 		Driver.csClient.sendSearchQueryWithCallBack
@@ -310,7 +317,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			this.sumUpdateTime = this.sumUpdateTime + expUpdateReply.getCompletionTime();
 			
 			numRecvd++;
-			
+			numUpdateRecvd++;
 			//System.out.println("Update recvd numSent "+ numSent+" numRecvd "+numRecvd
 			//		 +" numUpdate "+numUpdate);
 			if( checkForCompletionWithLossTolerance() )
@@ -380,7 +387,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			{
 				this.noTaxiFound++;
 			}
-			
+			numSearchRecvd++;
 			numRecvd++;
 			//System.out.println("Search recvd numSent "+ numSent+" numRecvd "+numRecvd
 			//		 +" numSearch "+numSearch);
@@ -473,7 +480,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			synchronized(waitLock)
 			{
 				numSent++;
-				numUpdate++;
+				numUpdateSent++;
 			}
 			Driver.csClient.sendUpdateWithCallBack
 								( taxiGUID, null, 
