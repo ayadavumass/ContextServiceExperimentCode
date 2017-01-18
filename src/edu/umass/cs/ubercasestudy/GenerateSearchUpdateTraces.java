@@ -14,7 +14,7 @@ public class GenerateSearchUpdateTraces
 	public static final String SEARCH_FILE_NAME			= "searchFile.txt";
 	public static final String UPDATE_FILE_NAME			= "updateFile.txt";
 	
-	public static final double SEARCH_AREA_RANGE		= 0.1;
+	public static final double SEARCH_AREA_RANGE		= 0.5;
 	
 	public void writeTrace()
 	{

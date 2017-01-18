@@ -54,6 +54,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	// this function will be called from a thread.
 	public void startIssuingQueries()
 	{
+		startExpTime();
 		long startTime = System.currentTimeMillis();
 		
 		DropOffThread dpt = new DropOffThread();
