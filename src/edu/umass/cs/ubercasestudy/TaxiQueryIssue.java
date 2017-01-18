@@ -361,21 +361,23 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		
 			if(taxiGUID.length()<= 0)
 			{
+				noTaxiFoundFullSearch = true;
+				
 				// send query again with bigger search range
-				if(expSearchReply.isFullRangeQuery())
-				{
-					//System.out.println("No taxi found even for full range query");
-					noTaxiFoundFullSearch = true;
-				}
-				else
-				{
-					double currSearchRange = expSearchReply.getSearchRange();
-					currSearchRange = currSearchRange + Driver.SEARCH_AREA_RANGE;
-					sendOutTaxiRequest(taxiRideInfo.getPickUpLat(), taxiRideInfo.getPickUpLong(), 
-							taxiRideInfo.getDropOffLat(), taxiRideInfo.getDropOffLong(),
-							expSearchReply.getCallerReqId(), 
-							taxiRideInfo.getRideEndTimeStamp(), currSearchRange);
-				}	
+//				if(expSearchReply.isFullRangeQuery())
+//				{
+//					//System.out.println("No taxi found even for full range query");
+//					noTaxiFoundFullSearch = true;
+//				}
+//				else
+//				{
+//					double currSearchRange = expSearchReply.getSearchRange();
+//					currSearchRange = currSearchRange + Driver.SEARCH_AREA_RANGE;
+//					sendOutTaxiRequest(taxiRideInfo.getPickUpLat(), taxiRideInfo.getPickUpLong(), 
+//							taxiRideInfo.getDropOffLat(), taxiRideInfo.getDropOffLong(),
+//							expSearchReply.getCallerReqId(), 
+//							taxiRideInfo.getRideEndTimeStamp(), currSearchRange);
+//				}	
 			}
 		}
 		
