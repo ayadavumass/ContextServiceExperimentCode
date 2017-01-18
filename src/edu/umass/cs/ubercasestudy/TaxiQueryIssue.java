@@ -38,7 +38,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	public long numSearchRecvd					= 0;
 	public long numUpdateRecvd					= 0;
 	
-	private long noTaxiFound					= 0;
+	public long noTaxiFound						= 0;
 	
 	private boolean sendingCompl				= false;
     //new PriorityQueue<String>(10, comparator);

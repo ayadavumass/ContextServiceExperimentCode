@@ -59,7 +59,7 @@ public class Driver
 	// from 1st Feb
 	public static final int MIN_DATE 						= 1;
 	// 14th Feb
-	public static final int MAX_DATE 						= 4;
+	public static final int MAX_DATE 						= 7;
 	
 	public static final String LAT_ATTR						= "latitude";
 	public static final String LONG_ATTR					= "longitude";
@@ -278,7 +278,8 @@ public class Driver
 					System.out.println("Curr time "+new Date((long) (currUnixTimeInSec*1000))
 							+ " numSent "+tqi.numSent+" numRecvd "+tqi.numRecvd
 							+ " numSearchSent"+tqi.numSearchSent+" numSearchRecvd "+tqi.numSearchRecvd
-							+ " numUpdateSent "+tqi.numUpdateSent+" numUpdateRecvd "+tqi.numUpdateRecvd);
+							+ " numUpdateSent "+tqi.numUpdateSent+" numUpdateRecvd "+tqi.numUpdateRecvd
+							+ "noTaxiFound "+tqi.noTaxiFound);
 				}
 			}
 		}
