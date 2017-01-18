@@ -32,11 +32,11 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	private long sumSearchReply					= 0;
 	private long sumUpdateTime					= 0;
 	
-	private long numSearchSent					= 0;
-	private long numUpdateSent					= 0;
+	public long numSearchSent					= 0;
+	public long numUpdateSent					= 0;
 	
-	private long numSearchRecvd					= 0;
-	private long numUpdateRecvd					= 0;
+	public long numSearchRecvd					= 0;
+	public long numUpdateRecvd					= 0;
 	
 	private long noTaxiFound					= 0;
 	
