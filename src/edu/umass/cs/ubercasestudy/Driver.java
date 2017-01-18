@@ -100,6 +100,8 @@ public class Driver
 	
 	public static ExecutorService execServ;;
 	
+	public static TaxiQueryIssue tqi;
+	
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, ParseException
 	{
 		String csHost = args[0];
@@ -147,7 +149,7 @@ public class Driver
 		new Thread(clkThred).start();
 		
 		
-		TaxiQueryIssue  tqi = new TaxiQueryIssue();
+		tqi = new TaxiQueryIssue();
 		tqi.startIssuingQueries();
 		
 		System.out.println("Experiment complete");
@@ -273,7 +275,8 @@ public class Driver
 				if(printSum%(50*SLEEP_TIME) == 0)
 				{
 					printSum = 0;
-					System.out.println("Curr time "+new Date((long) (currUnixTimeInSec*1000)));
+					System.out.println("Curr time "+new Date((long) (currUnixTimeInSec*1000))
+							+" numSent "+tqi.numSent+" numRecvd "+tqi.numRecvd);
 				}
 			}
 		}
