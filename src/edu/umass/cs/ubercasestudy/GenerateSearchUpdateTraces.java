@@ -29,7 +29,7 @@ public class GenerateSearchUpdateTraces
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader(Driver.ONE_DAY_TRACE_PATH));
+			br = new BufferedReader(new FileReader(Driver.USED_TRACE_PATH));
 			
 			searchBW = new BufferedWriter(new FileWriter(SEARCH_FILE_NAME));
 			updateBW = new BufferedWriter(new FileWriter(UPDATE_FILE_NAME));

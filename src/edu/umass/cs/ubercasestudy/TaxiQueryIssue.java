@@ -67,7 +67,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		{
 			String sCurrentLine;
 			
-			br = new BufferedReader(new FileReader(Driver.ONE_DAY_TRACE_PATH));
+			br = new BufferedReader(new FileReader(Driver.USED_TRACE_PATH));
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
@@ -512,7 +512,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			String sCurrentLine;
 			
 			br = new BufferedReader(new FileReader
-									(Driver.ONE_DAY_TRACE_PATH));
+									(Driver.USED_TRACE_PATH));
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{

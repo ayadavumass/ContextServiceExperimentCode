@@ -45,13 +45,21 @@ public class Driver
 	public static final double MAX_STATUS					= 1.0;
 	
 	
-	public static   String ONE_DAY_TRACE_PATH
-					= "/home/ayadav/Documents/Data/NYCTaxiData/13FebTrace.csv";
+//	public static   String ONE_DAY_TRACE_PATH
+//					= "/home/ayadav/Documents/Data/NYCTaxiData/13FebTrace.csv";
+	
+	public static   String USED_TRACE_PATH
+					= "/home/ayadav/Documents/Data/NYCTaxiData/1WeekTrace.csv";
 	
 	public static final String TAXI_DATA_PATH 
 					= "/home/ayadav/Documents/Data/NYCTaxiData/yellow_tripdata_2016-02.csv";
 	
-	public static final String DATE_TO_SAMPLE 				= "2016-02-13";
+	//public static final String DATE_TO_SAMPLE 				= "2016-02-13";
+	
+	// from 1st Feb
+	public static final int MIN_DATE 						= 1;
+	// 14th Feb
+	public static final int MAX_DATE 						= 7;
 	
 	public static final String LAT_ATTR						= "latitude";
 	public static final String LONG_ATTR					= "longitude";
@@ -102,7 +110,7 @@ public class Driver
 		SEARCH_AREA_RANGE = Double.parseDouble(args[5]);
 		int numThreads = Integer.parseInt(args[6]);
 		Driver.myID = Integer.parseInt(args[7]);
-		ONE_DAY_TRACE_PATH = args[8];
+		USED_TRACE_PATH = args[8];
 		
 		
 		
@@ -113,7 +121,7 @@ public class Driver
 				+" REQUEST_ISSUE_PROB="+REQUEST_ISSUE_PROB
 				+" SEARCH_AREA_RANGE="+SEARCH_AREA_RANGE
 				+" numThreads="+numThreads
-				+" ONE_DAY_TRACE_PATH="+ONE_DAY_TRACE_PATH);
+				+" ONE_DAY_TRACE_PATH="+USED_TRACE_PATH);
 		
 		
 		long startUnixTimeInSec = findMinimumTimeFromTrace();
@@ -190,7 +198,7 @@ public class Driver
 		try
 		{
 			String sCurrentLine;
-			br = new BufferedReader(new FileReader(Driver.ONE_DAY_TRACE_PATH));
+			br = new BufferedReader(new FileReader(Driver.USED_TRACE_PATH));
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
