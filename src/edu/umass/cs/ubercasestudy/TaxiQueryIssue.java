@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -71,6 +72,13 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			
 			while( (sCurrentLine = br.readLine()) != null )
 			{
+				Date currDate = new Date((long) (Driver.getCurrUnixTime()*1000));
+				
+				if(currDate.getDate() > Driver.MAX_DATE)
+				{
+					System.out.println("Stopping trace transmissions");
+					break;
+				}
 				//System.out.println("line from file "+sCurrentLine);
 				if(sCurrentLine.startsWith("#"))
 					continue;
