@@ -275,11 +275,18 @@ public class Driver
 				if(printSum%(50*SLEEP_TIME) == 0)
 				{
 					printSum = 0;
+					double sendRate 
+						= (tqi.numSent*1000.0)/(System.currentTimeMillis()- tqi.expStartTime);
+					double goodput 
+						= (tqi.numRecvd*1000.0)/(System.currentTimeMillis()- tqi.expStartTime);
+					
 					System.out.println("Curr time "+new Date((long) (currUnixTimeInSec*1000))
 							+ " numSent "+tqi.numSent+" numRecvd "+tqi.numRecvd
 							+ " numSearchSent"+tqi.numSearchSent+" numSearchRecvd "+tqi.numSearchRecvd
 							+ " numUpdateSent "+tqi.numUpdateSent+" numUpdateRecvd "+tqi.numUpdateRecvd
-							+ "noTaxiFound "+tqi.noTaxiFound);
+							+ " noTaxiFound "+tqi.noTaxiFound
+							+ " sending rate "+sendRate
+							+ " Goodput "+goodput);
 				}
 			}
 		}
