@@ -37,6 +37,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	
 	private long noTaxiFound					= 0;
 	
+	private boolean sendingCompl				= false;
     //new PriorityQueue<String>(10, comparator);
 	public TaxiQueryIssue()
 	{
@@ -145,8 +146,15 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			}
 		}
 		
+		sendingCompl = true;
+		
 		double sendRate = (numSent*1000.0)/(System.currentTimeMillis()- startTime);
-		System.out.println("Eventual sending rate "+sendRate);
+		
+		System.out.println("Eventual sending rate "+sendRate
+				+" numSent="+numSent+" numRecvd="+numRecvd);
+		
+		
+		
 		this.waitForFinish();
 		
 		if(numSearch > 0)
@@ -181,6 +189,9 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 			
 			if(taxiRideInfo != null)
 			{
+				if(sendingCompl)
+					break;
+					
 				long dropOffTime = taxiRideInfo.getRideEndTimeStamp();
 				
 				synchronized(Driver.TIME_WAIT_LOCK)
@@ -201,6 +212,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				synchronized(this.ongoingTaxiRides)
 				{
 					taxiRideInfo = this.ongoingTaxiRides.poll();
+					ongoingTaxiRides.notify();
 				}
 				
 				String taxiGUID = taxiRideInfo.getTaxiGuid();
@@ -310,7 +322,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 
 	@Override
 	public void incrementSearchNumRecvd(ExperimentSearchReply expSearchReply)
-	{	
+	{
 		expSearchReply.setCompletionTime();
 		
 		TaxiRideInfo taxiRideInfo = expSearchReply.getTaxiRideInfo();
@@ -320,40 +332,43 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		JSONArray taxiGUIDArray = expSearchReply.getSearchReplyArray();
 		//System.out.println("taxiGUIDArray len "+taxiGUIDArray.length());
 		
-		assert(taxiGUIDArray != null);
-		
-		String taxiGUID = "";
-		
-		if(taxiGUIDArray.length() > 0)
-		{
-			taxiGUID = pickAFreeTaxi(taxiGUIDArray);
-			
-			//System.out.println("taxiGUID "+taxiGUID);
-			
-			if(taxiGUID.length() > 0)
-			{
-				instantiateTaxiRide(taxiRideInfo, taxiGUID);
-			}
-		}
-		
 		boolean noTaxiFoundFullSearch = false;
-		if(taxiGUID.length()<= 0)
+		
+		if(!sendingCompl)
 		{
-			// send query again with bigger search range
-			if(expSearchReply.isFullRangeQuery())
+			assert(taxiGUIDArray != null);
+			String taxiGUID = "";
+		
+			if(taxiGUIDArray.length() > 0)
 			{
-				//System.out.println("No taxi found even for full range query");
-				noTaxiFoundFullSearch = true;
+				taxiGUID = pickAFreeTaxi(taxiGUIDArray);
+				
+				//System.out.println("taxiGUID "+taxiGUID);
+				
+				if(taxiGUID.length() > 0)
+				{
+					instantiateTaxiRide(taxiRideInfo, taxiGUID);
+				}
 			}
-			else
+		
+			if(taxiGUID.length()<= 0)
 			{
-				double currSearchRange = expSearchReply.getSearchRange();
-				currSearchRange = currSearchRange + Driver.SEARCH_AREA_RANGE;
-				sendOutTaxiRequest(taxiRideInfo.getPickUpLat(), taxiRideInfo.getPickUpLong(), 
-						taxiRideInfo.getDropOffLat(), taxiRideInfo.getDropOffLong(),
-						expSearchReply.getCallerReqId(), 
-						taxiRideInfo.getRideEndTimeStamp(), currSearchRange);
-			}	
+				// send query again with bigger search range
+				if(expSearchReply.isFullRangeQuery())
+				{
+					//System.out.println("No taxi found even for full range query");
+					noTaxiFoundFullSearch = true;
+				}
+				else
+				{
+					double currSearchRange = expSearchReply.getSearchRange();
+					currSearchRange = currSearchRange + Driver.SEARCH_AREA_RANGE;
+					sendOutTaxiRequest(taxiRideInfo.getPickUpLat(), taxiRideInfo.getPickUpLong(), 
+							taxiRideInfo.getDropOffLat(), taxiRideInfo.getDropOffLong(),
+							expSearchReply.getCallerReqId(), 
+							taxiRideInfo.getRideEndTimeStamp(), currSearchRange);
+				}	
+			}
 		}
 		
 		synchronized(waitLock)
@@ -475,6 +490,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		public void run() 
 		{
 			checkFinishedTaxiRequests();
+			System.out.println("Drop off thread finished");
 		}
 	}
 	
