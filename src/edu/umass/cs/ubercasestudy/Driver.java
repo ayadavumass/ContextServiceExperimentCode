@@ -287,6 +287,13 @@ public class Driver
 							+ " noTaxiFound "+tqi.noTaxiFound
 							+ " sending rate "+sendRate
 							+ " Goodput "+goodput);
+					
+					if(tqi.numSearchRecvd > 0 && tqi.numUpdateRecvd > 0)
+					{
+						System.out.println("Average search time "+(tqi.sumSearchTime/tqi.numSearchRecvd)
+								+" SearchReplySize "+tqi.sumSearchReply/tqi.numSearchRecvd
+								+ "Average update time "+tqi.sumUpdateTime/tqi.numUpdateRecvd);
+					}
 				}
 			}
 		}

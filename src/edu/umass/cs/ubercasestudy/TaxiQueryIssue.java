@@ -28,9 +28,9 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	private long requestNum						= 0;
 	
 	//private final Object lockObj 				= new Object();
-	private long sumSearchTime					= 0;
-	private long sumSearchReply					= 0;
-	private long sumUpdateTime					= 0;
+	public long sumSearchTime					= 0;
+	public long sumSearchReply					= 0;
+	public long sumUpdateTime					= 0;
 	
 	public long numSearchSent					= 0;
 	public long numUpdateSent					= 0;
