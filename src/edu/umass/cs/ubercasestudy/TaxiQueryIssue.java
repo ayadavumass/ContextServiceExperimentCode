@@ -89,13 +89,13 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 					long pickupTime = Driver.dfm.parse(pickDateTimeString).getTime()/1000;
 					long dropOffTime = Driver.dfm.parse(dropDateTimeString).getTime()/1000;
 					
-					synchronized(Driver.TIME_WAIT_LOCK)
+					synchronized(Driver.STIME_WAIT_LOCK)
 					{
 						while(pickupTime > Driver.getCurrUnixTime())
 						{
 							try 
 							{
-								Driver.TIME_WAIT_LOCK.wait();
+								Driver.STIME_WAIT_LOCK.wait();
 							} catch (InterruptedException e) 
 							{
 								e.printStackTrace();
@@ -202,13 +202,13 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 					
 				long dropOffTime = taxiRideInfo.getRideEndTimeStamp();
 				
-				synchronized(Driver.TIME_WAIT_LOCK)
+				synchronized(Driver.UTIME_WAIT_LOCK)
 				{
 					while(dropOffTime > Driver.getCurrUnixTime())
 					{
 						try 
 						{
-							Driver.TIME_WAIT_LOCK.wait();
+							Driver.UTIME_WAIT_LOCK.wait();
 						} catch (InterruptedException e) 
 						{
 							e.printStackTrace();

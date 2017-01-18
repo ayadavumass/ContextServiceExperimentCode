@@ -91,7 +91,8 @@ public class Driver
 	public static int myID;
 	
 	// request sender waits 
-	public static final Object TIME_WAIT_LOCK				= new Object();
+	public static final Object STIME_WAIT_LOCK				= new Object();
+	public static final Object UTIME_WAIT_LOCK				= new Object();
 	
 	// key is taxi GUID, Boolean is true if taxi is free , false if not.
 	public static final HashMap<String, Boolean> taxiFreeMap		
@@ -268,10 +269,16 @@ public class Driver
 				double increment = (SLEEP_TIME/1000.0)*TIME_CONTRACTION_FACTOR;
 				currUnixTimeInSec = currUnixTimeInSec + increment;	
 				
-				synchronized(TIME_WAIT_LOCK)
+				synchronized(STIME_WAIT_LOCK)
 				{
-					TIME_WAIT_LOCK.notifyAll();
+					STIME_WAIT_LOCK.notify();
 				}
+				
+				synchronized(UTIME_WAIT_LOCK)
+				{
+					UTIME_WAIT_LOCK.notify();
+				}
+				
 				if(printSum%(50*SLEEP_TIME) == 0)
 				{
 					printSum = 0;
