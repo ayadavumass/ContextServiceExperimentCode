@@ -79,7 +79,7 @@ public class Driver
 	public static double currUnixTimeInSec					= -1;
 	public static ContextServiceClient csClient;
 	
-	public static final double SLEEP_TIME					= 100; //100ms;
+	public static final double SLEEP_TIME					= 10; //100ms;
 	public static double TIME_CONTRACTION_FACTOR			= 720.0; // 96 means running 1 day trace in 15 mins
 	
 	// 0.5 means 50% of trace will be sent. so 50% users got taxis.
@@ -279,7 +279,7 @@ public class Driver
 					UTIME_WAIT_LOCK.notify();
 				}
 				
-				if(printSum%(50*SLEEP_TIME) == 0)
+				if(printSum%(500*SLEEP_TIME) == 0)
 				{
 					printSum = 0;
 					double sendRate 
