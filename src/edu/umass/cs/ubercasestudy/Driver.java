@@ -19,7 +19,7 @@ import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 public class Driver
 {
 	public static final double LOSS_TOLERANCE				= 0.5;
-	public static final double WAIT_TIME					= 300000000; // 100 sec
+	public static final double WAIT_TIME					= 100000; // 100 sec
 	
 	// this is approximately similar to taxis in nyc, which is around 13000.
 	public static int NUMBER_TAXIS							= 100;
@@ -54,7 +54,7 @@ public class Driver
 	public static final String TAXI_DATA_PATH 
 					= "/home/ayadav/Documents/Data/NYCTaxiData/yellow_tripdata_2016-02.csv";
 	
-	//public static final String DATE_TO_SAMPLE 				= "2016-02-13";
+	//public static final String DATE_TO_SAMPLE 			= "2016-02-13";
 	
 	// from 1st Feb
 	public static final int MIN_DATE 						= 1;
