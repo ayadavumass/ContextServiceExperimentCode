@@ -59,7 +59,7 @@ public class Driver
 	// from 1st Feb
 	public static final int MIN_DATE 						= 1;
 	// 14th Feb
-	public static final int MAX_DATE 						= 7;
+	public static final int MAX_DATE 						= 14;
 	
 	public static final String LAT_ATTR						= "latitude";
 	public static final String LONG_ATTR					= "longitude";
