@@ -9,7 +9,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -95,8 +94,8 @@ public class Driver
 	public static final Object UTIME_WAIT_LOCK				= new Object();
 	
 	// key is taxi GUID, Boolean is true if taxi is free , false if not.
-	public static final HashMap<String, Boolean> taxiFreeMap		
-															= new HashMap<String, Boolean>();
+	//public static final HashMap<String, Boolean> taxiFreeMap		
+	//														= new HashMap<String, Boolean>();
 	
 	
 	public static ExecutorService execServ;;

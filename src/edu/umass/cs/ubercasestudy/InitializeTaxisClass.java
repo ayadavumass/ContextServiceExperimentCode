@@ -44,10 +44,10 @@ public class InitializeTaxisClass extends AbstractRequestSendingClass
 		
 		String guid = Driver.getSHA1(accountAlias);
 		
-		synchronized(Driver.taxiFreeMap)
-		{
-			Driver.taxiFreeMap.put(guid, true);
-		}
+//		synchronized(Driver.taxiFreeMap)
+//		{
+//			Driver.taxiFreeMap.put(guid, true);
+//		}
 		
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(guidNum, guid);
 		

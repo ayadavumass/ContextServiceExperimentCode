@@ -250,10 +250,10 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 				double freeRand = randGen.nextDouble()* Driver.FREE_INUSE_BOUNDARY;
 				updateTaxiGUID(taxiGUID, dropOffLat, dropOffLong, freeRand);
 				
-				synchronized(Driver.taxiFreeMap)
-				{
-					Driver.taxiFreeMap.put(taxiGUID, true);
-				}
+//				synchronized(Driver.taxiFreeMap)
+//				{
+//					Driver.taxiFreeMap.put(taxiGUID, true);
+//				}
 			}
 			else
 			{
@@ -369,7 +369,12 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		
 			if(taxiGUIDArray.length() > 0)
 			{
-				taxiGUID = pickAFreeTaxi(taxiGUIDArray);
+				try {
+					taxiGUID = pickAFreeTaxi(taxiGUIDArray);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				//System.out.println("taxiGUID "+taxiGUID);
 				
@@ -422,39 +427,39 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		}
 	}
 	
-	private String pickAFreeTaxi(JSONArray resultTaxiArray)
+	private String pickAFreeTaxi(JSONArray resultTaxiArray) throws JSONException
 	{
-		String taxiGUID = "";
+//		String taxiGUID = "";
+//		
+//		for(int i=0; i<resultTaxiArray.length(); i++)
+//		{
+//			try 
+//			{
+//				String currGUID = resultTaxiArray.getString(i);
+//				
+//				synchronized(Driver.taxiFreeMap)
+//				{
+//					//System.out.println("currGUID "+currGUID);
+//					// taxi is free
+//					if(Driver.taxiFreeMap.containsKey(currGUID))
+//					{
+//						if(Driver.taxiFreeMap.get(currGUID))
+//						{
+//							// taxi busy.
+//							Driver.taxiFreeMap.put(currGUID, false);
+//							taxiGUID = currGUID;
+//							break;
+//						}
+//					}
+//				}
+//			} 
+//			catch (JSONException e)
+//			{
+//				e.printStackTrace();
+//			}
+//		}
 		
-		for(int i=0; i<resultTaxiArray.length(); i++)
-		{
-			try 
-			{
-				String currGUID = resultTaxiArray.getString(i);
-				
-				synchronized(Driver.taxiFreeMap)
-				{
-					//System.out.println("currGUID "+currGUID);
-					// taxi is free
-					if(Driver.taxiFreeMap.containsKey(currGUID))
-					{
-						if(Driver.taxiFreeMap.get(currGUID))
-						{
-							// taxi busy.
-							Driver.taxiFreeMap.put(currGUID, false);
-							taxiGUID = currGUID;
-							break;
-						}
-					}
-				}
-			} 
-			catch (JSONException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		
-		return taxiGUID;
+		return resultTaxiArray.getString(randGen.nextInt(resultTaxiArray.length()));
 	}
 	
 	
