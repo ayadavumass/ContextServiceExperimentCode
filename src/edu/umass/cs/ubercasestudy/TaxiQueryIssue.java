@@ -46,7 +46,7 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 	public TaxiQueryIssue()
 	{
 		super(Driver.LOSS_TOLERANCE, (long) Driver.WAIT_TIME);
-		randGen = new Random();
+		randGen = new Random((Driver.myID+1)*100);
 		Comparator<TaxiRideInfo> comparator = new TaxiRideInfo(-1, -1, -1, 
 																	-1, -1);
 		ongoingTaxiRides = new PriorityBlockingQueue<TaxiRideInfo>(10,comparator );
@@ -187,9 +187,21 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		
 		double thpt = (numRecvd*1000.0)/(System.currentTimeMillis()- startTime);
 		if(this.timeout)
-			System.out.println("TimeOut: Goodput "+thpt+" numSent "+numSent+" numRecvd "+numRecvd);
+			System.out.println("TimeOut: Goodput "+thpt+" numSent "+numSent+" numRecvd "+numRecvd
+					+" numSearchReqsSent "+numSearchSent
+					+" numSearchReqsRecvd "+numSearchRecvd
+					+" SearchReplySize "+this.sumSearchReply/numSearchRecvd 
+					+" noTaxiFoundFullSearch "+noTaxiFound
+					+" numUpdateReqsSent "+numUpdateSent
+					+" numUpdateReqsRecvd "+numUpdateRecvd);
 		else
-			System.out.println("Successfull: Goodput "+thpt+" numSent "+numSent+" numRecvd "+numRecvd);
+			System.out.println("Successful: Goodput "+thpt+" numSent "+numSent+" numRecvd "+numRecvd
+					+" numSearchReqsSent "+numSearchSent
+					+" numSearchReqsRecvd "+numSearchRecvd
+					+" SearchReplySize "+this.sumSearchReply/numSearchRecvd 
+					+" noTaxiFoundFullSearch "+noTaxiFound
+					+" numUpdateReqsSent "+numUpdateSent
+					+" numUpdateReqsRecvd "+numUpdateRecvd);
 	}
 	
 	// this function will also be called from a thread.
