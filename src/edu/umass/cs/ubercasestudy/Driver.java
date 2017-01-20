@@ -124,7 +124,8 @@ public class Driver
 				+" REQUEST_ISSUE_PROB="+REQUEST_ISSUE_PROB
 				+" SEARCH_AREA_RANGE="+SEARCH_AREA_RANGE
 				+" numThreads="+numThreads
-				+" ONE_DAY_TRACE_PATH="+USED_TRACE_PATH);
+				+" ONE_DAY_TRACE_PATH="+USED_TRACE_PATH
+				+" Driver.myID="+Driver.myID);
 		
 		
 		long startUnixTimeInSec = findMinimumTimeFromTrace();

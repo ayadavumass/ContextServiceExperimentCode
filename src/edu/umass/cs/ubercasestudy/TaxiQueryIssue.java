@@ -187,9 +187,9 @@ public class TaxiQueryIssue extends AbstractRequestSendingClass
 		
 		double thpt = (numRecvd*1000.0)/(System.currentTimeMillis()- startTime);
 		if(this.timeout)
-			System.out.println("TimeOut: Goodput="+thpt+" numSent="+numSent+" numRecvd="+numRecvd);
+			System.out.println("TimeOut: Goodput "+thpt+" numSent "+numSent+" numRecvd "+numRecvd);
 		else
-			System.out.println("Successfull: Goodput="+thpt+" numSent="+numSent+" numRecvd="+numRecvd);
+			System.out.println("Successfull: Goodput "+thpt+" numSent "+numSent+" numRecvd "+numRecvd);
 	}
 	
 	// this function will also be called from a thread.

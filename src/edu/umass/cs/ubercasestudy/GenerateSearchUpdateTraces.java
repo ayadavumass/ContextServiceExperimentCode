@@ -73,16 +73,16 @@ public class GenerateSearchUpdateTraces
 				// >0.5 is in use.
 				double inuseRand  = 1-randGen.nextDouble()* Driver.FREE_INUSE_BOUNDARY;
 				String updateStr1 = Driver.LAT_ATTR+","+pickupLat+","
-								  		+Driver.LONG_ATTR+","+pickupLong+","
-								  		+Driver.STATUS_ATTR+","+inuseRand;
+								  		+Driver.LONG_ATTR+","+pickupLong;
+								  		//+Driver.STATUS_ATTR+","+inuseRand;
 				
 				updateBW.write(updateStr1+"\n");
 				
 				double freeRand   = randGen.nextDouble()* Driver.FREE_INUSE_BOUNDARY;
 				
 				String updateStr2 = Driver.LAT_ATTR+","+dropOffLat+","
-				  						+ Driver.LONG_ATTR+","+dropOffLong+","
-				  						+ Driver.STATUS_ATTR+","+freeRand;
+				  						+ Driver.LONG_ATTR+","+dropOffLong;
+				  						//+ Driver.STATUS_ATTR+","+freeRand;
 				
 				updateBW.write(updateStr2+"\n");
 			}
@@ -124,9 +124,9 @@ public class GenerateSearchUpdateTraces
 		String searchQuery = Driver.LAT_ATTR +" >= "+latMin
 							+" AND "+Driver.LAT_ATTR+" <= "+latMax
 							+" AND "+Driver.LONG_ATTR +" >= "+longMin
-							+" AND "+Driver.LONG_ATTR+" <= "+longMax
-							+" AND "+Driver.STATUS_ATTR+" >= "+Driver.MIN_STATUS
-							+" AND "+Driver.STATUS_ATTR+" <= "+Driver.FREE_INUSE_BOUNDARY;
+							+" AND "+Driver.LONG_ATTR+" <= "+longMax;
+							//+" AND "+Driver.STATUS_ATTR+" >= "+Driver.MIN_STATUS
+							//+" AND "+Driver.STATUS_ATTR+" <= "+Driver.FREE_INUSE_BOUNDARY;
 		return searchQuery;
 	}
 	
