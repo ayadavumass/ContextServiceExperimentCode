@@ -102,7 +102,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	private boolean useLateralTransfrom					= true;
 	private boolean useRealTraj							= false;
 	
-	private long updateStartTime;
+	//private long updateStartTime;
 	
 	private boolean skippingUpdateEnabled				= true;
 	private int skippingTimeInSec						= 120*60; //once in 30 min
@@ -431,7 +431,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	
 	public void runUpdates() 
 	{
-		updateStartTime = System.currentTimeMillis();
+		//updateStartTime = System.currentTimeMillis();
+		this.startExpTime();
 		//simulatedTime = SearchAndUpdateDriver.MIN_UNIX_TIME;
 		while( SearchAndUpdateDriver.currentRealTime 
 				<= SearchAndUpdateDriver.EXP_END_TIME )
@@ -469,11 +470,11 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		}
 		
 		long end = System.currentTimeMillis();
-		double sendingRate = (numSent*1000.0)/(end-updateStartTime);
+		double sendingRate = (numSent*1000.0)/(end-this.expStartTime);
 		System.out.println("Update eventual sending rate "+sendingRate+" reqs/s");
 		this.waitForFinish();
 		long endTime = System.currentTimeMillis();
-		double systemThpt = (numRecvd*1000.0)/(endTime-updateStartTime);
+		double systemThpt = (numRecvd*1000.0)/(endTime-this.expStartTime);
 		System.out.println("Update system throughput "+systemThpt+" reqs/s");
 		System.out.println("Update avg update latency "+(sumUpdateLatency/numRecvd)+" ms");
 	}
@@ -489,8 +490,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 //		String dateFormat = sdf.format(date);
 		
 		long currTime = System.currentTimeMillis();
-		double sendingRate = (numSent*1000.0)/(currTime-updateStartTime);
-		double systemThpt = (numRecvd*1000.0)/(currTime-updateStartTime);
+		double sendingRate = (numSent*1000.0)/(currTime-this.expStartTime);
+		double systemThpt = (numRecvd*1000.0)/(currTime-this.expStartTime);
 		
 		String str = " numSent "+numSent+" numRecvd "+numRecvd
 				+ " updatesAtSameTime "
