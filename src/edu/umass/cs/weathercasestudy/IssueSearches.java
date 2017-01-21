@@ -307,9 +307,9 @@ public class IssueSearches extends AbstractRequestSendingClass
 			
 			numOriginalSearch++;
 			
-			String searchQuery
-				= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE "+SearchAndUpdateDriver.latitudeAttr+" >= "+minLat+
-				" AND "+SearchAndUpdateDriver.latitudeAttr+" <= "+maxLat+" AND "+SearchAndUpdateDriver.longitudeAttr+" >= "+
+			String searchQuery = SearchAndUpdateDriver.latitudeAttr+" >= "+minLat+
+				" AND "+SearchAndUpdateDriver.latitudeAttr+" <= "+maxLat
+				+" AND "+SearchAndUpdateDriver.longitudeAttr+" >= "+
 				minLong+" AND "+SearchAndUpdateDriver.longitudeAttr+" <= "+maxLong;
 			
 			ExperimentSearchReply searchRep 

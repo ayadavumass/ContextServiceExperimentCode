@@ -438,7 +438,7 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 		{
 			sendUpdatesWhoseTimeHasCome();
 			
-			try 
+			try
 			{
 				Thread.sleep((long)SearchAndUpdateDriver.TIME_REQUEST_SLEEP);
 			} 

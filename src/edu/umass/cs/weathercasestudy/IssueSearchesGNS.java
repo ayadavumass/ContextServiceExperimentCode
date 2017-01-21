@@ -177,7 +177,7 @@ public class IssueSearchesGNS extends AbstractRequestSendingClass
 			double maxLong = boundingRect.getMaxY();
 			
 //			String searchQuery
-//				= "SELECT GUID_TABLE.guid FROM GUID_TABLE WHERE "+LAT_ATTR_NAME+" >= "+minLat+
+//				= LAT_ATTR_NAME+" >= "+minLat+
 //				" AND "+LAT_ATTR_NAME+" <= "+maxLat+" AND "+LONG_ATTR_NAME+" >= "+
 //				minLong+" AND "+LONG_ATTR_NAME+" <= "+maxLong;
 			
