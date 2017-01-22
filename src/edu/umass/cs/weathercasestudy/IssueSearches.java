@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 
-public class IssueSearches extends AbstractRequestSendingClass
+public class IssueSearches extends AbstractSearchRequestSendingClass
 {
 	private WeatherDataProcessing weatherDataProcess;
 	
@@ -49,7 +49,7 @@ public class IssueSearches extends AbstractRequestSendingClass
 	public IssueSearches( ContextServiceClient csclient, 
 			int searchId, WeatherDataProcessing weatherDataProcess) throws NoSuchAlgorithmException, IOException
 	{
-		super( SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE, SearchAndUpdateDriver.WAIT_TIME );
+		super();
 		
 		//this.refreshTimeInSec 	 = refreshTimeInSec;
 		//this.searchId			 	= searchId;

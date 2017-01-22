@@ -531,8 +531,7 @@ public class SearchAndUpdateDriver
 	
 	
 	private static class IssueSearchRequests implements Runnable
-	{
-		
+	{	
 		public IssueSearchRequests()
 		{
 			for(int i=0; i<searchList.size(); i++)
@@ -554,8 +553,7 @@ public class SearchAndUpdateDriver
 				catch (InterruptedException e) 
 				{
 					e.printStackTrace();
-				}
-				
+				}		
 				
 				for(int i=0; i<searchList.size(); i++)
 				{
@@ -565,6 +563,7 @@ public class SearchAndUpdateDriver
 			}
 		}
 	}
+	
 	
 	private static class PeriodicRefreshThread implements Runnable
 	{

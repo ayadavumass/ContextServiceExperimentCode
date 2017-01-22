@@ -6,31 +6,28 @@ import java.util.TimerTask;
 import edu.umass.cs.contextservice.client.callback.interfaces.CallBackInterface;
 
 
-public abstract class AbstractRequestSendingClass
+public abstract class AbstractSearchRequestSendingClass
 {
-	protected long expStartTime;
-	protected final Timer waitTimer;
-	protected final Object waitLock = new Object();
-	protected long numSent;
-	protected long numRecvd;
-	protected boolean threadFinished;
-	protected final Object threadFinishLock = new Object();
+	protected static long expStartTime;
+	protected static final Timer waitTimer = new Timer();;
+	protected static final Object waitLock = new Object();
+	protected static long numSent;
+	protected static long numRecvd;
+	protected static boolean threadFinished;
+	protected static final Object threadFinishLock = new Object();
 	
 	// 1% loss tolerance
-	private final double lossTolerance;
+	private static final double lossTolerance = SearchAndUpdateDriver.SEARCH_LOSS_TOLERANCE;
 	
 	private final CallBackInterface expCallback;
-	private final long waitTime;
+	private static final long waitTime = SearchAndUpdateDriver.WAIT_TIME;
 	
-	public AbstractRequestSendingClass( double lossTolerance, long waitTime )
+	public AbstractSearchRequestSendingClass( )
 	{
-		expCallback =  new ExperimentCallBack(this, null);
+		expCallback =  new ExperimentCallBack(null, this);
 		threadFinished = false;
-		this.lossTolerance = lossTolerance;
-		this.waitTime = waitTime;
 		numSent = 0;
 		numRecvd = 0;
-		waitTimer = new Timer();
 	}
 	
 	protected void startExpTime()

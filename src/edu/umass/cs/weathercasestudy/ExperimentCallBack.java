@@ -12,16 +12,20 @@ public class ExperimentCallBack implements CallBackInterface
 	//private ConcurrentHashMap<Long, Long> requestIDMap;
 	private final AbstractRequestSendingClass reqSendClass;
 	
-	public ExperimentCallBack(AbstractRequestSendingClass reqSendClass)
+	private final AbstractSearchRequestSendingClass sreqSendClass;
+	
+	public ExperimentCallBack(AbstractRequestSendingClass reqSendClass
+			, AbstractSearchRequestSendingClass sreqSendClass)
 	{
 		this.reqSendClass = reqSendClass;
+		this.sreqSendClass = sreqSendClass;
 	}
 	
 	@Override
 	public void searchCompletion(SearchReplyInterface searchRep)
 	{
 		long timeTaken = ((ExperimentSearchReply)searchRep).getCompletionTime();
-		reqSendClass.incrementSearchNumRecvd(searchRep.getReplySize(), timeTaken);
+		sreqSendClass.incrementSearchNumRecvd(searchRep.getReplySize(), timeTaken);
 	}
 	
 	@Override
