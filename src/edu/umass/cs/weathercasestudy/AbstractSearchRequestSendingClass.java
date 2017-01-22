@@ -37,24 +37,31 @@ public abstract class AbstractSearchRequestSendingClass
 	
 	protected void waitForFinish()
 	{
-		waitTimer.schedule(new WaitTimerTask(), waitTime);
-		
-		synchronized(waitLock)
+		try
 		{
-			while( !checkForCompletionWithLossTolerance(numSent, numRecvd) )
+			waitTimer.schedule(new WaitTimerTask(), waitTime);
+			
+			synchronized(waitLock)
 			{
-				try
+				while( !checkForCompletionWithLossTolerance(numSent, numRecvd) )
 				{
-					waitLock.wait();
-				} catch (InterruptedException e)
-				{
-					e.printStackTrace();
+					try
+					{
+						waitLock.wait();
+					} catch (InterruptedException e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
+			
+			//stopThis();	
+			waitTimer.cancel();
 		}
-		
-		//stopThis();	
-		waitTimer.cancel();
+		catch(IllegalStateException ise)
+		{
+			ise.printStackTrace();
+		}
 		
 		threadFinished = true;
 		synchronized( threadFinishLock )
