@@ -60,7 +60,8 @@ public abstract class AbstractSearchRequestSendingClass
 		}
 		catch(IllegalStateException ise)
 		{
-			ise.printStackTrace();
+			//ise.printStackTrace();
+			System.out.println("IllegalStateException");
 		}
 		
 		threadFinished = true;
