@@ -17,9 +17,6 @@ public class IssueSearches extends AbstractSearchRequestSendingClass
 {
 	private WeatherDataProcessing weatherDataProcess;
 	
-//	private static String csHost;
-//	private static int csPort;
-	
 	public static ContextServiceClient csClient;
 	public static boolean useGNS							= false;
 	
@@ -27,7 +24,7 @@ public class IssueSearches extends AbstractSearchRequestSendingClass
 	private int nextIndexToSend 							= 0;
 	
 	//private long requestId									= 0;
-	
+	private double numSearch								= 0;
 	private double sumSearchLatency							= 0;
 	private double sumResultSize							= 0;
 	
@@ -83,6 +80,7 @@ public class IssueSearches extends AbstractSearchRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
+			numSearch++;
 //			System.out.println("Updates recvd "+userGUID+" time "+timeTaken
 //					+" numRecvd "+numRecvd+" numSent "+numSent);
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
@@ -246,8 +244,8 @@ public class IssueSearches extends AbstractSearchRequestSendingClass
 		searchStatClass.systemThpt = systemThpt;
 		searchStatClass.numSent = numSent;
 		searchStatClass.numRecvd = numRecvd;
-		searchStatClass.latency = (sumSearchLatency/numRecvd);
-		searchStatClass.avgReplySize = (sumResultSize/numRecvd);
+		searchStatClass.latency = (sumSearchLatency/numSearch);
+		searchStatClass.avgReplySize = (sumResultSize/numSearch);
 		searchStatClass.numOriginalSearch = numOriginalSearch;
 		searchStatClass.avgLatRange = (this.sumLatitude/numOriginalSearch);
 		searchStatClass.avgLongRange = (this.sumLongitude/numOriginalSearch);
