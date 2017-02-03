@@ -45,10 +45,10 @@ public class SearchAndUpdateDriver
 //	public static final double EXP_START_TIME					= 1385770103;
 //	public static final double EXP_END_TIME						= 1389644000;
 	
-	public static final String nomadLogDataPath 				= "/users/ayadavum/nomadLog/loc_seq";
-																//= "/home/adipc/Documents/nomadlogData/loc_seq";
-	public static final String weatherDataPath 					= "/users/ayadavum/weatherData/weatherEvent.json";
-																//= "/home/adipc/Downloads/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
+	public static final String nomadLogDataPath 				//= "/users/ayadavum/nomadLog/loc_seq";
+																= "/home/ayadav/Documents/Data/nomadlogData/loc_seq";
+	public static final String weatherDataPath 					//= "/users/ayadavum/weatherData/weatherEvent.json";
+																= "/home/ayadav/Documents/Data/weatherdata/wwa_201311300000_201401310000/weatherEvent.json";
 	
 	public static String csHost									= null;
 	public static int csPort									= -1;
