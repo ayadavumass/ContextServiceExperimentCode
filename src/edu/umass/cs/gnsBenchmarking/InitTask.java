@@ -30,9 +30,10 @@ public class InitTask implements Runnable
 	@Override
 	public void run()
 	{
+		GNSClient gnsClient = null;
 		try
 		{
-			GNSClient gnsClient = SearchAndUpdateDriver.getGNSClient();
+			gnsClient = SearchAndUpdateDriver.getGNSClient();
 			GuidEntry guidEntry = GuidUtils.lookupOrCreateAccountGuid
 					( gnsClient, accountGuidAlias,
 					"password", true );
@@ -49,7 +50,7 @@ public class InitTask implements Runnable
 			gnsClient.execute(GNSCommand.update(guidEntry, attrValuePairs));
 			long end = System.currentTimeMillis();
 			requestSendingTask.incrementUpdateNumRecvd(guidEntry.guid, end-start);
-			SearchAndUpdateDriver.returnGNSClient(gnsClient);
+			
 		} catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -58,5 +59,13 @@ public class InitTask implements Runnable
 		{
 			ex.printStackTrace();
 		}
+		finally
+		{
+			if(gnsClient != null)
+			{
+				SearchAndUpdateDriver.returnGNSClient(gnsClient);
+			}
+		}
+		
 	}
 }
