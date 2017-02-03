@@ -37,8 +37,9 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		SearchAndUpdateDriver.initTaskES.execute(initTask);
 	}
 	
+	
 	public void initializaRateControlledRequestSender() throws Exception
-	{	
+	{
 		this.startExpTime();
 		double reqspms = SearchAndUpdateDriver.initRate/1000.0;
 		long currTime = 0;
