@@ -17,6 +17,7 @@ import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 import edu.umass.cs.gnsclient.client.util.GuidUtils;
+import edu.umass.cs.gnscommon.packets.CommandPacket;
 
 public class SearchAndUpdateDriver
 {
@@ -223,22 +224,23 @@ public class SearchAndUpdateDriver
 		    }
 		    
 		    // gnsClient.setReadTimeout(15 * 1000); // 30 seconds
-		    GNSCommand reply = gnsClient.execute
-		    		(GNSCommand.batchCreateGUIDs(gnsClient.getGNSProvider(),
-		    					batchAccountGuid, aliases));
+		    CommandPacket reply = gnsClient.execute
+		    		(GNSCommand.batchCreateGUIDs(batchAccountGuid, aliases));
 		}
 		
 	    
-		GNSCommand reply = gnsClient.execute
+		CommandPacket reply = gnsClient.execute
 	    			(GNSCommand.lookupAccountRecord(batchAccountGuid.getGuid()));
-	    	
+	    
 	    JSONObject batchJSON = reply.getResultJSONObject();
 	    int numGuidsCreated = batchJSON.getInt("guidCnt");
-	    	
+	    
+	    System.out.println("numGuidsCreated "+numGuidsCreated);
+	    
 	    assert(numGuidsCreated == numUsers);
-	    	
+	    
 	    System.out.println(numGuidsCreated+" guids created");
-	    	
+	    
 //	      result = gnsClient.
 //	    		  guidBatchCreate(batchAccountGuid, aliases);
 //	      client.setReadTimeout(oldTimeout);
