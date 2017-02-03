@@ -24,7 +24,7 @@ public class SearchAndUpdateDriver
 	// 100 seconds, experiment runs for 100 seconds
 	public static 	 long EXPERIMENT_TIME						= 100000;
 	
-	public static final int BATCH_SIZE							= 250;
+	public static int BATCH_SIZE								= 250;
 	public static final String GNS_REC_PREFIX					= "nr_valuesMap";
 	
 	// 1% loss tolerance
@@ -107,6 +107,7 @@ public class SearchAndUpdateDriver
 		//queryExpiryTime     = Long.parseLong(args[20]);
 		threadPoolSize    	  = Integer.parseInt(args[6]);
 		int initPoolSize  	  = Integer.parseInt(args[7]);
+		BATCH_SIZE			  = Integer.parseInt(args[8]);
 		
 		reqTaskES 			  = Executors.newFixedThreadPool(threadPoolSize);
 		initTaskES 			  = Executors.newFixedThreadPool(initPoolSize);
