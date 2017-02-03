@@ -33,6 +33,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		String accountAlias = SearchAndUpdateDriver.guidPrefix+guidNum+"@gmail.com";
 		
 		
+		
 		InitTask initTask = new InitTask(attrValJSON, accountAlias, this);
 		SearchAndUpdateDriver.initTaskES.execute(initTask);
 	}
