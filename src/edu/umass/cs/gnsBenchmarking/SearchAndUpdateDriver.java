@@ -141,10 +141,10 @@ public class SearchAndUpdateDriver
 			if( userInitEnable )
 			{
 				
-				long start 	= System.currentTimeMillis();
-				batchedAccountCreation();
-				long end 	= System.currentTimeMillis();
-				System.out.println("Batch creation of "+numUsers+" took "+(end-start)+" ms");
+//				long start 	= System.currentTimeMillis();
+//				batchedAccountCreation();
+//				long end 	= System.currentTimeMillis();
+//				System.out.println("Batch creation of "+numUsers+" took "+(end-start)+" ms");
 				
 				// add index
 //				System.out.println("Adding Index");
@@ -154,9 +154,9 @@ public class SearchAndUpdateDriver
 //				System.out.println("Adding index took "+(end-start));
 				
 				
-				start 	= System.currentTimeMillis();
+				long start 	= System.currentTimeMillis();
 				new UserInitializationClass().initializaRateControlledRequestSender();
-				end 	= System.currentTimeMillis();
+				long end 	= System.currentTimeMillis();
 				System.out.println(numUsers+" initialization complete "+(end-start));
 			}
 		}
@@ -205,7 +205,7 @@ public class SearchAndUpdateDriver
 //		}
 //	}
 	
-	public static void batchedAccountCreation() throws Exception
+	private static void batchedAccountCreation() throws Exception
 	{
 		GNSClient gnsClient = getGNSClient();
 		batchAccountGuid = GuidUtils.lookupOrCreateAccountGuid(gnsClient,

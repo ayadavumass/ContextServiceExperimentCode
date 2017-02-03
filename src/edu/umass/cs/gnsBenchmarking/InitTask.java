@@ -33,13 +33,13 @@ public class InitTask implements Runnable
 		try
 		{
 			GNSClient gnsClient = SearchAndUpdateDriver.getGNSClient();
-//			GuidEntry guidEntry = GuidUtils.llookupOrCreateAccountGuid
-//					( gnsClient, accountGuidAlias,
-//					"password", true );
+			GuidEntry guidEntry = GuidUtils.lookupOrCreateAccountGuid
+					( gnsClient, accountGuidAlias,
+					"password", true );
 			
-			GuidEntry guidEntry 
-				= GuidUtils.lookupGuidEntryFromDatabase(gnsClient.getGNSProvider(), 
-						accountGuidAlias);
+//			GuidEntry guidEntry 
+//				= GuidUtils.lookupGuidEntryFromDatabase(gnsClient.getGNSProvider(), 
+//						accountGuidAlias);
 			
 			synchronized( SearchAndUpdateDriver.guidInsertLock )
 			{
