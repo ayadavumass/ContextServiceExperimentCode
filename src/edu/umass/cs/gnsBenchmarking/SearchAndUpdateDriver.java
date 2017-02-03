@@ -126,7 +126,7 @@ public class SearchAndUpdateDriver
 			
 			batchAccountAlias = batchAccountAlias + myID+"@gmail.com";
 			
-			for(int i=0; i<threadPoolSize; i++)
+			for(int i=0; i<1; i++)
 			{
 				GNSClient gnsClient = new GNSClient();
 				gnsClientQueue.add(gnsClient);

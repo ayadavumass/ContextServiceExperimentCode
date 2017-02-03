@@ -33,7 +33,9 @@ public class InitTask implements Runnable
 		GNSClient gnsClient = null;
 		try
 		{
+			System.out.println("Creating GUID "+accountGuidAlias);
 			gnsClient = SearchAndUpdateDriver.getGNSClient();
+			System.out.println("Creating GUID "+accountGuidAlias+" Got GNS client");
 			GuidEntry guidEntry = GuidUtils.lookupOrCreateAccountGuid
 					( gnsClient, accountGuidAlias,
 					"password", true );
@@ -67,5 +69,6 @@ public class InitTask implements Runnable
 			}
 		}
 		
+		System.out.println("Creating GUID "+accountGuidAlias+" Finished");
 	}
 }
