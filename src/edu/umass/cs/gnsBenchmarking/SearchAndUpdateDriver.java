@@ -96,7 +96,6 @@ public class SearchAndUpdateDriver
 	{
 		numUsers 		  	  = Double.parseDouble(args[0]);
 		myID 			  	  = Integer.parseInt(args[1]);
-		initRate 		  	  = 100.0;
 		requestRate   	  	  = Double.parseDouble(args[2]);
 		numAttrs 		  	  = 20;
 		numAttrsInQuery   	  = 4;
@@ -107,7 +106,8 @@ public class SearchAndUpdateDriver
 		//queryExpiryTime     = Long.parseLong(args[20]);
 		threadPoolSize    	  = Integer.parseInt(args[6]);
 		int initPoolSize  	  = Integer.parseInt(args[7]);
-		BATCH_SIZE			  = Integer.parseInt(args[8]);
+		initRate 		  	  = Integer.parseInt(args[8]);
+		//BATCH_SIZE			  = ;
 		
 		reqTaskES 			  = Executors.newFixedThreadPool(threadPoolSize);
 		initTaskES 			  = Executors.newFixedThreadPool(initPoolSize);
