@@ -37,7 +37,7 @@ public class SearchAndUpdateDriver
 	public static final double SEARCH_LOSS_TOLERANCE			= 0.5;
 	
 	// after sending all the requests it waits for 100 seconds 
-	public static final int WAIT_TIME							= 100000000;
+	public static final int WAIT_TIME							= 1000000;
 	
 	public static final double ATTR_MIN 						= 1.0;
 	public static final double ATTR_MAX 						= 1500.0;

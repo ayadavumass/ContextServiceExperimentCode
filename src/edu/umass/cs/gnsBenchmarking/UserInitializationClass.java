@@ -124,7 +124,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			}
 		}
 	}
-
+	
 	@Override
 	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
 	{
