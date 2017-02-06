@@ -46,7 +46,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		long currTime = 0;
 		
 		// sleep for 100ms
-		double numberShouldBeSentPerSleep = reqspms*100.0;
+		double numberShouldBeSentPerSleep = reqspms*1000.0;
 		
 		double totalNumUsersSent = 0;
 		
@@ -92,7 +92,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			{
 				break;
 			}
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		}
 		
 		long endTime = System.currentTimeMillis();
