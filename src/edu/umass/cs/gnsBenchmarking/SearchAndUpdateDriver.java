@@ -74,7 +74,7 @@ public class SearchAndUpdateDriver
 	
 	public static double predicateLength						= 0.5;
 	
-	public static int threadPoolSize							= 1;
+	public static int numGNSClients								= 1;
 	
 	public static List<GuidEntry> listOfGuidEntries				= null;
 	public static final Object guidInsertLock					= new Object();
@@ -94,23 +94,42 @@ public class SearchAndUpdateDriver
 	
 	public static void main( String[] args ) throws Exception
 	{
+//		numUsers 		  	  = Double.parseDouble(args[0]);
+//		myID 			  	  = Integer.parseInt(args[1]);
+//		requestRate   	  	  = Double.parseDouble(args[2]);
+//		numAttrs 		  	  = 20;
+//		numAttrsInQuery   	  = 4;
+//		rhoValue 		  	  = Double.parseDouble(args[3]);
+//		predicateLength   	  = Double.parseDouble(args[4]);
+//		useMongoDirectly  	  = Boolean.parseBoolean(args[5]);
+//		
+//		//queryExpiryTime     = Long.parseLong(args[20]);
+//		threadPoolSize    	  = Integer.parseInt(args[6]);
+//		int initPoolSize  	  = Integer.parseInt(args[7]);
+//		initRate 		  	  = Integer.parseInt(args[8]);
+//		//BATCH_SIZE			  = ;
+//		
+//		reqTaskES 			  = Executors.newFixedThreadPool(threadPoolSize);
+//		initTaskES 			  = Executors.newFixedThreadPool(initPoolSize);
+		
+		
 		numUsers 		  	  = Double.parseDouble(args[0]);
-		myID 			  	  = Integer.parseInt(args[1]);
-		requestRate   	  	  = Double.parseDouble(args[2]);
+		myID 			  	  = 0;
+		requestRate   	  	  = 100;
 		numAttrs 		  	  = 20;
 		numAttrsInQuery   	  = 4;
-		rhoValue 		  	  = Double.parseDouble(args[3]);
-		predicateLength   	  = Double.parseDouble(args[4]);
-		useMongoDirectly  	  = Boolean.parseBoolean(args[5]);
+		rhoValue 		  	  = 0.5;
+		predicateLength   	  = 0.5;
+		useMongoDirectly  	  = false;
 		
 		//queryExpiryTime     = Long.parseLong(args[20]);
-		threadPoolSize    	  = Integer.parseInt(args[6]);
-		int initPoolSize  	  = Integer.parseInt(args[7]);
-		initRate 		  	  = Integer.parseInt(args[8]);
+		numGNSClients    	  = Integer.parseInt(args[1]);
+		initRate 		  	  = Integer.parseInt(args[2]);
 		//BATCH_SIZE			  = ;
 		
-		reqTaskES 			  = Executors.newFixedThreadPool(threadPoolSize);
-		initTaskES 			  = Executors.newFixedThreadPool(initPoolSize);
+		reqTaskES 			  = Executors.newFixedThreadPool(numGNSClients);
+		initTaskES 			  = Executors.newFixedThreadPool(numGNSClients);
+		
 		
 		//if( useMongoDirectly )
 		{
@@ -126,7 +145,7 @@ public class SearchAndUpdateDriver
 			
 			batchAccountAlias = batchAccountAlias + myID+"@gmail.com";
 			
-			for(int i=0; i<threadPoolSize; i++)
+			for(int i=0; i<numGNSClients; i++)
 			{
 				GNSClient gnsClient = new GNSClient();
 				gnsClientQueue.add(gnsClient);
@@ -159,6 +178,9 @@ public class SearchAndUpdateDriver
 				System.out.println(numUsers+" initialization complete "+(end-start));
 			}
 		}
+		
+		System.out.println(numUsers+" GUIDs created exiting ");
+		System.exit(0);
 		
 		System.out.println("Starting workload");
 		BothSearchAndUpdate bothSearchAndUpdate = null;
