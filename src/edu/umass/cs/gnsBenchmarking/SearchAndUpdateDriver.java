@@ -44,6 +44,8 @@ public class SearchAndUpdateDriver
 	
 	public static final String attrPrefix						= "attr";
 	
+	public static final int NUM_GNS_RETRIES						= 10;
+	
 	public static double numUsers 								= -1;
 	
 	//2% of domain queried
@@ -148,6 +150,7 @@ public class SearchAndUpdateDriver
 			for(int i=0; i<numGNSClients; i++)
 			{
 				GNSClient gnsClient = new GNSClient();
+				gnsClient.setNumRetriesUponTimeout(NUM_GNS_RETRIES);
 				gnsClientQueue.add(gnsClient);
 			}
 			System.out.println("[Client connected to GNS]\n");
