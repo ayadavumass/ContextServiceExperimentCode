@@ -33,6 +33,7 @@ public class InitTask implements Runnable
 		GNSClient gnsClient = null;
 		try
 		{
+			long start = System.currentTimeMillis();
 			System.out.println("Creating GUID "+accountGuidAlias);
 			gnsClient = SearchAndUpdateDriver.getGNSClient();
 			System.out.println("Creating GUID "+accountGuidAlias+" Got GNS client");
@@ -48,8 +49,8 @@ public class InitTask implements Runnable
 			{
 				SearchAndUpdateDriver.listOfGuidEntries.add(guidEntry);
 			}
-			long start = System.currentTimeMillis();
-			gnsClient.execute(GNSCommand.update(guidEntry, attrValuePairs));
+			
+			//gnsClient.execute(GNSCommand.update(guidEntry, attrValuePairs));
 			long end = System.currentTimeMillis();
 			requestSendingTask.incrementUpdateNumRecvd(guidEntry.guid, end-start);
 			
