@@ -13,13 +13,13 @@ import edu.umass.cs.gnsclient.client.util.GuidUtils;
  * class's object is passed in executor service
  * @author adipc
  */
-public class InitTask implements Runnable
+public class GUIDAttrValInitTask implements Runnable
 {
 	private final JSONObject attrValuePairs;
 	private final String accountGuidAlias;
 	private final AbstractRequestSendingClass requestSendingTask;
 	
-	public InitTask( JSONObject attrValuePairs, String accountGuidAlias,
+	public GUIDAttrValInitTask( JSONObject attrValuePairs, String accountGuidAlias,
 			AbstractRequestSendingClass requestSendingTask )
 	{
 		this.attrValuePairs = attrValuePairs;

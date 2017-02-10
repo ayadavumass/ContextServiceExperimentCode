@@ -45,6 +45,7 @@ public class SearchAndUpdateDriver
 	public static final String attrPrefix						= "attr";
 	
 	public static final int NUM_GNS_RETRIES						= 10;
+	public static final int GNS_FORCED_TIMEOUT					= 4000; //4 s
 	
 	public static double numUsers 								= -1;
 	
@@ -150,7 +151,9 @@ public class SearchAndUpdateDriver
 			for(int i=0; i<numGNSClients; i++)
 			{
 				GNSClient gnsClient = new GNSClient();
+				gnsClient.setForcedTimeout(GNS_FORCED_TIMEOUT);
 				gnsClient.setNumRetriesUponTimeout(NUM_GNS_RETRIES);
+				
 				gnsClientQueue.add(gnsClient);
 			}
 			System.out.println("[Client connected to GNS]\n");
