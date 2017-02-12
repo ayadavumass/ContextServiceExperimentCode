@@ -28,7 +28,7 @@ public class SearchAndUpdateDriver
 	public static final String GNS_REC_PREFIX					= "nr_valuesMap";
 	
 	// 1% loss tolerance
-	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
+	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
 	
 	// 1% loss tolerance
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
