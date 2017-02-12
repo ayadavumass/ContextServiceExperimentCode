@@ -118,17 +118,20 @@ public class SearchAndUpdateDriver
 		
 		numUsers 		  	  = Double.parseDouble(args[0]);
 		myID 			  	  = 0;
-		requestRate   	  	  = 100;
+		
 		numAttrs 		  	  = 20;
 		numAttrsInQuery   	  = 4;
-		rhoValue 		  	  = 0.5;
-		predicateLength   	  = 0.5;
 		useMongoDirectly  	  = false;
 		
 		//queryExpiryTime     = Long.parseLong(args[20]);
 		numGNSClients    	  = Integer.parseInt(args[1]);
 		initRate 		  	  = Integer.parseInt(args[2]);
 		//BATCH_SIZE			  = ;
+		requestRate   	  	  = Integer.parseInt(args[3]);
+		rhoValue 		  	  = Double.parseDouble(args[4]);
+		predicateLength   	  = Double.parseDouble(args[5]);
+		
+		
 		
 		reqTaskES 			  = Executors.newFixedThreadPool(numGNSClients);
 		initTaskES 			  = Executors.newFixedThreadPool(numGNSClients);
@@ -186,7 +189,7 @@ public class SearchAndUpdateDriver
 		}
 		
 		System.out.println(numUsers+" GUIDs created exiting ");
-		System.exit(0);
+		//System.exit(0);
 		
 		System.out.println("Starting workload");
 		BothSearchAndUpdate bothSearchAndUpdate = null;
