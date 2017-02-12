@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidUtils;
 
 /**
  * Class implements the task used for 
@@ -15,14 +16,14 @@ import edu.umass.cs.gnsclient.client.util.GuidEntry;
 public class UpdateTask implements Runnable
 {
 	private final JSONObject attrValuePairs;
-	private final GuidEntry guidEntry;
+	private final String guidAlias;
 	private final AbstractRequestSendingClass requestSendingTask;
 	
-	public UpdateTask( JSONObject attrValuePairs, GuidEntry guidEntry,
+	public UpdateTask( JSONObject attrValuePairs, String guidAlias,
 			AbstractRequestSendingClass requestSendingTask )
 	{
 		this.attrValuePairs = attrValuePairs;
-		this.guidEntry = guidEntry;
+		this.guidAlias = guidAlias;
 		this.requestSendingTask = requestSendingTask;
 	}
 	
@@ -35,6 +36,7 @@ public class UpdateTask implements Runnable
 //								+userGUID+" attrValuePairs "+attrValuePairs);
 			GNSClient gnsClient = SearchAndUpdateDriver.getGNSClient();
 			long start = System.currentTimeMillis();
+			GuidEntry guidEntry = GuidUtils.lookupGuidEntryFromDatabase(gnsClient, guidAlias);
 			gnsClient.execute(GNSCommand.update(guidEntry, attrValuePairs));
 			long end = System.currentTimeMillis();
 			requestSendingTask.incrementUpdateNumRecvd(guidEntry.guid, end-start);

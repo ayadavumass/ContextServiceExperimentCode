@@ -8,9 +8,6 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-import edu.umass.cs.gnsclient.client.util.GuidEntry;
-
 public class BothSearchAndUpdate extends 
 					AbstractRequestSendingClass implements Runnable
 {
@@ -27,8 +24,6 @@ public class BothSearchAndUpdate extends
 	
 	private long numSearchesRecvd			= 0;
 	private long numUpdatesRecvd			= 0;
-	
-	
 	
 	
 	// we don't want to issue new search queries for the trigger exp.
@@ -323,7 +318,6 @@ public class BothSearchAndUpdate extends
 //		}
 //	}
 	
-	
 	private HashMap<String, Boolean> pickDistinctAttrs( int numAttrsToPick, 
 			int totalAttrs, Random randGen )
 	{
@@ -349,8 +343,9 @@ public class BothSearchAndUpdate extends
 	
 	private void sendALocMessage( int currUserGuidNum, long reqIdNum )
 	{
-		GuidEntry guidEntry = SearchAndUpdateDriver.listOfGuidEntries.get(currUserGuidNum);
+		String accountAlias = SearchAndUpdateDriver.guidPrefix+currUserGuidNum+"@gmail.com";
 		
+	
 		int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
 		double randVal = SearchAndUpdateDriver.ATTR_MIN 
 				+updateRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN);
@@ -367,7 +362,7 @@ public class BothSearchAndUpdate extends
 		//SearchAndUpdateDriver.csClient.sendUpdate(userGUID, null, 
 		//		attrValuePairs, -1);
 		//System.out.println("Updating "+currUserGuidNum+" "+attrValJSON);
-		UpdateTask updTask = new UpdateTask( attrValJSON, guidEntry, this );
+		UpdateTask updTask = new UpdateTask( attrValJSON, accountAlias, this );
 		SearchAndUpdateDriver.reqTaskES.execute(updTask);
 	}
 	

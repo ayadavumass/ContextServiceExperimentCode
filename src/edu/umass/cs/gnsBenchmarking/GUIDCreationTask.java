@@ -45,10 +45,10 @@ public class GUIDCreationTask implements Runnable
 //				= GuidUtils.lookupGuidEntryFromDatabase(gnsClient.getGNSProvider(), 
 //						accountGuidAlias);
 			
-			synchronized( SearchAndUpdateDriver.guidInsertLock )
-			{
-				SearchAndUpdateDriver.listOfGuidEntries.add(guidEntry);
-			}
+//			synchronized( SearchAndUpdateDriver.guidInsertLock )
+//			{
+//				SearchAndUpdateDriver.listOfGuidEntries.add(guidEntry);
+//			}
 			
 			gnsClient.execute(GNSCommand.update(guidEntry, attrValuePairs));
 			long end = System.currentTimeMillis();

@@ -4,7 +4,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
@@ -79,8 +78,8 @@ public class SearchAndUpdateDriver
 	
 	public static int numGNSClients								= 1;
 	
-	public static List<GuidEntry> listOfGuidEntries				= null;
-	public static final Object guidInsertLock					= new Object();
+	//public static List<GuidEntry> listOfGuidEntries				= null;
+	//public static final Object guidInsertLock					= new Object();
 	
 	public static Queue<GNSClient> gnsClientQueue				= new LinkedList<GNSClient>();
 	public static final Object queueLock						= new Object();
@@ -130,7 +129,7 @@ public class SearchAndUpdateDriver
 		requestRate   	  	  = Integer.parseInt(args[3]);
 		rhoValue 		  	  = Double.parseDouble(args[4]);
 		predicateLength   	  = Double.parseDouble(args[5]);
-		
+		userInitEnable		  = Boolean.parseBoolean(args[6]);
 		
 		
 		reqTaskES 			  = Executors.newFixedThreadPool(numGNSClients);
@@ -165,7 +164,7 @@ public class SearchAndUpdateDriver
 			//userInfoHashMap = new HashMap<String, UserRecordInfo>();
 			//taskES = Executors.newCachedThreadPool();
 			
-			listOfGuidEntries = new LinkedList<GuidEntry>();
+			//listOfGuidEntries = new LinkedList<GuidEntry>();
 			if( userInitEnable )
 			{
 //				long start 	= System.currentTimeMillis();
@@ -179,7 +178,6 @@ public class SearchAndUpdateDriver
 //				addAttributeIndex();
 //				end = System.currentTimeMillis();
 //				System.out.println("Adding index took "+(end-start));
-				
 				
 				long start 	= System.currentTimeMillis();
 				new UserInitializationClass().initializaRateControlledRequestSender();
