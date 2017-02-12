@@ -420,8 +420,8 @@ public class BothSearchAndUpdate extends
 			numRecvd++;
 			this.numSearchesRecvd++;
 			sumResultSize = sumResultSize + resultSize;
-//			System.out.println("Search reply recvd size "+resultSize+" time taken "
-//					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
+			System.out.println("Search reply recvd size "+resultSize+" time taken "
+					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )

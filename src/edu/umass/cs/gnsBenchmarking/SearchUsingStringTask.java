@@ -30,6 +30,7 @@ public class SearchUsingStringTask implements Runnable
 			GNSClient gnsClient = SearchAndUpdateDriver.getGNSClient();
 			long start = System.currentTimeMillis();
 			
+			System.out.println("Sending search "+searchQuery);
 			List<String> guidList  
 				= (List<String>) gnsClient.execute
 			(GNSCommand.selectQuery(searchQuery)).getResultList();
