@@ -377,10 +377,9 @@ public class BothSearchAndUpdate extends
 	}
 	
 	public long getNumUpdatesRecvd()
-	{	
+	{
 		return this.numUpdatesRecvd;
 	}
-	
 	
 	public long getNumSearchesRecvd()
 	{
@@ -391,7 +390,6 @@ public class BothSearchAndUpdate extends
 	{
 		return (this.numSearchesRecvd>0)?this.sumResultSize/this.numSearchesRecvd:0.0;
 	}
-	
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken)
@@ -420,8 +418,8 @@ public class BothSearchAndUpdate extends
 			numRecvd++;
 			this.numSearchesRecvd++;
 			sumResultSize = sumResultSize + resultSize;
-			System.out.println("Search reply recvd size "+resultSize+" time taken "
-					+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
+			//System.out.println("Search reply recvd size "+resultSize+" time taken "
+			//		+timeTaken+" numSent "+numSent+" numRecvd "+numRecvd);
 			//if(currNumReplyRecvd == currNumReqSent)
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
