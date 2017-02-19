@@ -292,5 +292,7 @@ public class LargeNumUsers
 		UserInitializationClass userInitObj = new UserInitializationClass();
 		
 		userInitObj.initializaRateControlledRequestSender();
+		
+		System.exit(0);
 	}
 }
