@@ -1,5 +1,8 @@
 package edu.umass.cs.largescalecasestudy;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
 
 import org.json.JSONObject;
@@ -113,6 +116,47 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
 		System.out.println("UserInit result:Goodput "+sysThrput);	
+	}
+	
+	public void writeTraceToFile(int numEntries)
+	{
+		BufferedWriter bw = null;
+		
+		try 
+		{
+			bw = new BufferedWriter(new FileWriter("nationwidePopTrace.txt"));
+			
+			for(int i=0; i<numEntries; i++)
+			{	
+				double randnum = initRand.nextDouble();
+				
+				CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
+				
+				
+				double latitude =  countynode.minLat + 
+							(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
+				
+				double longitude = countynode.minLong + 
+							(countynode.maxLong - countynode.minLong) * initRand.nextDouble();
+				
+				bw.write("latitude,"+latitude+",longitude,"+longitude+"\n");
+			}
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} finally 
+		{
+			try 
+			{
+				if (bw != null)
+					bw.close();
+			}
+			catch (IOException ex) 
+			{
+				ex.printStackTrace();
+			}
+		}
 	}
 	
 	

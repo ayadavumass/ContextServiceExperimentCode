@@ -16,12 +16,15 @@ public class LargeNumUsers
 {
 	public static final double INSERT_LOSS_TOLERANCE		= 0.0;
 	
+	//public static final String COUNTY_INFO_FILE 	
+	//														= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
+	
 	public static final String COUNTY_INFO_FILE 	
-															= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
+															= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
 	
 	
-	private static String csHost 								= "";
-	private static int csPort 									= -1;
+	private static String csHost 							= "";
+	private static int csPort 								= -1;
 	
 	public static List<CountyNode> countyProbList;
 	
@@ -254,12 +257,12 @@ public class LargeNumUsers
        return returnGUID.substring(0, 40);
 	}
 	
-	
 	public static void main(String[] args) throws Exception
 	{
 		numusers = Long.parseLong(args[0]);
 		csHost = args[1];
 		csPort = Integer.parseInt(args[2]);
+		initRate = Double.parseDouble(args[3]);
 		
 		csClient  = new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
@@ -291,7 +294,9 @@ public class LargeNumUsers
 		
 		UserInitializationClass userInitObj = new UserInitializationClass();
 		
-		userInitObj.initializaRateControlledRequestSender();
+		//userInitObj.initializaRateControlledRequestSender();
+		
+		userInitObj.writeTraceToFile(100000);
 		
 		System.exit(0);
 	}
