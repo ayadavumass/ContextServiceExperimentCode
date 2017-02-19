@@ -166,8 +166,11 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
+			if(numRecvd%10000 == 0)
+			{
+				System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
 					" numSent "+numSent+" numRecvd "+numRecvd);
+			}
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
