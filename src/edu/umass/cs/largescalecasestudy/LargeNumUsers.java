@@ -255,7 +255,7 @@ public class LargeNumUsers
 	}
 	
 	
-	public static void main(String[] args) throws NoSuchAlgorithmException, IOException
+	public static void main(String[] args) throws Exception
 	{
 		numusers = Long.parseLong(args[0]);
 		csHost = args[1];
@@ -288,5 +288,9 @@ public class LargeNumUsers
 //			CountyNode countynode = binarySearchOfCounty(randNum);
 //			System.out.println("i="+i+" rand="+randNum+" countynode="+countynode.toString());
 //		}
+		
+		UserInitializationClass userInitObj = new UserInitializationClass();
+		
+		userInitObj.initializaRateControlledRequestSender();
 	}
 }
