@@ -16,11 +16,11 @@ public class LargeNumUsers
 {
 	public static final double INSERT_LOSS_TOLERANCE		= 0.0;
 	
-	//public static final String COUNTY_INFO_FILE 	
-	//														= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
-	
 	public static final String COUNTY_INFO_FILE 	
-															= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
+															= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
+	
+	//public static final String COUNTY_INFO_FILE 	
+	//														= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
 	
 	
 	private static String csHost 							= "";
@@ -294,9 +294,9 @@ public class LargeNumUsers
 		
 		UserInitializationClass userInitObj = new UserInitializationClass();
 		
-		//userInitObj.initializaRateControlledRequestSender();
+		userInitObj.initializaRateControlledRequestSender();
 		
-		userInitObj.writeTraceToFile(100000);
+		//userInitObj.writeTraceToFile(100000);
 		
 		System.exit(0);
 	}
