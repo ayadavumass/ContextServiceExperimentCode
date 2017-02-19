@@ -253,7 +253,7 @@ public class SearchClass extends AbstractRequestSendingClass
 							+attrName +" <= "+queryMax+" ) ) AND ";
 				}
 			}
-		}	
+		}
 		SearchTask searchTask = new SearchTask( searchQuery, this );
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
 	}
