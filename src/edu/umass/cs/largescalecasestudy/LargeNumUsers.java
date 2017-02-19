@@ -17,7 +17,7 @@ public class LargeNumUsers
 	public static final double INSERT_LOSS_TOLERANCE		= 0.0;
 	
 	public static final String COUNTY_INFO_FILE 	
-															= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
+															= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
 	
 	
 	private static String csHost 								= "";
