@@ -35,7 +35,6 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		readFirstEntriesAfterStartTime();
 	}
 	
-	
 	private void sendAInitMessage(long guidNum) throws Exception
 	{
 		double randnum = initRand.nextDouble();
@@ -79,8 +78,13 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		JSONObject firstJSON = firstJSONObjectMap.get(filename);
 		
+		BufferedWriter bw = null;
+		
 		try
 		{
+			bw = new BufferedWriter(new FileWriter(LargeNumUsers.USER_INFO_FILE_NAME));
+			
+			
 			JSONObject geoLocJSON = firstJSON.getJSONObject(LargeNumUsers.GEO_LOC_KEY);
 			JSONArray coordArray = geoLocJSON.getJSONArray(LargeNumUsers.COORD_KEY);
 			
@@ -106,11 +110,30 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			userRecInfo.distanceInMeters = distanceInMeters;
 			userRecInfo.startAngle = startAngle;
 			
-			LargeNumUsers.userInfoMap.put(userGUID, userRecInfo);
+			//LargeNumUsers.userInfoMap.put(userGUID, userRecInfo);
+			String str = userGUID+","+filename+","+distanceInMeters+","+startAngle+"\n";
+			bw.write(str);
 		}
 		catch (JSONException e) 
 		{
 			e.printStackTrace();
+		}
+		catch(IOException ioex)
+		{
+			ioex.printStackTrace();
+		}
+		finally
+		{
+			if(bw != null)
+			{
+				try 
+				{
+					bw.close();
+				} catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	

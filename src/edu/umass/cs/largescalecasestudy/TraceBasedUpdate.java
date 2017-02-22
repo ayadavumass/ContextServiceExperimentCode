@@ -119,45 +119,72 @@ public class TraceBasedUpdate extends
 					GlobalCoordinate logCoord 
 									= new GlobalCoordinate(logLat, logLong);
 					
-					Iterator<String> userGUIDIter = LargeNumUsers.userInfoMap.keySet().iterator();
+					BufferedReader br = null;
 					
-					while(userGUIDIter.hasNext())
+					try
 					{
-						String guid = userGUIDIter.next();
-						UserRecordInfo userRecInfo = LargeNumUsers.userInfoMap.get(guid);
+						br = new BufferedReader(new FileReader(LargeNumUsers.USER_INFO_FILE_NAME));
 						
-						if( userRecInfo.filename.equals(filename) )
+						String sCurrentLine;
+						
+						while( (sCurrentLine = br.readLine()) != null )
 						{
-							double distanceInMeters = userRecInfo.distanceInMeters;
-							double angle = userRecInfo.startAngle;
+							String[] parsed = sCurrentLine.split(",");
 							
-							GlobalCoordinate transformedCoord 
-									= GeodeticCalculator.calculateEndingGlobalCoordinates
-														(logCoord, angle, distanceInMeters);
+							String guid = parsed[0];
+							String guidfilename = parsed[1];
+							double distanceInMeters = Double.parseDouble(parsed[2]);
+							double startAngle = Double.parseDouble(parsed[3]);
 							
-							long reqNum = -1;
-							synchronized(waitLock)
-							{
-								numSent++;
-								reqNum = numSent;
+							if( guidfilename.equals(filename) )
+							{								
+								GlobalCoordinate transformedCoord 
+										= GeodeticCalculator.calculateEndingGlobalCoordinates
+															(logCoord, startAngle, distanceInMeters);
+								
+								long reqNum = -1;
+								synchronized(waitLock)
+								{
+									numSent++;
+									reqNum = numSent;
+								}
+								
+								JSONObject attrValJSON = new JSONObject();
+								
+								attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
+															transformedCoord.getLatitude());
+								attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
+															transformedCoord.getLongitude());
+								
+								
+								ExperimentUpdateReply updateRep 
+										= new ExperimentUpdateReply(reqNum, guid);
+								
+								LargeNumUsers.csClient.sendUpdateWithCallBack
+													(guid, null, attrValJSON, -1, 
+															updateRep, this.getCallBack());
 							}
 							
-							JSONObject attrValJSON = new JSONObject();
 							
-							attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
-														transformedCoord.getLatitude());
-							attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
-														transformedCoord.getLongitude());
-							
-							
-							ExperimentUpdateReply updateRep 
-									= new ExperimentUpdateReply(reqNum, guid);
-							
-							LargeNumUsers.csClient.sendUpdateWithCallBack
-												(guid, null, attrValJSON, -1, 
-														updateRep, this.getCallBack());
 						}
 					}
+					catch(IOException ioex)
+					{
+						ioex.printStackTrace();
+					}
+					finally
+					{
+						if(br != null)
+						{
+							try {
+								br.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+					
 				}
 				catch(JSONException jsonex)
 				{
@@ -305,8 +332,8 @@ public class TraceBasedUpdate extends
 					{
 						JSONObject currJSON = new JSONObject(sCurrentLine);
 						
-						long jsonTimestamp  = currJSON.getLong(
-										LargeNumUsers.GEO_LOC_TIME_KEY);
+						long jsonTimestamp  = Long.parseLong(currJSON.getString(
+										LargeNumUsers.GEO_LOC_TIME_KEY));
 						
 						if( (jsonTimestamp >= startTimestamp) 
 									&& (jsonTimestamp < endTimestamp) )

@@ -8,7 +8,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
@@ -33,6 +32,8 @@ public class LargeNumUsers
 	
 	public  static final String USER_TRACE_DIR					= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/confidentialTrace/goodusers";
 	
+	
+	public static final String USER_INFO_FILE_NAME				= "UserInfo.txt";
 	
 	// latitude longitude key in json and attribute names in CNS
 	public static final String LATITUDE_KEY						= "latitude";
@@ -87,9 +88,6 @@ public class LargeNumUsers
 	
 	
 	public static ContextServiceClient csClient;
-	
-	
-	public static HashMap<String, UserRecordInfo> userInfoMap	= null;
 	
 	
 	public static long computeSumPopulation()
@@ -390,7 +388,7 @@ public class LargeNumUsers
 		
 		guidPrefix 	= guidPrefix+myID;
 		
-		userInfoMap = new HashMap<String, UserRecordInfo>();
+		//userInfoMap = new HashMap<String, UserRecordInfo>();
 		
 		countyProbList = new LinkedList<CountyNode>();
 		
@@ -429,7 +427,6 @@ public class LargeNumUsers
 		
 		TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
 		traceBasedUpdate.rateControlledRequestSender();
-		
 		
 		System.exit(0);
 	}
