@@ -29,11 +29,9 @@ public class LargeNumUsers
 	//public static final String COUNTY_INFO_FILE 	
 		//														= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
 	
-	
 	//public  static final String USER_TRACE_DIR				= "/home/ayadav/Documents/Data/confidentialUserTraces/processedIndividualTracesDupRem/goodusers";
 	
 	public  static final String USER_TRACE_DIR					= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/confidentialTrace/goodusers";
-	
 	
 	
 	// latitude longitude key in json and attribute names in CNS
@@ -431,7 +429,6 @@ public class LargeNumUsers
 		
 		TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
 		traceBasedUpdate.rateControlledRequestSender();
-		
 		
 		
 		System.exit(0);
