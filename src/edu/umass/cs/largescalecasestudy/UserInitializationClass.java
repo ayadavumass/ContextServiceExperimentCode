@@ -1,11 +1,22 @@
 package edu.umass.cs.largescalecasestudy;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.common.hash.Hashing;
+
+import edu.umass.cs.acs.geodesy.GeodeticCalculator;
+import edu.umass.cs.acs.geodesy.GeodeticCurve;
+import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 
 public class UserInitializationClass extends AbstractRequestSendingClass
 {
@@ -13,18 +24,23 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	// doesn't give uniform properties.
 	private final Random initRand;
 	
+	private HashMap<String, JSONObject> firstJSONObjectMap;
+	
 	public UserInitializationClass()
 	{
 		super( LargeNumUsers.INSERT_LOSS_TOLERANCE );
+		firstJSONObjectMap = new HashMap<String, JSONObject>();
 		initRand = new Random((LargeNumUsers.myID+1)*100);
+		
+		readFirstEntriesAfterStartTime();
 	}
 	
-	private void sendAInitMessage(int guidNum) throws Exception
+	
+	private void sendAInitMessage(long guidNum) throws Exception
 	{
 		double randnum = initRand.nextDouble();
 		
 		CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
-		
 		
 		double latitude =  countynode.minLat + 
 					(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
@@ -35,11 +51,15 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		JSONObject attrValJSON = new JSONObject();
 		
-		attrValJSON.put("latitude", latitude);
-		attrValJSON.put("longitude", longitude);
+		attrValJSON.put(LargeNumUsers.LATITUDE_KEY, latitude);
+		attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, longitude);
 		
 		
 		String userGUID = LargeNumUsers.getSHA1(LargeNumUsers.guidPrefix+guidNum);
+		
+		computeAndStoreTransfromFromUserLog(userGUID, latitude, 
+				longitude);
+		
 		
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(guidNum, userGUID);
 		
@@ -49,8 +69,54 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	}
 	
 	
+	private void computeAndStoreTransfromFromUserLog(String userGUID, double latitude, 
+														double longitude)
+	{
+		int arrayIndex = Hashing.consistentHash(userGUID.hashCode(), 
+											LargeNumUsers.filenameList.size());
+		
+		String filename = LargeNumUsers.filenameList.get(arrayIndex);
+		
+		JSONObject firstJSON = firstJSONObjectMap.get(filename);
+		
+		try
+		{
+			JSONObject geoLocJSON = firstJSON.getJSONObject(LargeNumUsers.GEO_LOC_KEY);
+			JSONArray coordArray = geoLocJSON.getJSONArray(LargeNumUsers.COORD_KEY);
+			
+			double logLat  = coordArray.getDouble(1);
+			double logLong = coordArray.getDouble(0);
+			
+			GlobalCoordinate transformCoord 
+							= new GlobalCoordinate(latitude, longitude);
+			
+			GlobalCoordinate logCoord
+							= new GlobalCoordinate(logLat, logLong);
+			
+			GeodeticCurve gCurve 
+				= GeodeticCalculator.calculateGeodeticCurve(logCoord, transformCoord);
+
+			double startAngle = gCurve.getAzimuth();
+			//endAngle = gCurve.getReverseAzimuth();
+			double distanceInMeters = gCurve.getEllipsoidalDistance();
+
+			UserRecordInfo userRecInfo = new UserRecordInfo();
+			
+			userRecInfo.filename = filename;
+			userRecInfo.distanceInMeters = distanceInMeters;
+			userRecInfo.startAngle = startAngle;
+			
+			LargeNumUsers.userInfoMap.put(userGUID, userRecInfo);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	
 	public void initializaRateControlledRequestSender() throws Exception
-	{	
+	{
 		this.startExpTime();
 		double reqspms = LargeNumUsers.initRate/1000.0;
 		long currTime = 0;
@@ -58,13 +124,13 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		// sleep for 100ms
 		double numberShouldBeSentPerSleep = reqspms*100.0;
 		
-		double totalNumUsersSent = 0;
+		long totalNumUsersSent = 0;
 		
 		while(  totalNumUsersSent < LargeNumUsers.numusers  )
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
-				sendAInitMessage((int)totalNumUsersSent);
+				sendAInitMessage(totalNumUsersSent);
 				totalNumUsersSent++;
 				numSent++;
 				assert(numSent == totalNumUsersSent);
@@ -89,7 +155,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
-				sendAInitMessage((int)totalNumUsersSent);
+				sendAInitMessage(totalNumUsersSent);
 				totalNumUsersSent++;
 				numSent++;
 				assert(numSent == totalNumUsersSent);
@@ -98,6 +164,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 					break;
 				}
 			}
+			
 			if(totalNumUsersSent >= LargeNumUsers.numusers)
 			{
 				break;
@@ -159,6 +226,64 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		}
 	}
 	
+	public void readFirstEntriesAfterStartTime()
+	{
+		for(int i=0; i<LargeNumUsers.filenameList.size(); i++)
+		{
+			String filename = LargeNumUsers.filenameList.get(i);
+			
+			BufferedReader readfile = null;
+			
+			try
+			{
+				String sCurrentLine;
+				readfile = new BufferedReader(new FileReader
+							(LargeNumUsers.USER_TRACE_DIR+"/"+filename));
+				
+				while( (sCurrentLine = readfile.readLine()) != null )
+				{
+					try
+					{
+						JSONObject jsoObject = new JSONObject(sCurrentLine);
+						
+						double geoloctimestamp = Double.parseDouble
+								(jsoObject.getString(LargeNumUsers.GEO_LOC_TIME_KEY));
+						
+						if( geoloctimestamp >= LargeNumUsers.START_UNIX_TIME )
+						{
+							firstJSONObjectMap.put(filename, jsoObject);
+							break;
+						}
+					}
+					catch (NumberFormatException e) 
+					{
+						e.printStackTrace();
+					} 
+					catch (JSONException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				try
+				{
+					if (readfile != null)
+						readfile.close();				
+				}
+				catch (IOException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
@@ -178,9 +303,9 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			}
 		}
 	}
-
+	
 	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
 	{
 	}
 }

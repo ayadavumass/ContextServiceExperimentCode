@@ -104,6 +104,7 @@ public class SearchAndUpdateDriver
 	
 	public static ContextServiceClient csClient; 
 	public static WeatherDataProcessing weatherDataProcess;
+	
 	public static void main( String[] args )
 									throws Exception
 	{
@@ -122,7 +123,7 @@ public class SearchAndUpdateDriver
 		
 		if( runGNS )
 		{
-			threadPoolSize = Integer.parseInt(args[10]);
+			threadPoolSize 	  = Integer.parseInt(args[10]);
 			
 			taskES 			  = Executors.newFixedThreadPool(threadPoolSize);
 			
@@ -590,7 +591,6 @@ public class SearchAndUpdateDriver
 			}
 		}
 	}
-	
 	
 	public static class ReadTriggerRecvd implements Runnable
 	{

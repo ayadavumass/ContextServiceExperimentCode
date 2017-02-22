@@ -27,24 +27,24 @@ import edu.umass.cs.utils.UtilFunctions;
 
 public class IssueUpdates2 extends AbstractRequestSendingClass
 {
-//	public static final double UPD_LOSS_TOLERANCE       = 0.5;
+	//	public static final double UPD_LOSS_TOLERANCE       = 0.5;
 	
 	// 42.87417896666666 | 43.260640499999994 | -79.30631786666666 | -78.66029963333332
 	// 42.87417896666666 | 43.00299947777777 | -78.87563904444443 | -78.66029963333332 
 	
-//	public static final double minBuffaloLat 			= 42.0;
-//	public static final double maxBuffaloLat 			= 44.0;
-//	
-//	public static final double minBuffaloLong			= -80.0;
-//	public static final double maxBuffaloLong 			= -78.0;
+	//	public static final double minBuffaloLat 			= 42.0;
+	//	public static final double maxBuffaloLat 			= 44.0;
+	//	
+	//	public static final double minBuffaloLong			= -80.0;
+	//	public static final double maxBuffaloLong 			= -78.0;
 	
-//	public static final double minBuffaloLat 			= 42.87417896666666;
-//	public static final double maxBuffaloLat 			= 43.00299947777777;
-//	
-//	public static final double minBuffaloLong			= -78.87563904444443;
-//	public static final double maxBuffaloLong 			= -78.66029963333332;
+	//	public static final double minBuffaloLat 			= 42.87417896666666;
+	//	public static final double maxBuffaloLat 			= 43.00299947777777;
+	//	
+	//	public static final double minBuffaloLong			= -78.87563904444443;
+	//	public static final double maxBuffaloLong 			= -78.66029963333332;
 	
-//	public static final double timeContractionFactor 	= 17859.416666667;
+	//	public static final double timeContractionFactor 	= 17859.416666667;
 	
 //	public static  String guidPrefix					= "GUID";
 	
@@ -63,8 +63,8 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 	//	public static final String nomadLogDataPath 		
 	//								= "/home/adipc/Documents/nomadlogData/loc_seq";
 	
-//	public static final String nomadLogDataPath 		
-//										= "/home/adipc/Documents/nomadlogData/loc_seq";
+	//	public static final String nomadLogDataPath 		
+	//										= "/home/adipc/Documents/nomadlogData/loc_seq";
 	
 	private HashMap<Integer, List<TrajectoryEntry>> userMobilityEntryHashMap;
 	
@@ -409,12 +409,12 @@ public class IssueUpdates2 extends AbstractRequestSendingClass
 				
 				trajList.add(trajEntry);				
 			}
-			
 		}
 		
 		assert( logTrajectory.size() == trajList.size() );
 		return succTransform;
 	}
+	
 	
 	private boolean isCoordWithinBounds(double latitude, double longitude)
 	{
