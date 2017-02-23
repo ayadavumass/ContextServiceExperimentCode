@@ -49,7 +49,10 @@ public class LargeNumUsers
 	
 	//1484538143
 	// actual date is Mon, 16 Jan 2017 03:42:23 GMT
-	public static final long END_UNIX_TIME						= 1484538143;
+	//public static final long END_UNIX_TIME						= 1484538143;
+	
+	
+	public static final long END_UNIX_TIME						= 1478039615;
 	
 	
 	//"geoLocationCurrentTimestamp"
