@@ -43,9 +43,9 @@ public class LargeNumUsers
 	public static long  TIME_UPDATE_SLEEP_TIME					= 60*1000;  // every minute
 	
 	// 1475465005.550073
-	// actual date is Mon, 03 Oct 2016 03:23:25 GMT
+	// actual date is 2016-11-01 22:28:35 +0000
 	// Update requests that have timestamp >= startUnixTime are sent to CNS
-	public static final long START_UNIX_TIME					= 1475465005;
+	public static final long START_UNIX_TIME					= 1478039315;
 	
 	//1484538143
 	// actual date is Mon, 16 Jan 2017 03:42:23 GMT
