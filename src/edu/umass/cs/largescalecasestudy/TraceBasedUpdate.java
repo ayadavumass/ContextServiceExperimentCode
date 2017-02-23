@@ -68,17 +68,21 @@ public class TraceBasedUpdate extends
 		{
 			synchronized(logReadLock)
 			{
-				while(currentEventFileMap.size() == 0)
+				while( (currentEventFileMap.size() == 0) && 
+							(LargeNumUsers.currRealUnixTime < LargeNumUsers.END_UNIX_TIME) )
 				{
 					logReadLock.wait();
 				}
 				
-				processEvents();
-				
-				currentEventFileMap.clear();
-				logReadLock.notify();
+				if( currentEventFileMap.size() > 0 )
+				{
+					processEvents();
+					currentEventFileMap.clear();
+					logReadLock.notify();
+				}
 			}
 		}
+		
 	}
 	
 	
@@ -314,6 +318,11 @@ public class TraceBasedUpdate extends
 				{
 					e.printStackTrace();
 				}
+			}
+			
+			synchronized(logReadLock)
+			{
+				logReadLock.notify();
 			}
 		}
 		
