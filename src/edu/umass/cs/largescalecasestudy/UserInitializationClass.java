@@ -35,7 +35,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		readFirstEntriesAfterStartTime();
 	}
 	
-	private void sendAInitMessage(long guidNum) throws Exception
+	private void sendAInitMessage(long guidNum, BufferedWriter bw) throws Exception
 	{
 		double randnum = initRand.nextDouble();
 		
@@ -57,7 +57,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		String userGUID = LargeNumUsers.getSHA1(LargeNumUsers.guidPrefix+guidNum);
 		
 		computeAndStoreTransfromFromUserLog(userGUID, latitude, 
-				longitude);
+				longitude, bw);
 		
 		
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(guidNum, userGUID);
@@ -69,7 +69,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	
 	
 	private void computeAndStoreTransfromFromUserLog(String userGUID, double latitude, 
-														double longitude)
+														double longitude, BufferedWriter bw)
 	{
 		int arrayIndex = Hashing.consistentHash(userGUID.hashCode(), 
 											LargeNumUsers.filenameList.size());
@@ -78,13 +78,8 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		JSONObject firstJSON = firstJSONObjectMap.get(filename);
 		
-		BufferedWriter bw = null;
-		
 		try
-		{
-			bw = new BufferedWriter(new FileWriter(LargeNumUsers.USER_INFO_FILE_NAME));
-			
-			
+		{	
 			JSONObject geoLocJSON = firstJSON.getJSONObject(LargeNumUsers.GEO_LOC_KEY);
 			JSONArray coordArray = geoLocJSON.getJSONArray(LargeNumUsers.COORD_KEY);
 			
@@ -117,23 +112,9 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		catch (JSONException e) 
 		{
 			e.printStackTrace();
-		}
-		catch(IOException ioex)
+		} catch (IOException e) 
 		{
-			ioex.printStackTrace();
-		}
-		finally
-		{
-			if(bw != null)
-			{
-				try 
-				{
-					bw.close();
-				} catch (IOException e) 
-				{
-					e.printStackTrace();
-				}
-			}
+			e.printStackTrace();
 		}
 	}
 	
@@ -148,51 +129,68 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		double numberShouldBeSentPerSleep = reqspms*100.0;
 		
 		long totalNumUsersSent = 0;
+		BufferedWriter bw = null;
 		
-		while(  totalNumUsersSent < LargeNumUsers.numusers  )
+		try
 		{
-			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+			bw = new BufferedWriter(new FileWriter(LargeNumUsers.USER_INFO_FILE_NAME));
+			
+			while(  totalNumUsersSent < LargeNumUsers.numusers  )
 			{
-				sendAInitMessage(totalNumUsersSent);
-				totalNumUsersSent++;
-				numSent++;
-				assert(numSent == totalNumUsersSent);
+				for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+				{
+					sendAInitMessage(totalNumUsersSent, bw);
+					totalNumUsersSent++;
+					numSent++;
+					assert(numSent == totalNumUsersSent);
+					if(totalNumUsersSent >= LargeNumUsers.numusers)
+					{
+						break;
+					}
+				}
 				if(totalNumUsersSent >= LargeNumUsers.numusers)
 				{
 					break;
 				}
-			}
-			if(totalNumUsersSent >= LargeNumUsers.numusers)
-			{
-				break;
-			}
-			currTime = System.currentTimeMillis();
-			
-			double timeElapsed = ((currTime- expStartTime)*1.0);
-			double numberShouldBeSentByNow = timeElapsed*reqspms;
-			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
-			if(needsToBeSentBeforeSleep > 0)
-			{
-				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
-			}
-			
-			for(int i=0;i<needsToBeSentBeforeSleep;i++)
-			{
-				sendAInitMessage(totalNumUsersSent);
-				totalNumUsersSent++;
-				numSent++;
-				assert(numSent == totalNumUsersSent);
+				currTime = System.currentTimeMillis();
+				
+				double timeElapsed = ((currTime- expStartTime)*1.0);
+				double numberShouldBeSentByNow = timeElapsed*reqspms;
+				double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
+				if(needsToBeSentBeforeSleep > 0)
+				{
+					needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
+				}
+				
+				for(int i=0;i<needsToBeSentBeforeSleep;i++)
+				{
+					sendAInitMessage(totalNumUsersSent, bw);
+					totalNumUsersSent++;
+					numSent++;
+					assert(numSent == totalNumUsersSent);
+					if(totalNumUsersSent >= LargeNumUsers.numusers)
+					{
+						break;
+					}
+				}
+				
 				if(totalNumUsersSent >= LargeNumUsers.numusers)
 				{
 					break;
 				}
+				Thread.sleep(100);
 			}
-			
-			if(totalNumUsersSent >= LargeNumUsers.numusers)
+		}
+		catch(IOException ioex)
+		{
+			ioex.printStackTrace();
+		}
+		finally
+		{
+			if(bw != null)
 			{
-				break;
+				bw.close();
 			}
-			Thread.sleep(100);
 		}
 		
 		long endTime = System.currentTimeMillis();
@@ -207,6 +205,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		System.out.println("UserInit result:Goodput "+sysThrput);	
 	}
+	
 	
 	public void writeTraceToFile(int numEntries)
 	{
