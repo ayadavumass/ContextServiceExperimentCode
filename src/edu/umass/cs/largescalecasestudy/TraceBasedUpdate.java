@@ -232,7 +232,7 @@ public class TraceBasedUpdate extends
 			numRecvd++;
 			this.numUpdatesRecvd++;
 			
-			if(numRecvd%10000 == 0)
+			if(numRecvd%1000 == 0)
 			{
 				System.out.println("AverageUpdateLatency "+getAverageUpdateLatency()
 				                   +" NumUpdatesRecvd "+getNumUpdatesRecvd());
