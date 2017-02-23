@@ -232,14 +232,14 @@ public class TraceBasedUpdate extends
 			numRecvd++;
 			this.numUpdatesRecvd++;
 			
-			if(numRecvd%1000 == 0)
+			if(numRecvd%10000 == 0)
 			{
 				System.out.println("AverageUpdateLatency "+getAverageUpdateLatency()
 				                   +" NumUpdatesRecvd "+getNumUpdatesRecvd());
 			}
 			
-			System.out.println("AverageUpdateLatency "+getAverageUpdateLatency()
-            			+" NumUpdatesRecvd "+getNumUpdatesRecvd());
+			//System.out.println("AverageUpdateLatency "+getAverageUpdateLatency()
+            //			+" NumUpdatesRecvd "+getNumUpdatesRecvd());
 			
 			//if(currNumReplyRecvd == currNumReqSent)
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
