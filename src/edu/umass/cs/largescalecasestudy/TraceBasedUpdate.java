@@ -238,6 +238,9 @@ public class TraceBasedUpdate extends
 				                   +" NumUpdatesRecvd "+getNumUpdatesRecvd());
 			}
 			
+			System.out.println("AverageUpdateLatency "+getAverageUpdateLatency()
+            			+" NumUpdatesRecvd "+getNumUpdatesRecvd());
+			
 			//if(currNumReplyRecvd == currNumReqSent)
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
