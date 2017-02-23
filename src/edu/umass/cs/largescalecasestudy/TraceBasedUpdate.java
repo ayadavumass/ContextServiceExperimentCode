@@ -332,7 +332,7 @@ public class TraceBasedUpdate extends
 					{
 						JSONObject currJSON = new JSONObject(sCurrentLine);
 						
-						long jsonTimestamp  = Long.parseLong(currJSON.getString(
+						long jsonTimestamp  = (long)Double.parseDouble(currJSON.getString(
 										LargeNumUsers.GEO_LOC_TIME_KEY));
 						
 						if( (jsonTimestamp >= startTimestamp) 
