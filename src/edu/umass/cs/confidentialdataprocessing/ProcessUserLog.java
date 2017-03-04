@@ -61,13 +61,20 @@ public class ProcessUserLog
 					String guidString = jsoObject.getString(GUID_KEY);
 					String usernameString = jsoObject.getString(UNAME_KEY);
 					
+					if( usernameString.contains("westy") || 
+							usernameString.contains("test@casaradar.com") || 
+							usernameString.contains("goerkem") )
+						continue;
 					
-					if(!guidMap.containsKey(guidString))
+					else
 					{
-						usernum++;
-						guidMap.put(guidString, usernum);
-						usernameMap.put(usernameString, 1);
-					}	
+						if(!guidMap.containsKey(guidString))
+						{
+							usernum++;
+							guidMap.put(guidString, usernum);
+							usernameMap.put(usernameString, 1);
+						}
+					}
 				}
 				catch (JSONException e) 
 				{
@@ -89,6 +96,16 @@ public class ProcessUserLog
 			}
 		}	
 		System.out.println("guidMap "+guidMap.size()+" username map size "+usernameMap.size());
+		
+		
+		Iterator<String> userIter = usernameMap.keySet().iterator();
+		
+		while(userIter.hasNext())
+		{
+			String username = userIter.next();
+			System.out.println("username "+username);
+		}
+		
 	}
 	
 	
@@ -106,18 +123,16 @@ public class ProcessUserLog
 				{
 					JSONObject jsoObject = new JSONObject(sCurrentLine);
 					String guidString = jsoObject.getString(GUID_KEY);
-					int usernum = guidMap.get(guidString);
+					if(guidMap.containsKey(guidString))
+					{
+						int usernum = guidMap.get(guidString);
+						
+						String filename = USER_TRAJECTORY_DIR+"/"+"TraceUser"+usernum+".txt";
+						BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true));
 					
-					//System.out.println("UserGUID "+guidString+" usernum "+usernum);
-					
-					String filename = USER_TRAJECTORY_DIR+"/"+"TraceUser"+usernum+".txt";
-					
-					
-					BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true));
-					
-					bw.write(sCurrentLine+"\n");
-					bw.close();
-					
+						bw.write(sCurrentLine+"\n");
+						bw.close();
+					}
 				}
 				catch (JSONException e) 
 				{
@@ -236,7 +251,7 @@ public class ProcessUserLog
 	}
 	
 	
-	private static void removingDuplicateAndTimeSortingMethod2()
+	private static void removingDuplicateAndTimeSortingMethod2() throws JSONException
 	{
 		Iterator<String> guidIter = guidMap.keySet().iterator();
 		
@@ -261,11 +276,31 @@ public class ProcessUserLog
 				bwriter = new BufferedWriter(new FileWriter(pfilename));
 				
 				while( (sCurrentLine = readfile.readLine()) != null )
-				{
+				{	
 					if( !lastLine.equals(sCurrentLine) )
 					{
-						lastLine = sCurrentLine;
-						bwriter.write(sCurrentLine+"\n");
+						if(lastLine.length() == 0)
+						{
+							lastLine = sCurrentLine;
+							bwriter.write(sCurrentLine+"\n");
+						}
+						else
+						{
+							JSONObject lasJSON = new JSONObject(lastLine);
+							JSONObject currJSON = new JSONObject(sCurrentLine);
+							
+							lasJSON.remove("geoLocationCurrentTimestamp");
+							lasJSON.remove("geoLocationCurrentDatetime");
+						
+							currJSON.remove("geoLocationCurrentTimestamp");
+							currJSON.remove("geoLocationCurrentDatetime");
+							
+							if(!lasJSON.toString().equals(currJSON.toString()))
+							{
+								lastLine = sCurrentLine;
+								bwriter.write(sCurrentLine+"\n");
+							}
+						}
 					}
 					else
 					{
@@ -297,7 +332,6 @@ public class ProcessUserLog
 					ex.printStackTrace();
 				}
 			}
-			
 		}
 	}
 	
@@ -318,12 +352,12 @@ public class ProcessUserLog
 	}
 	
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws JSONException
 	{
 		computeUniqueGUIDs();
 		
-		//writeUserJSONsInDir();
+		writeUserJSONsInDir();
 		
-		//removingDuplicateAndTimeSortingMethod2();
+		removingDuplicateAndTimeSortingMethod2();
 	}
 }
