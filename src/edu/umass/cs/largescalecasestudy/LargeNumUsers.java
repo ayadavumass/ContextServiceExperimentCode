@@ -374,11 +374,11 @@ public class LargeNumUsers
 				currRealUnixTime = (long) (currRealUnixTime + (TIME_UPDATE_SLEEP_TIME/1000));
 				
 				time = time + (long)TIME_UPDATE_SLEEP_TIME;
-				if( (time % 10000) == 0 )
+				//if( (time % 10000) == 0 )
 				{
 					Date date = new Date((long)currRealUnixTime*1000L); 
 					// *1000 is to convert seconds to milliseconds
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 					// the format of your date
 					sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE)); 
 					// give a timezone reference for formating (see comment at the bottom
