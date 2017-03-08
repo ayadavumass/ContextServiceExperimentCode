@@ -175,9 +175,14 @@ public class TraceBasedUpdate extends
 				{
 					bw.close();
 				}
-			}		
+			}
+			
+			LargeNumUsers.userinfoFileNum = (LargeNumUsers.userinfoFileNum + 1)%2;
+			System.out.println("Current userinfo file num "+LargeNumUsers.userinfoFileNum);
 			Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
 		}
+		
+		System.out.println("Trace based request sending ends");
 	}
 	
 	
