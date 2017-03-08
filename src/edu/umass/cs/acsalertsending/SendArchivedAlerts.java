@@ -31,6 +31,8 @@ public class SendArchivedAlerts
 	
 	public static final long SLEEP_TIME							= 1000;
 	
+	
+	public static final String PROP_KEY							= "properties";
 	public static final String VALIDAT_KEY						= "validAt";
 	public static final String TIMESTAMP_KEY					= "timestamp";
 	
@@ -69,19 +71,21 @@ public class SendArchivedAlerts
 					try
 					{
 						alertJSON = new JSONObject(currLine);
+						JSONObject propJSON = alertJSON.getJSONObject(PROP_KEY);
 						
-						if( alertJSON.has(TIMESTAMP_KEY) )
+						if( propJSON.has(TIMESTAMP_KEY) )
 						{
-							String issueString = alertJSON.getString(TIMESTAMP_KEY);
+							String issueString = propJSON.getString(TIMESTAMP_KEY);
 							alertTimeStamp = getUnixtimestampFromLogTimestamp(issueString);	
 						}
-						else if(alertJSON.has(VALIDAT_KEY))
+						else if(propJSON.has(VALIDAT_KEY))
 						{
-							String issueString = alertJSON.getString(VALIDAT_KEY);
+							String issueString = propJSON.getString(VALIDAT_KEY);
 							alertTimeStamp = getUnixtimestampFromLogValidAtTime(issueString);	
 						}
 						else
 						{
+							System.out.println("No timestamp found "+alertJSON);
 							assert(false);
 						}
 						
@@ -163,7 +167,12 @@ public class SendArchivedAlerts
 	    outputString = prependHeader(outputString);
 	    out.print(outputString);
 	    out.flush();
-	    System.out.println("Alert sent");
+	    
+	    SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT);
+		sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE));
+		String date = sdf.format(new Date(currUnixTimestamp*1000));
+		
+	    System.out.println("Alert sent "+date);
 	    out.close();
 	    socket.close();
 	}
@@ -220,7 +229,7 @@ public class SendArchivedAlerts
 			String timeString = dateTime[1].substring(0, dateTime[1].length()-1);
 			
 			SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT);
-			sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE));
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 			
 			long unixtimestamp = sdf.parse(onlyDay+" "+timeString).getTime()/1000;
 			
@@ -261,17 +270,8 @@ public class SendArchivedAlerts
 	private static class TimeThread implements Runnable
 	{		
 		public TimeThread(String startDateTime)
-		{		
-			try
-			{
-				SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT); 
-				sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE)); 
-				currUnixTimestamp = sdf.parse(startDateTime).getTime()/1000;
-			}
-			catch (ParseException e) 
-			{
-				e.printStackTrace();
-			}
+		{		 
+			currUnixTimestamp = getUnixtimestampFromLogTimestamp(startDateTime);
 		}
 		
 		@Override
@@ -290,6 +290,16 @@ public class SendArchivedAlerts
 				
 				currUnixTimestamp = currUnixTimestamp + 1;
 				
+				if( (currUnixTimestamp % 10) == 0 )
+				{
+					SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT);
+					sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE));
+					
+					String date = sdf.format(new Date(currUnixTimestamp*1000));
+					
+					System.out.println("Current date "+date);
+				}
+				
 				synchronized(TIME_TICK_LOCK)
 				{
 					TIME_TICK_LOCK.notify();
@@ -301,7 +311,7 @@ public class SendArchivedAlerts
 	
 	public static void main(String[] args)
 	{
-		// this is the start date time when the alert start
+		// this is the start date time when the alert start. TIme in GMT
 		String startDateTime = args[0];
 		
 		TimeThread timeThread = new TimeThread(startDateTime);

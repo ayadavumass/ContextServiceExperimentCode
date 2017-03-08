@@ -1,15 +1,17 @@
 package edu.umass.cs.largescalecasestudy;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
@@ -18,29 +20,33 @@ import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 public class LargeNumUsers
 {
+	public static final String TEXAS_TIMEZONE					= "GMT-6";
+	public static final int NUM_EVENT_THRESHOLD					= 10;
 	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
-	
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
 	
 	public static final String COUNTY_INFO_FILE 	
 																= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
 	
 	//public static final String COUNTY_INFO_FILE 	
-		//														= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
+	//															= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
 	
-	//public  static final String USER_TRACE_DIR				= "/home/ayadav/Documents/Data/confidentialUserTraces/processedIndividualTracesDupRem/goodusers";
+	//public  static final String USER_TRACE_DIR					= "/home/ayadav/Documents/Data/confidentialUserTraces/processedIndividualTracesDupRem";;
+
+	public  static final String USER_TRACE_DIR					= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/processedIndividualTracesDupRem";
 	
-	public  static final String USER_TRACE_DIR					= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/confidentialTrace/goodusers";
+	//public static final String USER_TRACE_DIRECTORY 
+	//= 
 	
+	public static final String USER_INFO_FILE_PREFIX			= "UserInfo";
 	
-	public static final String USER_INFO_FILE_NAME				= "UserInfo.txt";
 	
 	// latitude longitude key in json and attribute names in CNS
 	public static final String LATITUDE_KEY						= "latitude";
 	public static final String LONGITUDE_KEY					= "longitude";
 	
 	
-	public static long  TIME_UPDATE_SLEEP_TIME					= 60*1000;  // every minute
+	public static final long  TIME_UPDATE_SLEEP_TIME			= 60*1000;  // every minute
 	
 	// 1475465005.550073
 	// actual date is 2016-11-01 22:28:35 +0000
@@ -65,6 +71,7 @@ public class LargeNumUsers
 	//"coordinates"
 	public static final String COORD_KEY						= "coordinates";
 	
+	public static final String GEOLOC_TIME						= "geoLocationCurrentTimestamp";
 	
 	
 	private static String csHost 								= "";
@@ -82,15 +89,18 @@ public class LargeNumUsers
 	
 	public static long currRealUnixTime							= START_UNIX_TIME;
 	
+	// two users files are written. When UserInfo1 is read then UserInfo2 is written
+	// and when 2 is read to perform updates then UserInfo1 is written for next updates.
+	public static int userinfoFileNum							= 0;
+	
 	
 //	public static String[] filenameArray 						= {"TraceUser144.txt", "TraceUser182.txt", "TraceUser214.txt", "TraceUser218.txt"
 //																		, "TraceUser173.txt", "TraceUser194.txt", "TraceUser187.txt", "TraceUser190.txt"
 //																		, "TraceUser154.txt", "TraceUser181.txt"};
-	
 	public static List<String> filenameList;
-	
-	
 	public static ContextServiceClient csClient;
+	
+	public static Random distibutionRand;
 	
 	
 	public static long computeSumPopulation()
@@ -279,11 +289,11 @@ public class LargeNumUsers
 			{
 				maxLong = countynode.maxLong;
 			}
-		}
-		
+		}	
 		System.out.println("minLat="+minLat+", minLong="+minLong
 					+", maxLat="+maxLat+", maxLong="+maxLong);
 	}
+	
 	
 	public static String getSHA1(String stringToHash)
 	{
@@ -313,24 +323,29 @@ public class LargeNumUsers
 	}
 	
 	
-	private static void readUserLogsDirectory()
+	public static long computeTimeRelativeToDatStart(long currUnixTimeStamp)
 	{
-		File folder = new File(USER_TRACE_DIR);
-		File[] listOfFiles = folder.listFiles();
+		Date date = new Date(currUnixTimeStamp*1000L); 
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
 		
-		for (int i = 0; i < listOfFiles.length; i++)
+		sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE)); 
+		String dateFormat = sdf.format(date);
+		
+		String onlyDate = dateFormat.split(" ")[0];
+		
+		try 
 		{
-			if ( listOfFiles[i].isFile() )
-			{
-				filenameList.add(listOfFiles[i].getName());
-				//System.out.println("File " + listOfFiles[i].getName());
-			}
-			else if (listOfFiles[i].isDirectory())
-			{
-				assert(false);
-				System.out.println("Directory " + listOfFiles[i].getName());
-		    }
+			Date midnightDate = sdf.parse(onlyDate+" "+"00:00:00");
+			long midnightunixtime = midnightDate.getTime()/1000;
+			
+			assert(currUnixTimeStamp >= midnightunixtime);
+			return (currUnixTimeStamp-midnightunixtime);
 		}
+		catch (ParseException e)
+		{
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	
@@ -359,13 +374,13 @@ public class LargeNumUsers
 				currRealUnixTime = (long) (currRealUnixTime + (TIME_UPDATE_SLEEP_TIME/1000));
 				
 				time = time + (long)TIME_UPDATE_SLEEP_TIME;
-				if((time % 10000) == 0)
+				if( (time % 10000) == 0 )
 				{
 					Date date = new Date((long)currRealUnixTime*1000L); 
 					// *1000 is to convert seconds to milliseconds
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
 					// the format of your date
-					sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
+					sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE)); 
 					// give a timezone reference for formating (see comment at the bottom
 					String dateFormat = sdf.format(date);
 					
@@ -385,6 +400,11 @@ public class LargeNumUsers
 		csPort 		= Integer.parseInt(args[2]);
 		initRate 	= Double.parseDouble(args[3]);
 		
+		distibutionRand = new Random((myID+1)*100);
+		
+		// compute distributions
+		DistributionLearningFromTraces.main(null);
+		
 		csClient  	= new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 		
@@ -397,7 +417,17 @@ public class LargeNumUsers
 		
 		filenameList   = new LinkedList<String>();
 		
-		long totalPop = computeSumPopulation();
+		Iterator<String> filenameIter 
+					   = DistributionLearningFromTraces.distributionsMap.keySet().iterator();
+		
+		while( filenameIter.hasNext() )
+		{
+			String filename = filenameIter.next();
+			filenameList.add(filename);
+		}
+		
+		
+		long totalPop  = computeSumPopulation();
 		
 		computeCountyPopDistribution(totalPop);
 		
@@ -416,7 +446,7 @@ public class LargeNumUsers
 //			System.out.println("i="+i+" rand="+randNum+" countynode="+countynode.toString());
 //		}
 		
-		readUserLogsDirectory();
+		//readUserLogsDirectory();
 		
 		UserInitializationClass userInitObj = new UserInitializationClass();
 		
@@ -433,4 +463,25 @@ public class LargeNumUsers
 		
 		System.exit(0);
 	}
+	
+	
+	/*private static void readUserLogsDirectory()
+	{
+		File folder = new File(USER_TRACE_DIR);
+		File[] listOfFiles = folder.listFiles();
+		
+		for (int i = 0; i < listOfFiles.length; i++)
+		{
+			if ( listOfFiles[i].isFile() )
+			{
+				filenameList.add(listOfFiles[i].getName());
+				//System.out.println("File " + listOfFiles[i].getName());
+			}
+			else if (listOfFiles[i].isDirectory())
+			{
+				assert(false);
+				System.out.println("Directory " + listOfFiles[i].getName());
+		    }
+		}
+	}*/
 }

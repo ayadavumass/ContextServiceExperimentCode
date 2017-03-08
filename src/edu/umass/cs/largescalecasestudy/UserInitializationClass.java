@@ -1,22 +1,18 @@
 package edu.umass.cs.largescalecasestudy;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Random;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.hash.Hashing;
 
 import edu.umass.cs.acs.geodesy.GeodeticCalculator;
-import edu.umass.cs.acs.geodesy.GeodeticCurve;
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
+import edu.umass.cs.largescalecasestudy.DistributionLearningFromTraces.DistanceAndAngle;
+
 
 public class UserInitializationClass extends AbstractRequestSendingClass
 {
@@ -24,16 +20,14 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	// doesn't give uniform properties.
 	private final Random initRand;
 	
-	private HashMap<String, JSONObject> firstJSONObjectMap;
-	
 	public UserInitializationClass()
 	{
 		super( LargeNumUsers.INSERT_LOSS_TOLERANCE );
-		firstJSONObjectMap = new HashMap<String, JSONObject>();
-		initRand = new Random((LargeNumUsers.myID+1)*100);
-		
-		readFirstEntriesAfterStartTime();
+		//firstJSONObjectMap = new HashMap<String, JSONObject>();
+		initRand = new Random((LargeNumUsers.myID+1)*100);	
+		//readFirstEntriesAfterStartTime();
 	}
+	
 	
 	private void sendAInitMessage(long guidNum, BufferedWriter bw) throws Exception
 	{
@@ -41,81 +35,56 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
 		
-		double latitude =  countynode.minLat + 
+		double homeLat =  countynode.minLat + 
 					(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
 		
-		double longitude = countynode.minLong + 
+		double homeLong = countynode.minLong + 
 					(countynode.maxLong - countynode.minLong) * initRand.nextDouble();
-		
-		
-		JSONObject attrValJSON = new JSONObject();
-		
-		attrValJSON.put(LargeNumUsers.LATITUDE_KEY, latitude);
-		attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, longitude);
-		
 		
 		String userGUID = LargeNumUsers.getSHA1(LargeNumUsers.guidPrefix+guidNum);
 		
-		computeAndStoreTransfromFromUserLog(userGUID, latitude, 
-				longitude, bw);
+		int arrayIndex = Hashing.consistentHash(userGUID.hashCode(), 
+				LargeNumUsers.filenameList.size());
 		
+		String filename = LargeNumUsers.filenameList.get(arrayIndex);
+		int numUpdatesPerDay = DistributionLearningFromTraces.getNumUpdatesFromDistForUser
+																					(filename);
+		int nextUpdateNum   = 1;
+		long nextUpdateTime = DistributionLearningFromTraces.getNextUpdateTimeFromDist
+																(filename, nextUpdateNum);
+		
+		DistanceAndAngle distAngle 
+						= DistributionLearningFromTraces.getDistAngleFromDist
+														(filename, nextUpdateNum);
+		
+		GlobalCoordinate destCoord = GeodeticCalculator.calculateEndingGlobalCoordinates
+				( new GlobalCoordinate(homeLat, homeLong), 
+						distAngle.angle, distAngle.distance );
+		
+		UserRecordInfo userRecInfo = new UserRecordInfo( userGUID, filename, 
+				homeLat, homeLong, numUpdatesPerDay,
+				nextUpdateNum, nextUpdateTime, 
+				destCoord.getLatitude(), destCoord.getLongitude() );
+		
+		try
+		{
+			bw.write(userRecInfo.toString() +"\n");
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		JSONObject attrValJSON = new JSONObject();
+		
+		attrValJSON.put(LargeNumUsers.LATITUDE_KEY, homeLat);
+		attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, homeLong);
 		
 		ExperimentUpdateReply updateRep = new ExperimentUpdateReply(guidNum, userGUID);
 		
 		LargeNumUsers.csClient.sendUpdateWithCallBack
 										( userGUID, null, attrValJSON, 
 										 -1, updateRep, this.getCallBack() );
-	}
-	
-	
-	private void computeAndStoreTransfromFromUserLog(String userGUID, double latitude, 
-														double longitude, BufferedWriter bw)
-	{
-		int arrayIndex = Hashing.consistentHash(userGUID.hashCode(), 
-											LargeNumUsers.filenameList.size());
-		
-		String filename = LargeNumUsers.filenameList.get(arrayIndex);
-		
-		JSONObject firstJSON = firstJSONObjectMap.get(filename);
-		
-		try
-		{	
-			JSONObject geoLocJSON = firstJSON.getJSONObject(LargeNumUsers.GEO_LOC_KEY);
-			JSONArray coordArray = geoLocJSON.getJSONArray(LargeNumUsers.COORD_KEY);
-			
-			double logLat  = coordArray.getDouble(1);
-			double logLong = coordArray.getDouble(0);
-			
-			GlobalCoordinate transformCoord 
-							= new GlobalCoordinate(latitude, longitude);
-			
-			GlobalCoordinate logCoord
-							= new GlobalCoordinate(logLat, logLong);
-			
-			GeodeticCurve gCurve 
-				= GeodeticCalculator.calculateGeodeticCurve(logCoord, transformCoord);
-
-			double startAngle = gCurve.getAzimuth();
-			//endAngle = gCurve.getReverseAzimuth();
-			double distanceInMeters = gCurve.getEllipsoidalDistance();
-
-			UserRecordInfo userRecInfo = new UserRecordInfo();
-			
-			userRecInfo.filename = filename;
-			userRecInfo.distanceInMeters = distanceInMeters;
-			userRecInfo.startAngle = startAngle;
-			
-			//LargeNumUsers.userInfoMap.put(userGUID, userRecInfo);
-			String str = userGUID+","+filename+","+distanceInMeters+","+startAngle+"\n";
-			bw.write(str);
-		}
-		catch (JSONException e) 
-		{
-			e.printStackTrace();
-		} catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	
@@ -133,7 +102,10 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		try
 		{
-			bw = new BufferedWriter(new FileWriter(LargeNumUsers.USER_INFO_FILE_NAME));
+			String writeFileName = LargeNumUsers.USER_INFO_FILE_PREFIX
+												+LargeNumUsers.userinfoFileNum;
+			
+			bw = new BufferedWriter(new FileWriter(writeFileName));
 			
 			while(  totalNumUsersSent < LargeNumUsers.numusers  )
 			{
@@ -248,12 +220,37 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		}
 	}
 	
-	public void readFirstEntriesAfterStartTime()
+	
+	@Override
+	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
+	{
+		synchronized(waitLock)
+		{
+			numRecvd++;
+			if(numRecvd%10000 == 0)
+			{
+				System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
+					" numSent "+numSent+" numRecvd "+numRecvd);
+			}
+			//if(currNumReplyRecvd == currNumReqSent)
+			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
+			{
+				waitLock.notify();
+			}
+		}
+	}
+	
+	@Override
+	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
+	{
+	}
+	
+	
+	/*public void readFirstEntriesAfterStartTime()
 	{
 		for(int i=0; i<LargeNumUsers.filenameList.size(); i++)
 		{
-			String filename = LargeNumUsers.filenameList.get(i);
-			
+			String filename = LargeNumUsers.filenameList.get(i);		
 			BufferedReader readfile = null;
 			
 			try
@@ -296,7 +293,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 				try
 				{
 					if (readfile != null)
-						readfile.close();				
+						readfile.close();
 				}
 				catch (IOException ex)
 				{
@@ -304,30 +301,74 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 				}
 			}
 		}
-	}
+	}*/
 	
 	
-	@Override
-	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
-	{
-		synchronized(waitLock)
-		{
-			numRecvd++;
-			if(numRecvd%10000 == 0)
-			{
-				System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
-			}
-			//if(currNumReplyRecvd == currNumReqSent)
-			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
-			{
-				waitLock.notify();
-			}
-		}
-	}
+	/*private void computeAndStoreTransfromFromUserLog(String userGUID, double latitude, 
+	double longitude, BufferedWriter bw)
+{
+int arrayIndex = Hashing.consistentHash(userGUID.hashCode(), 
+LargeNumUsers.filenameList.size());
+
+String filename = LargeNumUsers.filenameList.get(arrayIndex);
+
+JSONObject firstJSON = firstJSONObjectMap.get(filename);
+
+try
+{	
+JSONObject geoLocJSON = firstJSON.getJSONObject(LargeNumUsers.GEO_LOC_KEY);
+JSONArray coordArray = geoLocJSON.getJSONArray(LargeNumUsers.COORD_KEY);
+
+double logLat  = coordArray.getDouble(1);
+double logLong = coordArray.getDouble(0);
+
+GlobalCoordinate transformCoord 
+= new GlobalCoordinate(latitude, longitude);
+
+GlobalCoordinate logCoord
+= new GlobalCoordinate(logLat, logLong);
+
+GeodeticCurve gCurve 
+= GeodeticCalculator.calculateGeodeticCurve(logCoord, transformCoord);
+
+double startAngle = gCurve.getAzimuth();
+//endAngle = gCurve.getReverseAzimuth();
+double distanceInMeters = gCurve.getEllipsoidalDistance();
+
+UserRecordInfo userRecInfo = new UserRecordInfo();
+
+userRecInfo.filename = filename;
+userRecInfo.distanceInMeters = distanceInMeters;
+userRecInfo.startAngle = startAngle;
+
+//LargeNumUsers.userInfoMap.put(userGUID, userRecInfo);
+String str = userGUID+","+filename+","+distanceInMeters+","+startAngle+"\n";
+bw.write(str);
+}
+catch (JSONException e)
+{
+e.printStackTrace();
+} catch (IOException e)
+{
+e.printStackTrace();
+}
+}*/
 	
-	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken)
-	{
-	}
+	/*private void randomlyChooseUserFromLogs(String userGUID, double latitude, 
+	double longitude, BufferedWriter bw)
+{	
+int arrayIndex = Hashing.consistentHash(userGUID.hashCode(), 
+		LargeNumUsers.filenameList.size());
+
+String filename = LargeNumUsers.filenameList.get(arrayIndex);
+try
+{
+	String str = userGUID+","+filename+"\n";
+	bw.write(str);
+}
+catch (IOException e)
+{
+	e.printStackTrace();
+}
+}*/
 }

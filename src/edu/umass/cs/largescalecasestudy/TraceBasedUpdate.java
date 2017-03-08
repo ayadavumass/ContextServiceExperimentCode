@@ -1,23 +1,21 @@
 package edu.umass.cs.largescalecasestudy;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+
 import org.json.JSONObject;
 
 import edu.umass.cs.acs.geodesy.GeodeticCalculator;
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
+import edu.umass.cs.largescalecasestudy.DistributionLearningFromTraces.DistanceAndAngle;
 
 public class TraceBasedUpdate extends 
 					AbstractRequestSendingClass implements Runnable
-{	
+{
 	private long sumResultSize					= 0;
 	
 	private long sumSearchLatency				= 0;
@@ -31,18 +29,15 @@ public class TraceBasedUpdate extends
 	// so when number of search queries reaches threshold then we reset it to 
 	// the beginning.
 	//private long numberSearchesSent			= 0;
-	
-	private final Object logReadLock			= new Object();
-	
-	private HashMap<String, List<JSONObject>> currentEventFileMap;
+	//private final Object logReadLock			= new Object();
+	//private HashMap<String, List<JSONObject>> currentEventFileMap;
 	
 	
 	public TraceBasedUpdate()
 	{
 		super( LargeNumUsers.UPD_LOSS_TOLERANCE );
-		currentEventFileMap = new HashMap<String, List<JSONObject>>();
+		//currentEventFileMap = new HashMap<String, List<JSONObject>>();
 	}
-	
 	
 	@Override
 	public void run()
@@ -61,149 +56,128 @@ public class TraceBasedUpdate extends
 	
 	public void rateControlledRequestSender() throws Exception
 	{
-		TraceReadingClass traceReadingClass = new TraceReadingClass();
-		new Thread(traceReadingClass).start();
-		
-		while( LargeNumUsers.currRealUnixTime < LargeNumUsers.END_UNIX_TIME )
+		while( LargeNumUsers.currRealUnixTime 
+							< LargeNumUsers.END_UNIX_TIME )
 		{
-			synchronized(logReadLock)
+			int readFileNum  = LargeNumUsers.userinfoFileNum;
+			int writeFileNum = (LargeNumUsers.userinfoFileNum+1)%2;
+			
+			BufferedReader br = null;
+			BufferedWriter bw = null;
+			try
 			{
-				while( (currentEventFileMap.size() == 0) && 
-							(LargeNumUsers.currRealUnixTime < LargeNumUsers.END_UNIX_TIME) )
+				String readFileName = LargeNumUsers.USER_INFO_FILE_PREFIX
+												+readFileNum;
+				
+				String writeFileName = LargeNumUsers.USER_INFO_FILE_PREFIX+writeFileNum;
+				
+				br = new BufferedReader(new FileReader(readFileName));
+				bw = new BufferedWriter(new FileWriter(writeFileName));
+				
+				String currLine;
+				while( (currLine = br.readLine()) != null )
 				{
-					logReadLock.wait();
+					UserRecordInfo userRecInfo = UserRecordInfo.fromString(currLine);					
+					
+					long currRelativeTime 
+						= LargeNumUsers.computeTimeRelativeToDatStart
+												(LargeNumUsers.currRealUnixTime);
+					
+					if( currRelativeTime >= userRecInfo.getNextUpdateUnixTime() )
+					{
+						// skipping some earlier updates for the day
+						// sending only alerts from the last minute or sleep interval.
+						if( userRecInfo.getNextUpdateUnixTime() >= 
+								(currRelativeTime-(LargeNumUsers.TIME_UPDATE_SLEEP_TIME/1000) ) )
+						{
+							long reqNum = -1;
+							synchronized(waitLock)
+							{
+								numSent++;
+								reqNum = numSent;
+							}
+							
+							JSONObject attrValJSON = new JSONObject();
+							
+							attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
+												userRecInfo.getNextUpdateLat());
+							
+							attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
+												userRecInfo.getNextUpdateLong());
+							
+							ExperimentUpdateReply updateRep 
+									= new ExperimentUpdateReply(reqNum, userRecInfo.getGUID());
+							
+							LargeNumUsers.csClient.sendUpdateWithCallBack
+												(userRecInfo.getGUID(), null, attrValJSON, -1, 
+														updateRep, this.getCallBack());
+						}
+						
+						// write a next update entry
+						if( userRecInfo.getNextUpdateNum() < userRecInfo.getTotalUpdates() )
+						{	
+							int nextUpdateNum   = userRecInfo.getNextUpdateNum()+1;
+							assert(nextUpdateNum > 1 );
+							
+							// for i > 1 nextUpdateTime is relative to previous update
+							long nextUpdateTime = DistributionLearningFromTraces.getNextUpdateTimeFromDist
+																(userRecInfo.getFilename(), nextUpdateNum);
+							
+							long reqcurrRelativeTime = LargeNumUsers.computeTimeRelativeToDatStart
+									(LargeNumUsers.currRealUnixTime);
+							
+							// making nextUpdateTime relative to the midnight of the current day
+							nextUpdateTime = nextUpdateTime + reqcurrRelativeTime;
+							
+							DistanceAndAngle distAngle 
+										= DistributionLearningFromTraces.getDistAngleFromDist
+															(userRecInfo.getFilename(), nextUpdateNum);
+							
+							GlobalCoordinate destCoord 
+									= GeodeticCalculator.calculateEndingGlobalCoordinates
+										( new GlobalCoordinate(userRecInfo.getHomeLat(), userRecInfo.getHomeLong()), 
+															distAngle.angle, distAngle.distance );
+							
+							UserRecordInfo nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
+									userRecInfo.getFilename(), 
+									userRecInfo.getHomeLat(), userRecInfo.getHomeLong(), 
+										userRecInfo.getTotalUpdates(),
+										nextUpdateNum, nextUpdateTime, 
+										destCoord.getLatitude(), destCoord.getLongitude() );
+							
+							bw.write(nextuserRecInfo.toString()+"\n");
+						}
+						
+						
+					}
+					else
+					{
+						// write entry as it is in the file, so that it can eb executed at later time
+						
+						bw.write(userRecInfo.toString()+"\n");
+					}
+				}
+				//FIXME: fix the date change also.
+				
+			}
+			catch(IOException ioex)
+			{
+				ioex.printStackTrace();
+			}
+			finally
+			{
+				if( br != null )
+				{
+					br.close();
 				}
 				
-				if( currentEventFileMap.size() > 0 )
+				if( bw != null )
 				{
-					processEvents();
-					currentEventFileMap.clear();
-					logReadLock.notify();
+					bw.close();
 				}
-			}
+			}		
+			Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
 		}
-		
-	}
-	
-	
-	private void processEvents()
-	{
-		while( currentEventFileMap.size() > 0 )
-		{
-			Iterator<String> fileNameIter = currentEventFileMap.keySet().iterator();
-			
-			// remove entries that have zero remaining events in the list.
-			List<String> removedFileNameList = new LinkedList<String>();
-			
-			while( fileNameIter.hasNext() )
-			{
-				try
-				{
-					String filename = fileNameIter.next();
-					
-					List<JSONObject> jsonList = currentEventFileMap.get(filename);
-					
-					assert(jsonList.size() > 0);
-					
-					JSONObject eventJSON = jsonList.remove(0);
-					
-					assert(eventJSON != null);
-					
-					if( jsonList.size() == 0 )
-					{
-						removedFileNameList.add(filename);
-					}
-					
-					JSONObject geoLocJSON = eventJSON.getJSONObject(LargeNumUsers.GEO_LOC_KEY);
-					JSONArray coordArray = geoLocJSON.getJSONArray(LargeNumUsers.COORD_KEY);
-					
-					double logLat  = coordArray.getDouble(1);
-					double logLong = coordArray.getDouble(0);
-					
-					GlobalCoordinate logCoord 
-									= new GlobalCoordinate(logLat, logLong);
-					
-					BufferedReader br = null;
-					
-					try
-					{
-						br = new BufferedReader(new FileReader(LargeNumUsers.USER_INFO_FILE_NAME));
-						
-						String sCurrentLine;
-						
-						while( (sCurrentLine = br.readLine()) != null )
-						{
-							String[] parsed = sCurrentLine.split(",");
-							
-							String guid = parsed[0];
-							String guidfilename = parsed[1];
-							double distanceInMeters = Double.parseDouble(parsed[2]);
-							double startAngle = Double.parseDouble(parsed[3]);
-							
-							if( guidfilename.equals(filename) )
-							{								
-								GlobalCoordinate transformedCoord 
-										= GeodeticCalculator.calculateEndingGlobalCoordinates
-															(logCoord, startAngle, distanceInMeters);
-								
-								long reqNum = -1;
-								synchronized(waitLock)
-								{
-									numSent++;
-									reqNum = numSent;
-								}
-								
-								JSONObject attrValJSON = new JSONObject();
-								
-								attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
-															transformedCoord.getLatitude());
-								attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
-															transformedCoord.getLongitude());
-								
-								
-								ExperimentUpdateReply updateRep 
-										= new ExperimentUpdateReply(reqNum, guid);
-								
-								LargeNumUsers.csClient.sendUpdateWithCallBack
-													(guid, null, attrValJSON, -1, 
-															updateRep, this.getCallBack());
-							}
-							
-							
-						}
-					}
-					catch(IOException ioex)
-					{
-						ioex.printStackTrace();
-					}
-					finally
-					{
-						if(br != null)
-						{
-							try {
-								br.close();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-					
-				}
-				catch(JSONException jsonex)
-				{
-					jsonex.printStackTrace();
-				}
-			}
-			
-			
-			for(int i=0; i<removedFileNameList.size(); i++)
-			{
-				String filename = removedFileNameList.get(i);
-				currentEventFileMap.remove(filename);
-			}
-		}
-		assert(currentEventFileMap.size() == 0);
 	}
 	
 	
@@ -273,8 +247,8 @@ public class TraceBasedUpdate extends
 	}
 	
 	
-	private class TraceReadingClass implements Runnable
-	{	
+	/*private class TraceReadingClass implements Runnable
+	{
 		@Override
 		public void run()
 		{
@@ -309,7 +283,7 @@ public class TraceBasedUpdate extends
 						}	
 					}
 				}
-				
+					
 				try
 				{
 					Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
@@ -326,12 +300,10 @@ public class TraceBasedUpdate extends
 			}
 		}
 		
-		
 		private void sendRequestFromAFile( String filename,
 				long startTimestamp, long endTimestamp )
 		{
-			BufferedReader readfile = null;
-			
+			BufferedReader readfile = null;		
 			try
 			{
 				String sCurrentLine;
@@ -393,6 +365,5 @@ public class TraceBasedUpdate extends
 			}
 			//return totalPop;
 		}
-	}
-	
+	}*/
 }
