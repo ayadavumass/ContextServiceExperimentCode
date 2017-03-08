@@ -9,10 +9,6 @@ import org.json.JSONObject;
 
 import com.google.common.hash.Hashing;
 
-import edu.umass.cs.acs.geodesy.GeodeticCalculator;
-import edu.umass.cs.acs.geodesy.GlobalCoordinate;
-import edu.umass.cs.largescalecasestudy.DistributionLearningFromTraces.DistanceAndAngle;
-
 
 public class UserInitializationClass extends AbstractRequestSendingClass
 {
@@ -53,18 +49,18 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		long nextUpdateTime = DistributionLearningFromTraces.getNextUpdateTimeFromDist
 																(filename, nextUpdateNum);
 		
-		DistanceAndAngle distAngle 
-						= DistributionLearningFromTraces.getDistAngleFromDist
-														(filename, nextUpdateNum);
+		//DistanceAndAngle distAngle 
+		//				= DistributionLearningFromTraces.getDistAngleFromDist
+		//												(filename, nextUpdateNum);
 		
-		GlobalCoordinate destCoord = GeodeticCalculator.calculateEndingGlobalCoordinates
-				( new GlobalCoordinate(homeLat, homeLong), 
-						distAngle.angle, distAngle.distance );
+		//GlobalCoordinate destCoord = GeodeticCalculator.calculateEndingGlobalCoordinates
+		//		( new GlobalCoordinate(homeLat, homeLong), 
+		//				distAngle.angle, distAngle.distance );
 		
 		UserRecordInfo userRecInfo = new UserRecordInfo( userGUID, filename, 
 				homeLat, homeLong, numUpdatesPerDay,
 				nextUpdateNum, nextUpdateTime, 
-				destCoord.getLatitude(), destCoord.getLongitude() );
+				homeLat, homeLong );
 		
 		try
 		{
