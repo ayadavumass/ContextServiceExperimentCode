@@ -80,7 +80,7 @@ public class TraceBasedUpdate extends
 				while( (currLine = br.readLine()) != null )
 				{
 					System.out.println("currLine "+currLine);
-					/*UserRecordInfo userRecInfo = UserRecordInfo.fromString(currLine);					
+					UserRecordInfo userRecInfo = UserRecordInfo.fromString(currLine);					
 					
 					long currRelativeTime 
 						= LargeNumUsers.computeTimeRelativeToDatStart
@@ -90,7 +90,7 @@ public class TraceBasedUpdate extends
 					{
 						// skipping some earlier updates for the day
 						// sending only alerts from the last minute or sleep interval.
-						if( userRecInfo.getNextUpdateUnixTime() >= 
+						/*if( userRecInfo.getNextUpdateUnixTime() >= 
 								(currRelativeTime-(LargeNumUsers.TIME_UPDATE_SLEEP_TIME/1000) ) )
 						{
 							long reqNum = -1;
@@ -113,7 +113,7 @@ public class TraceBasedUpdate extends
 //							LargeNumUsers.csClient.sendUpdateWithCallBack
 //												(userRecInfo.getGUID(), null, attrValJSON, -1, 
 //														updateRep, this.getCallBack());
-						}
+						}*/
 						
 						// write a next update entry
 						if( userRecInfo.getNextUpdateNum() < userRecInfo.getTotalUpdates() )
@@ -158,10 +158,9 @@ public class TraceBasedUpdate extends
 						
 						bw.write(userRecInfo.toString()+"\n");
 						bw.flush();
-					}*/
+					}
 				}
 				//FIXME: fix the date change also.
-				
 			}
 			catch(IOException ioex)
 			{

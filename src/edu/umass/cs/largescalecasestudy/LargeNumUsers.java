@@ -457,9 +457,15 @@ public class LargeNumUsers
 		TimerThread timerThread = new TimerThread();
 		new Thread(timerThread).start();
 		
-		
-		TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
-		traceBasedUpdate.rateControlledRequestSender();
+		try
+		{
+			TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
+			traceBasedUpdate.rateControlledRequestSender();
+		}
+		catch(Exception | Error ex)
+		{
+			ex.printStackTrace();
+		}
 		
 		System.exit(0);
 	}
