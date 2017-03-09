@@ -90,7 +90,7 @@ public class TraceBasedUpdate extends
 					{
 						// skipping some earlier updates for the day
 						// sending only alerts from the last minute or sleep interval.
-						/*if( userRecInfo.getNextUpdateUnixTime() >= 
+						if( userRecInfo.getNextUpdateUnixTime() >= 
 								(currRelativeTime-(LargeNumUsers.TIME_UPDATE_SLEEP_TIME/1000) ) )
 						{
 							long reqNum = -1;
@@ -107,13 +107,13 @@ public class TraceBasedUpdate extends
 							attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
 												userRecInfo.getNextUpdateLong());
 							
-//							ExperimentUpdateReply updateRep 
-//									= new ExperimentUpdateReply(reqNum, userRecInfo.getGUID());
-//							
-//							LargeNumUsers.csClient.sendUpdateWithCallBack
-//												(userRecInfo.getGUID(), null, attrValJSON, -1, 
-//														updateRep, this.getCallBack());
-						}*/
+							ExperimentUpdateReply updateRep 
+									= new ExperimentUpdateReply(reqNum, userRecInfo.getGUID());
+							
+							LargeNumUsers.csClient.sendUpdateWithCallBack
+												(userRecInfo.getGUID(), null, attrValJSON, -1, 
+														updateRep, this.getCallBack());
+						}
 						
 						// write a next update entry
 						if( userRecInfo.getNextUpdateNum() < userRecInfo.getTotalUpdates() )
@@ -140,19 +140,32 @@ public class TraceBasedUpdate extends
 															(userRecInfo.getFilename(), nextUpdateNum);
 							
 							System.out.println("distAngle dist "+distAngle.distance+" ang "+distAngle.angle);
-							GlobalCoordinate destCoord 
+							UserRecordInfo nextuserRecInfo = null;
+							if(distAngle.distance > 0)
+							{
+								GlobalCoordinate destCoord 
 									= GeodeticCalculator.calculateEndingGlobalCoordinates
 										( new GlobalCoordinate(userRecInfo.getHomeLat(), userRecInfo.getHomeLong()), 
-															distAngle.angle, distAngle.distance );
-							
-							System.out.println("destCoord lat "+destCoord.getLatitude()+" long "+destCoord.getLongitude());
-							
-							UserRecordInfo nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
-									userRecInfo.getFilename(), 
-									userRecInfo.getHomeLat(), userRecInfo.getHomeLong(), 
+														distAngle.angle, distAngle.distance );
+								
+								System.out.println("destCoord lat "+destCoord.getLatitude()+" long "+destCoord.getLongitude());
+								
+								nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
+										userRecInfo.getFilename(), 
+										userRecInfo.getHomeLat(), userRecInfo.getHomeLong(), 
 										userRecInfo.getTotalUpdates(),
 										nextUpdateNum, nextUpdateTime, 
 										destCoord.getLatitude(), destCoord.getLongitude() );
+							}
+							else
+							{
+								nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
+									userRecInfo.getFilename(), 
+									userRecInfo.getHomeLat(), userRecInfo.getHomeLong(), 
+									userRecInfo.getTotalUpdates(),
+									nextUpdateNum, nextUpdateTime, 
+									userRecInfo.getHomeLat(), userRecInfo.getHomeLong() );
+							}
 							
 							System.out.println("Writing start");
 							bw.write(nextuserRecInfo.toString()+"\n");
