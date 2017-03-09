@@ -116,7 +116,7 @@ public class TraceBasedUpdate extends
 						}*/
 						
 						// write a next update entry
-						if( userRecInfo.getNextUpdateNum() < userRecInfo.getTotalUpdates() )
+						/*if( userRecInfo.getNextUpdateNum() < userRecInfo.getTotalUpdates() )
 						{	
 							int nextUpdateNum   = userRecInfo.getNextUpdateNum()+1;
 							assert(nextUpdateNum > 1 );
@@ -149,7 +149,7 @@ public class TraceBasedUpdate extends
 							
 							bw.write(nextuserRecInfo.toString()+"\n");
 							bw.flush();
-						}
+						}*/
 						
 					}
 					else
