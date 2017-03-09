@@ -116,7 +116,7 @@ public class TraceBasedUpdate extends
 						}*/
 						
 						// write a next update entry
-						/*if( userRecInfo.getNextUpdateNum() < userRecInfo.getTotalUpdates() )
+						if( userRecInfo.getNextUpdateNum() < userRecInfo.getTotalUpdates() )
 						{	
 							int nextUpdateNum   = userRecInfo.getNextUpdateNum()+1;
 							assert(nextUpdateNum > 1 );
@@ -125,20 +125,27 @@ public class TraceBasedUpdate extends
 							long nextUpdateTime = DistributionLearningFromTraces.getNextUpdateTimeFromDist
 																(userRecInfo.getFilename(), nextUpdateNum);
 							
+							System.out.println("nextUpdateTime "+nextUpdateTime+" nextUpdateNum "+nextUpdateNum);
+							
 							long reqcurrRelativeTime = LargeNumUsers.computeTimeRelativeToDatStart
 									(LargeNumUsers.currRealUnixTime);
 							
 							// making nextUpdateTime relative to the midnight of the current day
 							nextUpdateTime = nextUpdateTime + reqcurrRelativeTime;
 							
+							System.out.println("reqcurrRelativeTime "+reqcurrRelativeTime+" nextUpdateTime "+nextUpdateTime);
+							
 							DistanceAndAngle distAngle 
 										= DistributionLearningFromTraces.getDistAngleFromDist
 															(userRecInfo.getFilename(), nextUpdateNum);
 							
+							System.out.println("distAngle dist "+distAngle.distance+" ang "+distAngle.angle);
 							GlobalCoordinate destCoord 
 									= GeodeticCalculator.calculateEndingGlobalCoordinates
 										( new GlobalCoordinate(userRecInfo.getHomeLat(), userRecInfo.getHomeLong()), 
 															distAngle.angle, distAngle.distance );
+							
+							System.out.println("destCoord lat "+destCoord.getLatitude()+" long "+destCoord.getLongitude());
 							
 							UserRecordInfo nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
 									userRecInfo.getFilename(), 
@@ -147,9 +154,11 @@ public class TraceBasedUpdate extends
 										nextUpdateNum, nextUpdateTime, 
 										destCoord.getLatitude(), destCoord.getLongitude() );
 							
+							System.out.println("Writing start");
 							bw.write(nextuserRecInfo.toString()+"\n");
 							bw.flush();
-						}*/
+							System.out.println("Writing end");
+						}
 						
 					}
 					else
