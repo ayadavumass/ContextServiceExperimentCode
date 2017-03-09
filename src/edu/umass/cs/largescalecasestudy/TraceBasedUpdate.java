@@ -149,6 +149,7 @@ public class TraceBasedUpdate extends
 										destCoord.getLatitude(), destCoord.getLongitude() );
 							
 							bw.write(nextuserRecInfo.toString()+"\n");
+							bw.flush();
 						}
 						
 					}
@@ -157,6 +158,7 @@ public class TraceBasedUpdate extends
 						// write entry as it is in the file, so that it can eb executed at later time
 						
 						bw.write(userRecInfo.toString()+"\n");
+						bw.flush();
 					}
 				}
 				//FIXME: fix the date change also.
