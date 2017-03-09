@@ -399,6 +399,7 @@ public class LargeNumUsers
 		csHost 		= args[1];
 		csPort 		= Integer.parseInt(args[2]);
 		initRate 	= Double.parseDouble(args[3]);
+		myID        = Integer.parseInt(args[4]);
 		
 		distibutionRand = new Random((myID+1)*100);
 		
