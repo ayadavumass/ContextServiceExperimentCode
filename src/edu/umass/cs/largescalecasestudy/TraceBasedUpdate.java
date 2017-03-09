@@ -80,7 +80,7 @@ public class TraceBasedUpdate extends
 				while( (currLine = br.readLine()) != null )
 				{
 					System.out.println("currLine "+currLine);
-					UserRecordInfo userRecInfo = UserRecordInfo.fromString(currLine);					
+					/*UserRecordInfo userRecInfo = UserRecordInfo.fromString(currLine);					
 					
 					long currRelativeTime 
 						= LargeNumUsers.computeTimeRelativeToDatStart
@@ -101,7 +101,6 @@ public class TraceBasedUpdate extends
 							}
 							
 							JSONObject attrValJSON = new JSONObject();
-							
 							attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
 												userRecInfo.getNextUpdateLat());
 							
@@ -159,7 +158,7 @@ public class TraceBasedUpdate extends
 						
 						bw.write(userRecInfo.toString()+"\n");
 						bw.flush();
-					}
+					}*/
 				}
 				//FIXME: fix the date change also.
 				
