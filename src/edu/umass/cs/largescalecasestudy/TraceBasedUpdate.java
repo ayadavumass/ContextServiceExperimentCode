@@ -79,6 +79,7 @@ public class TraceBasedUpdate extends
 				String currLine;
 				while( (currLine = br.readLine()) != null )
 				{
+					System.out.println("currLine "+currLine);
 					UserRecordInfo userRecInfo = UserRecordInfo.fromString(currLine);					
 					
 					long currRelativeTime 
@@ -149,7 +150,6 @@ public class TraceBasedUpdate extends
 							
 							bw.write(nextuserRecInfo.toString()+"\n");
 						}
-						
 						
 					}
 					else
