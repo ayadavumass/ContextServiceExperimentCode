@@ -74,12 +74,9 @@ public class TraceBasedUpdate extends
 				br = new BufferedReader(new FileReader(readFileName));
 				bw = new BufferedWriter(new FileWriter(writeFileName));
 				
-				System.out.println("File read loop starts");
-				
 				String currLine;
 				while( (currLine = br.readLine()) != null )
 				{
-					System.out.println("currLine "+currLine);
 					UserRecordInfo userRecInfo = UserRecordInfo.fromString(currLine);					
 					
 					long currRelativeTime 
@@ -125,21 +122,16 @@ public class TraceBasedUpdate extends
 							long nextUpdateTime = DistributionLearningFromTraces.getNextUpdateTimeFromDist
 																(userRecInfo.getFilename(), nextUpdateNum);
 							
-							System.out.println("nextUpdateTime "+nextUpdateTime+" nextUpdateNum "+nextUpdateNum);
-							
 							long reqcurrRelativeTime = LargeNumUsers.computeTimeRelativeToDatStart
 									(LargeNumUsers.currRealUnixTime);
 							
 							// making nextUpdateTime relative to the midnight of the current day
 							nextUpdateTime = nextUpdateTime + reqcurrRelativeTime;
 							
-							System.out.println("reqcurrRelativeTime "+reqcurrRelativeTime+" nextUpdateTime "+nextUpdateTime);
-							
 							DistanceAndAngle distAngle 
 										= DistributionLearningFromTraces.getDistAngleFromDist
 															(userRecInfo.getFilename(), nextUpdateNum);
 							
-							System.out.println("distAngle dist "+distAngle.distance+" ang "+distAngle.angle);
 							UserRecordInfo nextuserRecInfo = null;
 							if(distAngle.distance > 0)
 							{
@@ -147,8 +139,6 @@ public class TraceBasedUpdate extends
 									= GeodeticCalculator.calculateEndingGlobalCoordinates
 										( new GlobalCoordinate(userRecInfo.getHomeLat(), userRecInfo.getHomeLong()), 
 														distAngle.angle, distAngle.distance );
-								
-								System.out.println("destCoord lat "+destCoord.getLatitude()+" long "+destCoord.getLongitude());
 								
 								nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
 										userRecInfo.getFilename(), 
@@ -166,11 +156,8 @@ public class TraceBasedUpdate extends
 									nextUpdateNum, nextUpdateTime, 
 									userRecInfo.getHomeLat(), userRecInfo.getHomeLong() );
 							}
-							
-							System.out.println("Writing start");
 							bw.write(nextuserRecInfo.toString()+"\n");
 							bw.flush();
-							System.out.println("Writing end");
 						}
 						
 					}
