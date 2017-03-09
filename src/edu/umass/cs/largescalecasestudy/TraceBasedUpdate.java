@@ -74,6 +74,8 @@ public class TraceBasedUpdate extends
 				br = new BufferedReader(new FileReader(readFileName));
 				bw = new BufferedWriter(new FileWriter(writeFileName));
 				
+				System.out.println("File read loop starts");
+				
 				String currLine;
 				while( (currLine = br.readLine()) != null )
 				{
@@ -177,6 +179,7 @@ public class TraceBasedUpdate extends
 				}
 			}
 			
+			System.out.println("File read loop ends");
 			LargeNumUsers.userinfoFileNum = (LargeNumUsers.userinfoFileNum + 1)%2;
 			System.out.println("Current userinfo file num "+LargeNumUsers.userinfoFileNum);
 			Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
