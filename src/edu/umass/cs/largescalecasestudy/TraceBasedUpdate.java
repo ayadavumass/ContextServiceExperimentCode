@@ -108,12 +108,12 @@ public class TraceBasedUpdate extends
 							attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
 												userRecInfo.getNextUpdateLong());
 							
-							ExperimentUpdateReply updateRep 
-									= new ExperimentUpdateReply(reqNum, userRecInfo.getGUID());
-							
-							LargeNumUsers.csClient.sendUpdateWithCallBack
-												(userRecInfo.getGUID(), null, attrValJSON, -1, 
-														updateRep, this.getCallBack());
+//							ExperimentUpdateReply updateRep 
+//									= new ExperimentUpdateReply(reqNum, userRecInfo.getGUID());
+//							
+//							LargeNumUsers.csClient.sendUpdateWithCallBack
+//												(userRecInfo.getGUID(), null, attrValJSON, -1, 
+//														updateRep, this.getCallBack());
 						}
 						
 						// write a next update entry
