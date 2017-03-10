@@ -48,6 +48,9 @@ public class LargeNumUsers
 	
 	public static final long  TIME_UPDATE_SLEEP_TIME			= 60*1000;  // every minute
 	
+	
+	public static final long TIME_DIST_INTERVAL					= 60*10; // 10 minutes on either side.
+	
 	// 1475465005.550073
 	// actual date is 2016-11-01 22:28:35 +0000
 	// Update requests that have timestamp >= startUnixTime are sent to CNS
@@ -421,6 +424,16 @@ public class LargeNumUsers
 				}
 			}
 		}
+	}
+	
+	/**
+	 * distributes time uniformly in +10 minutes interval of the given time
+	 * @return
+	 */
+	public static long distributeTimeUniformly(long timestamp)
+	{
+		long diff = distibutionRand.nextInt((int)TIME_DIST_INTERVAL);
+		return timestamp+diff;
 	}
 	
 	

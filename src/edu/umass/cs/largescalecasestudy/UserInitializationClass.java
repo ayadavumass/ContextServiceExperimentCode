@@ -49,6 +49,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		long nextUpdateTime = DistributionLearningFromTraces.getNextUpdateTimeFromDist
 																(filename, nextUpdateNum);
 		
+		nextUpdateTime = LargeNumUsers.distributeTimeUniformly(nextUpdateTime);
 		
 		boolean inTimeslot = LargeNumUsers.checkIfRelativeTimeInTimeSlot(nextUpdateTime);
 		
