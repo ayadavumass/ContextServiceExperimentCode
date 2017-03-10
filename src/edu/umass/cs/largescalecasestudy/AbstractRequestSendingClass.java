@@ -38,7 +38,7 @@ public abstract class AbstractRequestSendingClass
 	
 	protected void waitForFinish()
 	{
-		waitTimer.schedule(new WaitTimerTask(), 300000);
+		waitTimer.schedule(new WaitTimerTask(), 900000);
 		
 		synchronized(waitLock)
 		{

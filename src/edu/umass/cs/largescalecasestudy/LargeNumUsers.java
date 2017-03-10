@@ -104,6 +104,8 @@ public class LargeNumUsers
 	
 	public static Random distibutionRand;
 	
+	public static boolean performInit							= false;;
+	
 	
 	public static long computeSumPopulation()
 	{
@@ -426,6 +428,7 @@ public class LargeNumUsers
 		}
 	}
 	
+	
 	/**
 	 * distributes time uniformly in +10 minutes interval of the given time
 	 * @return
@@ -444,6 +447,8 @@ public class LargeNumUsers
 		csPort 		= Integer.parseInt(args[2]);
 		initRate 	= Double.parseDouble(args[3]);
 		myID        = Integer.parseInt(args[4]);
+		performInit = Boolean.parseBoolean(args[5]);
+		
 		
 		distibutionRand = new Random((myID+1)*100);
 		
@@ -476,28 +481,21 @@ public class LargeNumUsers
 		
 		computeCountyPopDistribution(totalPop);
 		
-//		for(int i=0; i<countyProbList.size(); i++)
-//		{
-//			System.out.println(countyProbList.get(i).toString());
-//		}
-		
 		computeGlobalLatLongBounds();
 		
-//		Random rand = new Random();
-//		for(int i=0; i<10000; i++)
-//		{
-//			double randNum = rand.nextDouble();
-//			CountyNode countynode = binarySearchOfCounty(randNum);
-//			System.out.println("i="+i+" rand="+randNum+" countynode="+countynode.toString());
-//		}
 		
-		//readUserLogsDirectory();
+		if(performInit)
+		{
+			UserInitializationClass userInitObj = new UserInitializationClass();
+			userInitObj.initializaRateControlledRequestSender();
+		}
+		else
+		{
+			UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
+			userInfoFileWrit.initializaRateControlledRequestSender();
+		}
 		
-		UserInitializationClass userInitObj = new UserInitializationClass();
 		
-		userInitObj.initializaRateControlledRequestSender();
-		
-		//userInitObj.writeTraceToFile(100000);
 		
 		TimerThread timerThread = new TimerThread();
 		new Thread(timerThread).start();
@@ -514,25 +512,4 @@ public class LargeNumUsers
 		
 		System.exit(0);
 	}
-	
-	
-	/*private static void readUserLogsDirectory()
-	{
-		File folder = new File(USER_TRACE_DIR);
-		File[] listOfFiles = folder.listFiles();
-		
-		for (int i = 0; i < listOfFiles.length; i++)
-		{
-			if ( listOfFiles[i].isFile() )
-			{
-				filenameList.add(listOfFiles[i].getName());
-				//System.out.println("File " + listOfFiles[i].getName());
-			}
-			else if (listOfFiles[i].isDirectory())
-			{
-				assert(false);
-				System.out.println("Directory " + listOfFiles[i].getName());
-		    }
-		}
-	}*/
 }
