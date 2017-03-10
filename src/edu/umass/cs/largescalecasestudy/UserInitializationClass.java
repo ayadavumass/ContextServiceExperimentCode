@@ -49,26 +49,31 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		long nextUpdateTime = DistributionLearningFromTraces.getNextUpdateTimeFromDist
 																(filename, nextUpdateNum);
 		
+		
+		boolean inTimeslot = LargeNumUsers.checkIfRelativeTimeInTimeSlot(nextUpdateTime);
+		
 		//DistanceAndAngle distAngle 
 		//				= DistributionLearningFromTraces.getDistAngleFromDist
 		//												(filename, nextUpdateNum);
-		
 		//GlobalCoordinate destCoord = GeodeticCalculator.calculateEndingGlobalCoordinates
 		//		( new GlobalCoordinate(homeLat, homeLong), 
 		//				distAngle.angle, distAngle.distance );
 		
-		UserRecordInfo userRecInfo = new UserRecordInfo( userGUID, filename, 
+		if(inTimeslot)
+		{
+			UserRecordInfo userRecInfo = new UserRecordInfo( userGUID, filename, 
 				homeLat, homeLong, numUpdatesPerDay,
 				nextUpdateNum, nextUpdateTime, 
 				homeLat, homeLong );
-		
-		try
-		{
-			bw.write(userRecInfo.toString() +"\n");
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
+			
+			try
+			{
+				bw.write(userRecInfo.toString() +"\n");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		JSONObject attrValJSON = new JSONObject();

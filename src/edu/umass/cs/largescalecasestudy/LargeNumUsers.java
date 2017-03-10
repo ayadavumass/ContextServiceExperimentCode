@@ -57,7 +57,6 @@ public class LargeNumUsers
 	// actual date is Mon, 16 Jan 2017 03:42:23 GMT
 	//public static final long END_UNIX_TIME					= 1484538143;
 	
-	
 	public static final long END_UNIX_TIME						= 1478014215;
 	
 	
@@ -254,6 +253,38 @@ public class LargeNumUsers
 		while(cont);
 		assert(retNode != null);
 		return retNode;
+	}
+	
+	
+	public static boolean checkIfRelativeTimeInTimeSlot(long relativeTimeFromMidnight) 
+																				throws ParseException
+	{
+		Date date = new Date(START_UNIX_TIME*1000);
+		// *1000 is to convert seconds to milliseconds
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// the format of your date
+		sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE));
+		// give a timezone reference for formating (see comment at the bottom
+		String dateFormat = sdf.format(date);
+		
+		String onlyDate = dateFormat.split(" ")[0];
+		
+		String midnight = onlyDate+" "+"00:00:00";
+		
+		Date midnightDate = sdf.parse(midnight);
+		
+		long midnightTS = midnightDate.getTime()/1000;
+		
+		long absTS = midnightTS+relativeTimeFromMidnight;
+		
+		if( (absTS >= START_UNIX_TIME) && (absTS <= END_UNIX_TIME) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	

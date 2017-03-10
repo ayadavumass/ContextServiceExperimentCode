@@ -128,36 +128,43 @@ public class TraceBasedUpdate extends
 							// making nextUpdateTime relative to the midnight of the current day
 							nextUpdateTime = nextUpdateTime + reqcurrRelativeTime;
 							
-							DistanceAndAngle distAngle 
-										= DistributionLearningFromTraces.getDistAngleFromDist
-															(userRecInfo.getFilename(), nextUpdateNum);
+							boolean inTimeslot 
+								= LargeNumUsers.checkIfRelativeTimeInTimeSlot(nextUpdateTime);
 							
-							UserRecordInfo nextuserRecInfo = null;
-							if(distAngle.distance > 0)
+							if(inTimeslot)
 							{
-								GlobalCoordinate destCoord 
-									= GeodeticCalculator.calculateEndingGlobalCoordinates
-										( new GlobalCoordinate(userRecInfo.getHomeLat(), userRecInfo.getHomeLong()), 
-														distAngle.angle, distAngle.distance );
+								DistanceAndAngle distAngle 
+											= DistributionLearningFromTraces.getDistAngleFromDist
+																(userRecInfo.getFilename(), nextUpdateNum);
 								
-								nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
+								UserRecordInfo nextuserRecInfo = null;
+								if(distAngle.distance > 0)
+								{
+									GlobalCoordinate destCoord 
+										= GeodeticCalculator.calculateEndingGlobalCoordinates
+											( new GlobalCoordinate(userRecInfo.getHomeLat(), userRecInfo.getHomeLong()), 
+															distAngle.angle, distAngle.distance );
+									
+									nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
+											userRecInfo.getFilename(), 
+											userRecInfo.getHomeLat(), userRecInfo.getHomeLong(), 
+											userRecInfo.getTotalUpdates(),
+											nextUpdateNum, nextUpdateTime, 
+											destCoord.getLatitude(), destCoord.getLongitude() );
+								}
+								else
+								{
+									nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
 										userRecInfo.getFilename(), 
 										userRecInfo.getHomeLat(), userRecInfo.getHomeLong(), 
 										userRecInfo.getTotalUpdates(),
 										nextUpdateNum, nextUpdateTime, 
-										destCoord.getLatitude(), destCoord.getLongitude() );
+										userRecInfo.getHomeLat(), userRecInfo.getHomeLong() );
+								}
+								bw.write(nextuserRecInfo.toString()+"\n");
+								bw.flush();
 							}
-							else
-							{
-								nextuserRecInfo = new UserRecordInfo( userRecInfo.getGUID(), 
-									userRecInfo.getFilename(), 
-									userRecInfo.getHomeLat(), userRecInfo.getHomeLong(), 
-									userRecInfo.getTotalUpdates(),
-									nextUpdateNum, nextUpdateTime, 
-									userRecInfo.getHomeLat(), userRecInfo.getHomeLong() );
-							}
-							bw.write(nextuserRecInfo.toString()+"\n");
-							bw.flush();
+							
 						}
 						
 					}
