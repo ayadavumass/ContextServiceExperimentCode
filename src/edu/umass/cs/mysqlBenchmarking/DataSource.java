@@ -24,7 +24,7 @@ public class DataSource
     {
     	portNum = 6000;
     	
-    	dirName = "mysqlDir-serv";
+    	dirName = "mysqlDir";
     	
     	dbName = "contextDB";
     	
@@ -40,7 +40,7 @@ public class DataSource
         //cpds.setMinPoolSize(5);
         //cpds.setAcquireIncrement(5);
         // 151 is default but on d710 machines it is set to 214
-        cpds.setMaxPoolSize(MySQLThroughputBenchmarking.PoolSize);
+        cpds.setMaxPoolSize(MySQLThroughputBenchmarking.poolSize);
         cpds.setAutoCommitOnClose(false);
         //cpds.setMaxStatements(180);
     }

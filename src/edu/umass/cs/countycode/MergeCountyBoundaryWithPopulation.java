@@ -10,6 +10,12 @@ import java.util.HashMap;
 
 public class MergeCountyBoundaryWithPopulation 
 {
+	public static final double MIN_US_LAT						= 22.0;
+	public static final double MAX_US_LAT						= 48.0;
+	
+	public static final double MIN_US_LONG						= -125.0;
+	public static final double MAX_US_LONG						= -66.0;
+	
 	public static final String BOUNDS_FILE				
 			= "/home/ayadav/Documents/Code/ContextServiceExperiments/processedCountyData.csv";
 	public static final String POP_FILE					
@@ -78,6 +84,12 @@ public class MergeCountyBoundaryWithPopulation
 				String maxLat = parsed[5];
 				String maxLong = parsed[6];
 				
+				boolean inside = checkIfCountyInBounds(Double.parseDouble(minLat), Double.parseDouble(maxLat), 
+						Double.parseDouble(minLong), Double.parseDouble(maxLong));
+				
+				if(!inside)
+					continue;
+				
 				String key = statefp+"-"+countyfp;
 				Long totpop = populationHashMap.get(key);
 				
@@ -117,4 +129,22 @@ public class MergeCountyBoundaryWithPopulation
 		}
 		
 	}
+	
+	
+	public static boolean checkIfCountyInBounds(double minLat, double maxLat, 
+														double minLong, double maxLong)
+	{
+		//MIN_US_LAT
+		
+		if( (minLat >= MIN_US_LAT) && (maxLat <= MAX_US_LAT) && 
+				(minLong >= MIN_US_LONG) && (maxLong <= MAX_US_LONG) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 }

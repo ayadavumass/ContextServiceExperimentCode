@@ -20,6 +20,13 @@ import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 public class LargeNumUsers
 {
+	public static final double MIN_US_LAT						= 22.0;
+	public static final double MAX_US_LAT						= 48.0;
+	
+	public static final double MIN_US_LONG						= -125.0;
+	public static final double MAX_US_LONG						= -66.0;
+	
+	
 	public static final String TEXAS_TIMEZONE					= "GMT-6";
 	public static final int NUM_EVENT_THRESHOLD					= 10;
 	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
@@ -494,7 +501,6 @@ public class LargeNumUsers
 			UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
 			userInfoFileWrit.initializaRateControlledRequestSender();
 		}
-		
 		
 		
 		TimerThread timerThread = new TimerThread();

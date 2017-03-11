@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,17 +18,12 @@ public class MySQLThroughputBenchmarking
 	public static final int RUN_SEARCH							= 2;
 	public static final int RUN_INSERT							= 3;
 	public static final int RUN_GET								= 4;
-	public static final int RUN_INDEX_READ_UPDATE				= 5;
-	public static final int RUN_INDEX_READ_SEARCH				= 6;
 	public static final int RUN_DELETE							= 7;
 	public static final int RUN_GET_BACK_TO_BACK				= 8;
 	public static final int RUN_UPDATE_BACK_TO_BACK				= 9;
 	public static final int RUN_TRIGGER_SEARCH					= 10;
 	public static final int RUN_TRIGGER_UPDATE					= 11;
-	
-	
-	
-	public static final int NUM_SUBSPACES						= 4;
+	public static final int RUN_BULK_INSERT						= 12;
 	
 	// 100 seconds, experiment runs for 100 seconds
 	public static final int EXPERIMENT_TIME						= 100000;
@@ -36,20 +32,21 @@ public class MySQLThroughputBenchmarking
 	public static final int WAIT_TIME							= 100000;
 	
 	// 1% loss tolerance
-	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
-			
+	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
+	
 	// 1% loss tolerance
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
-		
+	
 	// 1% loss tolerance
 	public static final double SEARCH_LOSS_TOLERANCE			= 0.5;
+	
+	public static int batchSize									= 10;
 	
 	public static final String guidPrefix						= "guidPrefix";
 	
 	public static final String dataTableName 					= "testTable";
 	
 	public static final String triggerTableName 				= "triggerTable";
-	
 	
 	
 	public static final int ATTR_MAX							= 1500;
@@ -71,7 +68,7 @@ public class MySQLThroughputBenchmarking
 	
 	public static int numGuidsToInsert;
 	
-	public static int PoolSize;
+	public static int poolSize;
 	
 	public static double predicateLength;
 	
@@ -82,14 +79,16 @@ public class MySQLThroughputBenchmarking
 	public static ExecutorService	 taskES						= null;
 	
 	// 1 if in memory is true and 0 otherwise.
-	public static int inMemory;
+	public static boolean inMemory;
+	
+	public static HashMap<String, Boolean> attrMap;
 	
 	public MySQLThroughputBenchmarking()
 	{
 		try
 		{
-			taskES = Executors.newFixedThreadPool(PoolSize);
-			//valueRand = new Random();
+			taskES = Executors.newFixedThreadPool(poolSize);
+			
 			dsInst = new DataSource(nodeId);
 			createTable();
 			
@@ -111,6 +110,7 @@ public class MySQLThroughputBenchmarking
 			e.printStackTrace();
 		}
 	}
+	
 	
 	private void createTable()
 	{
@@ -146,7 +146,7 @@ public class MySQLThroughputBenchmarking
 						+ "INDEX USING BTREE ("+attrName+")";
 			}
 			
-			if(inMemory == 1)
+			if(inMemory)
 			{
 				newTableCommand = newTableCommand +" ) ENGINE = MEMORY";
 			}
@@ -197,6 +197,7 @@ public class MySQLThroughputBenchmarking
 		}
 	}
 	
+	
 	public static String getSHA1(String stringToHash)
 	{
 		MessageDigest md = null;
@@ -234,7 +235,7 @@ public class MySQLThroughputBenchmarking
 				+ "userIP Binary(4) NOT NULL ,  userPort INTEGER NOT NULL , expiryTime BIGINT NOT NULL ";
 		newTableCommand = getPartitionInfoStorageString(newTableCommand);
 		
-		if(inMemory == 1)
+		if(inMemory)
 		{
 			newTableCommand = newTableCommand 
 				+ " , PRIMARY KEY(groupGUID, userIP, userPort), INDEX USING BTREE(expiryTime), "
@@ -287,6 +288,7 @@ public class MySQLThroughputBenchmarking
 		{
 			if(i >= 8)
 				break;
+			
 			String attrName = "attr"+i;
 			String lowerAttrName = "lower"+attrName;
 			String upperAttrName = "upper"+attrName;
@@ -298,11 +300,9 @@ public class MySQLThroughputBenchmarking
 			else
 			{
 				newTableCommand = newTableCommand+ " , "+lowerAttrName+" , "+upperAttrName;
-			}
-			
+			}	
 		}
-		newTableCommand = newTableCommand+ " ) ";*/
-		
+		newTableCommand = newTableCommand+ " ) ";*/	
 		return newTableCommand;
 	}
 	
@@ -314,38 +314,48 @@ public class MySQLThroughputBenchmarking
 		
 		requestType        = Integer.parseInt(args[3]);
 		requestsps         = Integer.parseInt(args[4]);
-		PoolSize  		   = Integer.parseInt(args[5]);
-		predicateLength    = Double.parseDouble(args[6]);
-		inMemory           = Integer.parseInt(args[7]);
+		poolSize  		   = Integer.parseInt(args[5]);
+		inMemory           = Boolean.parseBoolean(args[6]);
+		
+		attrMap 		   = new HashMap<String, Boolean>();
+		
+		for(int i=0; i<numAttrs; i++)
+		{
+			String attrName = "attr"+i;
+			attrMap.put(attrName, true);
+		}
+		
 		
 		MySQLThroughputBenchmarking mysqlBech 
 								= new MySQLThroughputBenchmarking();
 		
 		long start = System.currentTimeMillis();
-		InitializeClass initClass = new InitializeClass();
-		new Thread(initClass).start();
-		initClass.waitForThreadFinish();
-//			mysqlBech.insertRecords();
+		
+		if( requestType == RUN_BULK_INSERT )
+		{
+			batchSize = Integer.parseInt(args[7]);
+			BulkInitializeClass bulkInit = new BulkInitializeClass();
+			new Thread(bulkInit).start();
+			bulkInit.waitForThreadFinish();
+		}
+		else
+		{
+			InitializeClass initClass = new InitializeClass();
+			new Thread(initClass).start();
+			initClass.waitForThreadFinish();
+		}
+		
 		System.out.println(numGuids+" records inserted in "
 									+(System.currentTimeMillis()-start));
 		
 		try
 		{
 			Thread.sleep(10000);
-		} 
+		}
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
-		
-//		public static final int RUN_UPDATE							= 1;
-//		public static final int RUN_SEARCH							= 2;
-//		public static final int RUN_INSERT							= 3;
-//		public static final int RUN_GET								= 4;
-//		public static final int RUN_INDEX_READ_UPDATE				= 5;
-//		public static final int RUN_INDEX_READ_SEARCH				= 6;
-//		public static final int RUN_DELETE							= 7;
-		
 		
 		AbstractRequestSendingClass requestTypeObj = null;
 		switch( requestType )
@@ -361,6 +371,7 @@ public class MySQLThroughputBenchmarking
 			}
 			case RUN_SEARCH:
 			{
+				predicateLength    = Double.parseDouble(args[6]);
 				requestTypeObj = new SearchClass();
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();
@@ -383,23 +394,6 @@ public class MySQLThroughputBenchmarking
 				requestTypeObj = new GetClass();
 				new Thread(requestTypeObj).start();
 				requestTypeObj.waitForThreadFinish();
-				break;
-			}
-			case RUN_INDEX_READ_UPDATE:
-			{
-				requestTypeObj = new IndexReadUpdateClass();
-				new Thread(requestTypeObj).start();
-				requestTypeObj.waitForThreadFinish();
-				break;
-			}
-			case RUN_INDEX_READ_SEARCH:
-			{
-				requestTypeObj = new IndexReadSearchClass();
-				new Thread(requestTypeObj).start();
-				requestTypeObj.waitForThreadFinish();
-				System.out.println("Average result size "
-						 +(((IndexReadSearchClass)requestTypeObj).getAvgResultSize())
-						 + " avg attr match "+((IndexReadSearchClass)requestTypeObj).getAvgAttrMatch() );
 				break;
 			}
 			case RUN_DELETE:
@@ -458,63 +452,10 @@ public class MySQLThroughputBenchmarking
 				break;
 			}
 			default:
-				assert(false);
+				System.out.println("No case mathced");
+				//assert(false);
 		}
-		
 		System.exit(0);
 		//stateChange.waitForThreadFinish();
 	}
-	
-	/*public void insertRecords()
-	{
-		//String guidName = "guid";
-		for(int i=0;i<numGuids;i++)
-		{
-			String guid = getSHA1(guidPrefix+i);
-			try 
-			{
-				putValueObjectRecord(1+valueRand.nextInt(1499), 1+valueRand.nextInt(1499), guid, -1);
-			} catch (SQLException e) 
-			{
-				e.printStackTrace();
-			}
-			System.out.println(i+" records inserted");
-		}
-	}*/
-	
-	/*public void putValueObjectRecord(double value1, double value2, String nodeGUID, 
-			long versionNum) throws SQLException
-	{
-		Connection myConn = dsInst.getConnection();
-		Statement statement = null;
-		
-		String tableName = "testTable";
-		String insertTableSQL = "INSERT INTO "+tableName 
-				+" (value1, value2, nodeGUID, versionNum) " + "VALUES"
-				+ "("+value1+","+value2+",'"+nodeGUID+"',"+versionNum +")";
-		
-		try 
-		{
-			statement = (Statement) myConn.createStatement();
-			
-			statement.executeUpdate(insertTableSQL);
-		} catch (SQLException e) 
-		{
-			e.printStackTrace();
-		} finally
-		{
-			try
-			{
-				if(statement != null)
-					statement.close();
-				
-				if(myConn != null)
-					myConn.close();
-				
-			} catch (SQLException e) 
-			{
-				e.printStackTrace();
-			}
-		}
-	}*/
 }
