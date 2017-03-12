@@ -111,7 +111,7 @@ public class LargeNumUsers
 	
 	public static Random distibutionRand;
 	
-	public static boolean performInit							= false;;
+	public static boolean performInit							= false;
 	
 	
 	public static long computeSumPopulation()
@@ -455,7 +455,7 @@ public class LargeNumUsers
 		initRate 	= Double.parseDouble(args[3]);
 		myID        = Integer.parseInt(args[4]);
 		performInit = Boolean.parseBoolean(args[5]);
-		
+		boolean performReqs = Boolean.parseBoolean(args[6]);
 		
 		distibutionRand = new Random((myID+1)*100);
 		
@@ -502,18 +502,20 @@ public class LargeNumUsers
 			userInfoFileWrit.initializaRateControlledRequestSender();
 		}
 		
-		
-		TimerThread timerThread = new TimerThread();
-		new Thread(timerThread).start();
-		
-		try
+		if(performReqs)
 		{
-			TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
-			traceBasedUpdate.rateControlledRequestSender();
-		}
-		catch(Exception | Error ex)
-		{
-			ex.printStackTrace();
+			TimerThread timerThread = new TimerThread();
+			new Thread(timerThread).start();
+			
+			try
+			{
+				TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
+				traceBasedUpdate.rateControlledRequestSender();
+			}
+			catch(Exception | Error ex)
+			{
+				ex.printStackTrace();
+			}
 		}
 		
 		System.exit(0);

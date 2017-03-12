@@ -29,7 +29,7 @@ public class MySQLThroughputBenchmarking
 	public static final int EXPERIMENT_TIME						= 100000;
 	
 	// after sending all the requests it waits for 100 seconds 
-	public static final int WAIT_TIME							= 100000;
+	public static final int WAIT_TIME							= 10000000;
 	
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.0;

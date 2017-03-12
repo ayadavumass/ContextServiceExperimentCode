@@ -33,7 +33,7 @@ public class BulkInitializeClass extends AbstractRequestSendingClass
 	
 	private void updRateControlledRequestSender() throws Exception
 	{
-		double reqspms = 100.0/1000.0;
+		double reqspms = MySQLThroughputBenchmarking.requestsps/1000.0;
 		long currTime = 0;
 		
 		// sleep for 100ms
@@ -142,7 +142,7 @@ public class BulkInitializeClass extends AbstractRequestSendingClass
 	{
 		numSent++;
 		
-		BulkInitializeTask updTask = new BulkInitializeTask(updateInfo, this);
+		BulkInitializeTask updTask = new BulkInitializeTask(updateInfo, this, System.currentTimeMillis());
 		MySQLThroughputBenchmarking.taskES.execute(updTask);
 	}
 	
@@ -153,8 +153,12 @@ public class BulkInitializeClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("Init reply recvd "+userGUID+" time taken "+timeTaken+
-					" numSent "+numSent+" numRecvd "+numRecvd);
+			if((numRecvd % 10000) == 0)
+			{
+				System.out.println("Init reply recvd "+userGUID+" time taken "+timeTaken+
+						" numSent "+numSent+" numRecvd "+numRecvd);
+			}
+			
 			//if(currNumReplyRecvd == currNumReqSent)
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{

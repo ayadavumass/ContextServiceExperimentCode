@@ -11,10 +11,12 @@ public class BulkInitializeTask implements Runnable
 {
 	private final List<UpdateInfoClass> updateList;
 	private final AbstractRequestSendingClass requestSendingTask;
+	private final long startTime;
 	
 	public BulkInitializeTask( List<UpdateInfoClass> updateList,
-			AbstractRequestSendingClass requestSendingTask )
+			AbstractRequestSendingClass requestSendingTask, long startTime )
 	{
+		this.startTime = startTime;
 		this.updateList = updateList;
 		this.requestSendingTask = requestSendingTask;
 	}
@@ -24,10 +26,9 @@ public class BulkInitializeTask implements Runnable
 	{
 		try
 		{
-			long start = System.currentTimeMillis();
 			putValueObjectRecord();
 			long end = System.currentTimeMillis();
-			requestSendingTask.incrementUpdateNumRecvd("", end-start);
+			requestSendingTask.incrementUpdateNumRecvd("", end-startTime);
 		} catch (SQLException e) 
 		{
 			e.printStackTrace();
