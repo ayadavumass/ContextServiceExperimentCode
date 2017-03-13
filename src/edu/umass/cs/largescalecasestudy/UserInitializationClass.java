@@ -19,9 +19,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	public UserInitializationClass()
 	{
 		super( LargeNumUsers.INSERT_LOSS_TOLERANCE );
-		//firstJSONObjectMap = new HashMap<String, JSONObject>();
 		initRand = new Random((LargeNumUsers.myID+1)*100);	
-		//readFirstEntriesAfterStartTime();
 	}
 	
 	
