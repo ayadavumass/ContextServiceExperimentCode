@@ -22,13 +22,12 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		initRand = new Random((LargeNumUsers.myID+1)*100);	
 	}
 	
-	
 	private void sendAInitMessage(long guidNum, BufferedWriter bw) throws Exception
 	{
-		double randnum = initRand.nextDouble();
+		/*double randnum = initRand.nextDouble();
 		
 		CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
-		
+			
 		double homeLat =  countynode.minLat + 
 					(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
 		
@@ -84,9 +83,8 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		LargeNumUsers.csClient.sendUpdateWithCallBack
 										( userGUID, null, attrValJSON, 
-										 -1, updateRep, this.getCallBack() );
+										 -1, updateRep, this.getCallBack() );*/
 	}
-	
 	
 	public void initializaRateControlledRequestSender() throws Exception
 	{
@@ -181,7 +179,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	
 	public void writeTraceToFile(int numEntries)
 	{
-		BufferedWriter bw = null;
+		/*BufferedWriter bw = null;
 		
 		try 
 		{
@@ -217,7 +215,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			{
 				ex.printStackTrace();
 			}
-		}
+		}*/
 	}
 	
 	

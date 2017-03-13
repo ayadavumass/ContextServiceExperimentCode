@@ -1,42 +1,38 @@
 package edu.umass.cs.largescalecasestudy;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
 
 import com.google.common.hash.Hashing;
 
 
-public class UserInfoFileWriting 
+public class UserInfoFileWriting
 {
 	// different random generator for each variable, as using one for all of them
 	// doesn't give uniform properties.
-	private final Random initRand;
 	
 	public UserInfoFileWriting()
 	{
-		//firstJSONObjectMap = new HashMap<String, JSONObject>();
-		initRand = new Random((LargeNumUsers.myID+1)*100);	
-		//readFirstEntriesAfterStartTime();
 	}
 	
-	
-	private void sendAInitMessage(long guidNum, BufferedWriter bw) throws Exception
+	private void assingTraceAndWriteToFile(String guid, double homeLat, double homeLong, 
+												BufferedWriter bw) throws Exception
 	{
-		double randnum = initRand.nextDouble();
+//		double randnum = initRand.nextDouble();
+//		CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
+//		
+//		double homeLat =  countynode.minLat + 
+//					(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
+//		
+//		double homeLong = countynode.minLong + 
+//					(countynode.maxLong - countynode.minLong) * initRand.nextDouble();
+//		
+//		String userGUID = LargeNumUsers.getSHA1(LargeNumUsers.guidPrefix+guidNum);
 		
-		CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
-		
-		double homeLat =  countynode.minLat + 
-					(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
-		
-		double homeLong = countynode.minLong + 
-					(countynode.maxLong - countynode.minLong) * initRand.nextDouble();
-		
-		String userGUID = LargeNumUsers.getSHA1(LargeNumUsers.guidPrefix+guidNum);
-		
-		int arrayIndex = Hashing.consistentHash(userGUID.hashCode(), 
+		int arrayIndex = Hashing.consistentHash(guid.hashCode(), 
 				LargeNumUsers.filenameList.size());
 		
 		String filename = LargeNumUsers.filenameList.get(arrayIndex);
@@ -59,11 +55,11 @@ public class UserInfoFileWriting
 		
 		if(inTimeslot)
 		{
-			UserRecordInfo userRecInfo = new UserRecordInfo( userGUID, filename, 
+			UserRecordInfo userRecInfo = new UserRecordInfo( guid, filename, 
 				homeLat, homeLong, numUpdatesPerDay,
 				nextUpdateNum, nextUpdateTime, 
 				homeLat, homeLong );
-			
+					
 			try
 			{
 				bw.write(userRecInfo.toString() +"\n");
@@ -75,22 +71,36 @@ public class UserInfoFileWriting
 		}
 	}
 	
-	
-	public void initializaRateControlledRequestSender() throws Exception
+	public void initializeFileWriting() throws Exception
 	{
+		BufferedReader br = null;
 		BufferedWriter bw = null;
+		String writeFileName = LargeNumUsers.USER_INFO_FILE_PREFIX
+				+LargeNumUsers.userinfoFileNum;
 		
 		try
 		{
-			String writeFileName = LargeNumUsers.USER_INFO_FILE_PREFIX
-												+LargeNumUsers.userinfoFileNum;
-			long totalNumUsersSent = 0;
 			bw = new BufferedWriter(new FileWriter(writeFileName));
+			br = new BufferedReader(new FileReader(LargeNumUsers.guidFilePath));
 			
-			while(  totalNumUsersSent < LargeNumUsers.numusers  )
+			//first line is comment that starts with #
+			String currLine = br.readLine();
+			long startLineNum = LargeNumUsers.myID*LargeNumUsers.numusers;
+			long endLineNum = (LargeNumUsers.myID+1)*LargeNumUsers.numusers;
+			long currLineNum = 0;
+			
+			while( (currLine = br.readLine()) != null )
 			{
-				sendAInitMessage(totalNumUsersSent, bw);
-				totalNumUsersSent++;
+				if( (currLineNum >= startLineNum) && (currLineNum < endLineNum) )
+				{
+					String[] parsed = currLine.split(",");
+					String guid = parsed[0];
+					double homeLat = Double.parseDouble(parsed[1]);
+					double homeLong = Double.parseDouble(parsed[2]);
+					
+					assingTraceAndWriteToFile(guid, homeLat, homeLong, bw);
+				}
+				currLineNum++;
 			}
 		}
 		catch(IOException ioex)
@@ -99,20 +109,23 @@ public class UserInfoFileWriting
 		}
 		finally
 		{
+			if(br != null)
+			{
+				br.close();
+			}
+			
 			if(bw != null)
 			{
 				bw.close();
 			}
-		}
-		
+		}	
 		System.out.println("FileBasedUserInit complete eventual sending rate ");
 	}
 	
 	
 	public void writeTraceToFile(int numEntries)
 	{
-		BufferedWriter bw = null;
-		
+		/*BufferedWriter bw = null;	
 		try 
 		{
 			bw = new BufferedWriter(new FileWriter("nationwidePopTrace.txt"));
@@ -147,7 +160,6 @@ public class UserInfoFileWriting
 			{
 				ex.printStackTrace();
 			}
-		}
+		}*/
 	}
-	
 }

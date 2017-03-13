@@ -1,8 +1,6 @@
 package edu.umass.cs.largescalecasestudy;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -20,20 +18,18 @@ import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
 
 public class LargeNumUsers
 {
-	public static final double MIN_US_LAT						= 22.0;
-	public static final double MAX_US_LAT						= 48.0;
-	
-	public static final double MIN_US_LONG						= -125.0;
-	public static final double MAX_US_LONG						= -66.0;
-	
+	//public static final double MIN_US_LAT						= 22.0;
+	//public static final double MAX_US_LAT						= 48.0;
+	//public static final double MIN_US_LONG					= -125.0;
+	//public static final double MAX_US_LONG					= -66.0;
 	
 	public static final String TEXAS_TIMEZONE					= "GMT-6";
 	public static final int NUM_EVENT_THRESHOLD					= 10;
 	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
 	
-	public static final String COUNTY_INFO_FILE 	
-																= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
+	//public static final String COUNTY_INFO_FILE 	
+	//															= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
 	
 	//public static final String COUNTY_INFO_FILE 	
 	//															= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
@@ -86,7 +82,7 @@ public class LargeNumUsers
 	private static String csHost 								= "";
 	private static int csPort 									= -1;
 	
-	public static List<CountyNode> countyProbList;
+	//public static List<CountyNode> countyProbList;
 	
 	public static long numusers;
 	
@@ -94,7 +90,7 @@ public class LargeNumUsers
 	
 	public static double initRate								= 100.0;
 	
-	public static String guidPrefix 							= "GUID_PREFIX";
+	//public static String guidPrefix 							= "GUID_PREFIX";
 	
 	public static long currRealUnixTime							= START_UNIX_TIME;
 	
@@ -110,11 +106,12 @@ public class LargeNumUsers
 	public static ContextServiceClient csClient;
 	
 	public static Random distibutionRand;
+	public static String guidFilePath;
 	
-	public static boolean performInit							= false;
+	//public static boolean performInit							= false;
 	
 	
-	public static long computeSumPopulation()
+	/*public static long computeSumPopulation()
 	{
 		BufferedReader readfile = null;
 		long totalPop = 0;
@@ -149,13 +146,11 @@ public class LargeNumUsers
 			}
 		}
 		return totalPop;
-	}
+	}*/
 	
-	
-	private static void computeCountyPopDistribution(long totalPop)
+	/*private static void computeCountyPopDistribution(long totalPop)
 	{
-		BufferedReader readfile = null;
-		
+		BufferedReader readfile = null;	
 		try
 		{
 			String sCurrentLine;
@@ -216,7 +211,7 @@ public class LargeNumUsers
 				ex.printStackTrace();
 			}
 		}
-	}
+	}*/
 	
 	/**
 	 * Implements the binary search of county in which the given random
@@ -225,7 +220,7 @@ public class LargeNumUsers
 	 * Linear search each time will be expensive.
 	 * @return
 	 */
-	public static CountyNode binarySearchOfCounty(double randomVal)
+	/*public static CountyNode binarySearchOfCounty(double randomVal)
 	{
 		int lowerBound = 0;
 		int upperBound = countyProbList.size() -1;
@@ -265,11 +260,10 @@ public class LargeNumUsers
 		while(cont);
 		assert(retNode != null);
 		return retNode;
-	}
+	}*/
 	
-	
-	public static boolean checkIfRelativeTimeInTimeSlot(long relativeTimeFromMidnight) 
-																				throws ParseException
+	public static boolean checkIfRelativeTimeInTimeSlot
+								(long relativeTimeFromMidnight) throws ParseException
 	{
 		Date date = new Date(START_UNIX_TIME*1000);
 		// *1000 is to convert seconds to milliseconds
@@ -299,8 +293,7 @@ public class LargeNumUsers
 		}
 	}
 	
-	
-	private static void computeGlobalLatLongBounds()
+	/*private static void computeGlobalLatLongBounds()
 	{
 		double minLat    = 1000;
 		double minLong   = 1000;
@@ -316,7 +309,6 @@ public class LargeNumUsers
 				minLat = countynode.minLat;
 			}
 			
-			
 			if( countynode.minLong < minLong )
 			{
 				minLong = countynode.minLong;
@@ -325,8 +317,7 @@ public class LargeNumUsers
 			if( countynode.maxLat > maxLat )
 			{
 				maxLat = countynode.maxLat;
-			}
-			
+			}	
 			
 			if( countynode.maxLong > maxLong )
 			{
@@ -335,8 +326,7 @@ public class LargeNumUsers
 		}	
 		System.out.println("minLat="+minLat+", minLong="+minLong
 					+", maxLat="+maxLat+", maxLong="+maxLong);
-	}
-	
+	}*/
 	
 	public static String getSHA1(String stringToHash)
 	{
@@ -365,7 +355,6 @@ public class LargeNumUsers
 		return returnGUID.substring(0, 40);
 	}
 	
-	
 	public static long computeTimeRelativeToDatStart(long currUnixTimeStamp)
 	{
 		Date date = new Date(currUnixTimeStamp*1000L); 
@@ -390,7 +379,6 @@ public class LargeNumUsers
 		}
 		return -1;
 	}
-	
 	
 	public static class TimerThread implements Runnable
 	{
@@ -435,7 +423,6 @@ public class LargeNumUsers
 		}
 	}
 	
-	
 	/**
 	 * distributes time uniformly in +10 minutes interval of the given time
 	 * @return
@@ -452,12 +439,13 @@ public class LargeNumUsers
 		numusers 	= Long.parseLong(args[0]);
 		csHost 		= args[1];
 		csPort 		= Integer.parseInt(args[2]);
-		initRate 	= Double.parseDouble(args[3]);
-		myID        = Integer.parseInt(args[4]);
-		performInit = Boolean.parseBoolean(args[5]);
-		boolean performReqs = Boolean.parseBoolean(args[6]);
+		//initRate 	= Double.parseDouble(args[3]);
+		myID        = Integer.parseInt(args[3]);
+		//performInit = Boolean.parseBoolean(args[5]);
 		
 		distibutionRand = new Random((myID+1)*100);
+		
+		guidFilePath = args[4];
 		
 		// compute distributions
 		DistributionLearningFromTraces.main(null);
@@ -465,12 +453,9 @@ public class LargeNumUsers
 		csClient  	= new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 		
-		
-		guidPrefix 	= guidPrefix+myID;
-		
+		//guidPrefix 	= guidPrefix+myID;
 		//userInfoMap = new HashMap<String, UserRecordInfo>();
-		
-		countyProbList = new LinkedList<CountyNode>();
+		//countyProbList = new LinkedList<CountyNode>();
 		
 		filenameList   = new LinkedList<String>();
 		
@@ -483,41 +468,37 @@ public class LargeNumUsers
 			filenameList.add(filename);
 		}
 		
+		//long totalPop  = computeSumPopulation();
+		//computeCountyPopDistribution(totalPop);
+		//computeGlobalLatLongBounds();
 		
-		long totalPop  = computeSumPopulation();
+//		if(performInit)
+//		{
+//			UserInitializationClass userInitObj = new UserInitializationClass();
+//			userInitObj.initializaRateControlledRequestSender();
+//		}
+//		else
+//		{
+//			UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
+//			userInfoFileWrit.initializaRateControlledRequestSender();
+//		}
 		
-		computeCountyPopDistribution(totalPop);
+		UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
+		userInfoFileWrit.initializeFileWriting();
 		
-		computeGlobalLatLongBounds();
 		
-		
-		if(performInit)
-		{
-			UserInitializationClass userInitObj = new UserInitializationClass();
-			userInitObj.initializaRateControlledRequestSender();
-		}
-		else
-		{
-			UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
-			userInfoFileWrit.initializaRateControlledRequestSender();
-		}
-		
-		if(performReqs)
-		{
-			TimerThread timerThread = new TimerThread();
-			new Thread(timerThread).start();
+		TimerThread timerThread = new TimerThread();
+		new Thread(timerThread).start();
 			
-			try
-			{
-				TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
-				traceBasedUpdate.rateControlledRequestSender();
-			}
-			catch(Exception | Error ex)
-			{
-				ex.printStackTrace();
-			}
+		try
+		{
+			TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
+			traceBasedUpdate.rateControlledRequestSender();
 		}
-		
+		catch(Exception | Error ex)
+		{
+			ex.printStackTrace();
+		}	
 		System.exit(0);
 	}
 }
