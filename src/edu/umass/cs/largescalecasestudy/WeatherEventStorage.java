@@ -88,14 +88,21 @@ public class WeatherEventStorage implements Comparator<WeatherEventStorage>
 	@Override
 	public int compare(WeatherEventStorage o1, WeatherEventStorage o2) 
 	{
-		System.out.println("o1"+o1.issueUnixTimeStamp +" o2 "+o2.issueUnixTimeStamp);
-		if(o1.issueUnixTimeStamp < o2.issueUnixTimeStamp)
-		{
-			return -1;
-		}
-		else
-		{
-			return 1;
-		}
+		Long val1 =o1.issueUnixTimeStamp;
+		return val1.compareTo(o2.issueUnixTimeStamp);
+		
+		//System.out.println("o1"+o1.issueUnixTimeStamp +" o2 "+o2.issueUnixTimeStamp);
+//		if(o1.issueUnixTimeStamp < o2.issueUnixTimeStamp)
+//		{
+//			return -1;
+//		}
+//		else if (o1.issueUnixTimeStamp > o2.issueUnixTimeStamp)
+//		{
+//			return 1;
+//		}
+//		else 
+//		{
+//			return 0;
+//		}
 	}
 }
