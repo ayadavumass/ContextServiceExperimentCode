@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +48,7 @@ public class WeatherDataProcessingMaxTimeslots
 	
 	private static HashMap<Long, PerDayEventStorage> perTimeSlotMap;
 	
-	private static DateFormat dfm = new SimpleDateFormat("yyyyMMddHHmm");
+	//private static DateFormat dfm = new SimpleDateFormat("yyyyMMddHHmm");
 	
 	
 	public static void readTheWeatherFile()
@@ -170,6 +171,8 @@ public class WeatherDataProcessingMaxTimeslots
 		long unixtime;
 		try
 		{
+			DateFormat dfm = new SimpleDateFormat("yyyyMMddHHmm");
+			dfm.setTimeZone(TimeZone.getTimeZone("GMT"));
 			unixtime = dfm.parse(timestamp).getTime();
 			unixtime=unixtime/1000;
 			return unixtime;

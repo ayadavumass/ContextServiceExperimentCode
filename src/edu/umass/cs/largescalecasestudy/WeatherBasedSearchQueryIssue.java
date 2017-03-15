@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +39,7 @@ public class WeatherBasedSearchQueryIssue extends
 	public static final String MULTIPOLYGON_TYPE				= "MultiPolygon";
 	
 	
-	private final DateFormat dfm 								= new SimpleDateFormat("yyyyMMddHHmm");
+	//private final DateFormat dfm 								= new SimpleDateFormat("yyyyMMddHHmm");
 	
 	
 	private List<WeatherEventStorage> sortedWeatherEventList;
@@ -155,6 +156,8 @@ public class WeatherBasedSearchQueryIssue extends
 		long unixtime;
 		try
 		{
+			DateFormat dfm = new SimpleDateFormat("yyyyMMddHHmm");
+			dfm.setTimeZone(TimeZone.getTimeZone("GMT"));
 			unixtime = dfm.parse(timestamp).getTime();
 			unixtime=unixtime/1000;
 			return unixtime;

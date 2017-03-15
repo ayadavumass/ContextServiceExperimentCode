@@ -20,8 +20,8 @@ public class LargeNumUsers
 {
 	public static final double MIN_US_LAT						= 22.0;
 	public static final double MAX_US_LAT						= 48.0;
-	public static final double MIN_US_LONG					= -125.0;
-	public static final double MAX_US_LONG					= -66.0;
+	public static final double MIN_US_LONG						= -125.0;
+	public static final double MAX_US_LONG						= -66.0;
 	
 	public static final String TEXAS_TIMEZONE					= "GMT-6";
 	public static final int NUM_EVENT_THRESHOLD					= 10;
@@ -36,8 +36,6 @@ public class LargeNumUsers
 			//= "/home/ayadav/Documents/Data/NWSWeatherData/wwa_201701010000_201703150000/1Jan15Mar2017Weather.json";
 			= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/1Jan15Mar2017Weather.json";
 	
-	
-	public static final String TIMESLOT_QUERIES_FNAME			= "timeslotSearchQueries.txt";
 	
 	public static final String USER_INFO_FILE_PREFIX			= "UserInfo";
 	
@@ -58,11 +56,11 @@ public class LargeNumUsers
 	// 4. 1488249900
 	
 	
-	// for 14th March 2017, 09:15 AM
-	public static final long START_UNIX_TIME					= 1485135000;
+
+	public static final long START_UNIX_TIME					= 1485117000;
 		
-	// for 14th March 2017, 09:30 AM
-	public static final long END_UNIX_TIME						= 1485135900;
+
+	public static final long END_UNIX_TIME						= 1485117900;
 	
 	
 	//"geoLocationCurrentTimestamp"
@@ -216,11 +214,11 @@ public class LargeNumUsers
 					// *1000 is to convert seconds to milliseconds
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 					// the format of your date
-					sdf.setTimeZone(TimeZone.getTimeZone(TEXAS_TIMEZONE)); 
+					sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 					// give a timezone reference for formating (see comment at the bottom
 					String dateFormat = sdf.format(date);
 					
-					String printStr = "Current date "+dateFormat;
+					String printStr = "Current date in GMT "+dateFormat;
 					
 					System.out.println(printStr);
 				}
