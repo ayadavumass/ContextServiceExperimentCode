@@ -254,8 +254,11 @@ public class LargeNumUsers
 		csClient  	= new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 		
-		UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
-		userInfoFileWrit.initializeFileWriting();
+		if(enableUpdate)
+		{
+			UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
+			userInfoFileWrit.initializeFileWriting();
+		}
 		
 		WeatherBasedSearchQueryIssue searchIssue = null;
 		
