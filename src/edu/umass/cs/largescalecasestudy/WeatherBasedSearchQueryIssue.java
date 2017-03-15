@@ -38,7 +38,7 @@ public class WeatherBasedSearchQueryIssue extends
 	public static final String MULTIPOLYGON_TYPE				= "MultiPolygon";
 	
 	
-	private static DateFormat dfm 								= new SimpleDateFormat("yyyyMMddHHmm");
+	private final DateFormat dfm 								= new SimpleDateFormat("yyyyMMddHHmm");
 	
 	
 	private List<WeatherEventStorage> sortedWeatherEventList;

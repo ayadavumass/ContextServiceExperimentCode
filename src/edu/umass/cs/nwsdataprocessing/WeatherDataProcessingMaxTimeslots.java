@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
+import edu.umass.cs.largescalecasestudy.LargeNumUsers;
 
 public class WeatherDataProcessingMaxTimeslots
 {
@@ -41,8 +42,8 @@ public class WeatherDataProcessingMaxTimeslots
 	public static final String MULTIPOLYGON_TYPE		= "MultiPolygon";
 	
 	
-	public static final String WEATHER_DATA_PATH 		
-		= "/home/ayadav/Documents/Data/NWSWeatherData/wwa_201701010000_201703150000/1Jan15Mar2017Weather.json";
+	public static final String WEATHER_DATA_PATH = LargeNumUsers.WEATHER_DATA_PATH;
+		//= "/home/ayadav/Documents/Data/NWSWeatherData/wwa_201701010000_201703150000/1Jan15Mar2017Weather.json";
 	
 	private static HashMap<Long, PerDayEventStorage> perTimeSlotMap;
 	
