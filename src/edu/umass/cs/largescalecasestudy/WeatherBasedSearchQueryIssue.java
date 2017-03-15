@@ -214,6 +214,7 @@ public class WeatherBasedSearchQueryIssue extends
 										getUnixTimeStamp(issueTime), getUnixTimeStamp(expireTime), 
 										polygons, Double.parseDouble(areaKm2) );
 							
+							assert(weatherEvents != null);
 							sortedWeatherEventList.add(weatherEvents);
 						}
 					}
