@@ -28,42 +28,41 @@ public class LargeNumUsers
 	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
 	
-	//public static final String COUNTY_INFO_FILE 	
-	//															= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/countyData.csv";
-	
-	//public static final String COUNTY_INFO_FILE 	
-	//															= "/home/ayadav/Documents/Data/CountyPopulation/countyData.csv";
-	
-	//public  static final String USER_TRACE_DIR					= "/home/ayadav/Documents/Data/confidentialUserTraces/processedIndividualTracesDupRem";;
-
 	public  static final String USER_TRACE_DIR					= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/processedIndividualTracesDupRem";
 	
-	//public static final String USER_TRACE_DIRECTORY 
-	//= 
+	//public static final String GEOJSON_WEATHER_DATA_DIR			= "/home/ayadav/Documents/Data/weatherDataSnapShot/geojsondata";
+	
+	public static final String WEATHER_DATA_PATH 
+			//= "/home/ayadav/Documents/Data/NWSWeatherData/wwa_201701010000_201703150000/1Jan15Mar2017Weather.json";
+			= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/1Jan15Mar2017Weather.json";
+	
+	
+	public static final String TIMESLOT_QUERIES_FNAME			= "timeslotSearchQueries.txt";
 	
 	public static final String USER_INFO_FILE_PREFIX			= "UserInfo";
-	
 	
 	// latitude longitude key in json and attribute names in CNS
 	public static final String LATITUDE_KEY						= "latitude";
 	public static final String LONGITUDE_KEY					= "longitude";
-	
 	
 	public static final long  TIME_UPDATE_SLEEP_TIME			= 60*1000;  // every minute
 	
 	
 	public static final long TIME_DIST_INTERVAL					= 60*10; // 10 minutes on either side.
 	
-	// 1475465005.550073
-	// actual date is 2016-11-01 22:28:35 +0000
-	// Update requests that have timestamp >= startUnixTime are sent to CNS
-	public static final long START_UNIX_TIME					= 1478013315;
 	
-	//1484538143
-	// actual date is Mon, 16 Jan 2017 03:42:23 GMT
-	//public static final long END_UNIX_TIME					= 1484538143;
+	// 900 s timeslots with highest alert rate
+	// 1. 1485135000
+	// 2. 1483795800
+	// 3. 1485125100
+	// 4. 1488249900
 	
-	public static final long END_UNIX_TIME						= 1478014215;
+	
+	// for 14th March 2017, 09:15 AM
+	public static final long START_UNIX_TIME					= 1485135000;
+		
+	// for 14th March 2017, 09:30 AM
+	public static final long END_UNIX_TIME						= 1485135900;
 	
 	
 	//"geoLocationCurrentTimestamp"
@@ -82,15 +81,11 @@ public class LargeNumUsers
 	private static String csHost 								= "";
 	private static int csPort 									= -1;
 	
-	//public static List<CountyNode> countyProbList;
-	
 	public static long numusers;
 	
 	public static int myID										= 0;
 	
 	public static double initRate								= 100.0;
-	
-	//public static String guidPrefix 							= "GUID_PREFIX";
 	
 	public static long currRealUnixTime							= START_UNIX_TIME;
 	
@@ -99,168 +94,12 @@ public class LargeNumUsers
 	public static int userinfoFileNum							= 0;
 	
 	
-//	public static String[] filenameArray 						= {"TraceUser144.txt", "TraceUser182.txt", "TraceUser214.txt", "TraceUser218.txt"
-//																		, "TraceUser173.txt", "TraceUser194.txt", "TraceUser187.txt", "TraceUser190.txt"
-//																		, "TraceUser154.txt", "TraceUser181.txt"};
 	public static List<String> filenameList;
 	public static ContextServiceClient csClient;
 	
 	public static Random distibutionRand;
 	public static String guidFilePath;
 	
-	//public static boolean performInit							= false;
-	
-	
-	/*public static long computeSumPopulation()
-	{
-		BufferedReader readfile = null;
-		long totalPop = 0;
-		
-		try
-		{
-			String sCurrentLine;
-			readfile = new BufferedReader(new FileReader(COUNTY_INFO_FILE));
-			
-			while( (sCurrentLine = readfile.readLine()) != null )
-			{
-				String[] parsed = sCurrentLine.split(",");
-				
-				if( parsed.length >= 8)
-					totalPop = totalPop + Long.parseLong(parsed[7]);
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				if (readfile != null)
-					readfile.close();				
-			} 
-			catch (IOException ex) 
-			{
-				ex.printStackTrace();
-			}
-		}
-		return totalPop;
-	}*/
-	
-	/*private static void computeCountyPopDistribution(long totalPop)
-	{
-		BufferedReader readfile = null;	
-		try
-		{
-			String sCurrentLine;
-			readfile = new BufferedReader(new FileReader(COUNTY_INFO_FILE));
-			
-			double lastUpperBound = 0.0;
-			
-			while( (sCurrentLine = readfile.readLine()) != null )
-			{
-				String[] parsed = sCurrentLine.split(",");
-				
-				if( !(parsed.length >= 8) )
-					continue;
-					
-				
-				int statefp = Integer.parseInt(parsed[0]);
-				int countyfp = Integer.parseInt(parsed[1]);
-				String countyname = parsed[2];
-				double minLat = Double.parseDouble(parsed[3]);
-				double minLong = Double.parseDouble(parsed[4]);
-				double maxLat = Double.parseDouble(parsed[5]);
-				double maxLong = Double.parseDouble(parsed[6]);
-				long countypop = Long.parseLong(parsed[7]);
-				
-				double prob = (countypop*1.0)/(totalPop*1.0);
-				
-				CountyNode countynode = new CountyNode();
-				countynode.statefp = statefp;
-				countynode.countyfp = countyfp;
-				countynode.countyname = countyname;
-				countynode.minLat = minLat;
-				countynode.minLong = minLong;
-				countynode.maxLat = maxLat;
-				countynode.maxLong = maxLong;
-				countynode.population = countypop;
-				
-				
-				countynode.lowerProbBound = lastUpperBound;
-				countynode.upperProbBound = countynode.lowerProbBound + prob;
-				
-				lastUpperBound = countynode.upperProbBound;
-				
-				countyProbList.add(countynode);
-			}
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-		finally 
-		{
-			try
-			{
-				if (readfile != null)
-					readfile.close();				
-			} catch (IOException ex) 
-			{
-				ex.printStackTrace();
-			}
-		}
-	}*/
-	
-	/**
-	 * Implements the binary search of county in which the given random
-	 * variable lies. The code implements choosing a county to add a person based
-	 * on counties population. Binary search is needed because we have 3000 counties
-	 * Linear search each time will be expensive.
-	 * @return
-	 */
-	/*public static CountyNode binarySearchOfCounty(double randomVal)
-	{
-		int lowerBound = 0;
-		int upperBound = countyProbList.size() -1;
-		int mid = (lowerBound+upperBound)/2;
-		
-		boolean cont = true;
-		CountyNode retNode = null;
-		do
-		{
-			CountyNode countynode = countyProbList.get(mid);
-			if( (randomVal >= countynode.lowerProbBound) && 
-						(randomVal <countynode.upperProbBound) )
-			{
-				retNode = countynode;
-				break;
-			}
-			else
-			{
-				if( randomVal < countynode.lowerProbBound )
-				{
-					upperBound = mid-1;
-					assert(upperBound >=0);
-					mid = (lowerBound+upperBound)/2;
-				}
-				else if( randomVal >= countynode.upperProbBound )
-				{
-					lowerBound = mid+1;
-					assert(lowerBound < countyProbList.size());
-					mid = (lowerBound+upperBound)/2;
-				}
-				else
-				{
-					assert(false);
-				}
-			}
-		} 
-		while(cont);
-		assert(retNode != null);
-		return retNode;
-	}*/
 	
 	public static boolean checkIfRelativeTimeInTimeSlot
 								(long relativeTimeFromMidnight) throws ParseException
@@ -293,40 +132,6 @@ public class LargeNumUsers
 		}
 	}
 	
-	/*private static void computeGlobalLatLongBounds()
-	{
-		double minLat    = 1000;
-		double minLong   = 1000;
-		double maxLat    = -1000;
-		double maxLong   = -1000;
-		
-		for(int i=0; i<countyProbList.size(); i++)
-		{
-			CountyNode countynode = countyProbList.get(i);
-			
-			if(  countynode.minLat < minLat )
-			{
-				minLat = countynode.minLat;
-			}
-			
-			if( countynode.minLong < minLong )
-			{
-				minLong = countynode.minLong;
-			}
-			
-			if( countynode.maxLat > maxLat )
-			{
-				maxLat = countynode.maxLat;
-			}	
-			
-			if( countynode.maxLong > maxLong )
-			{
-				maxLong = countynode.maxLong;
-			}
-		}	
-		System.out.println("minLat="+minLat+", minLong="+minLong
-					+", maxLat="+maxLat+", maxLong="+maxLong);
-	}*/
 	
 	public static String getSHA1(String stringToHash)
 	{
@@ -436,69 +241,68 @@ public class LargeNumUsers
 	
 	public static void main(String[] args) throws Exception
 	{
-		numusers 	= Long.parseLong(args[0]);
-		csHost 		= args[1];
-		csPort 		= Integer.parseInt(args[2]);
-		//initRate 	= Double.parseDouble(args[3]);
-		myID        = Integer.parseInt(args[3]);
-		//performInit = Boolean.parseBoolean(args[5]);
+		numusers 				= Long.parseLong(args[0]);
+		csHost 					= args[1];
+		csPort 					= Integer.parseInt(args[2]);
+		myID        			= Integer.parseInt(args[3]);
+		guidFilePath 			= args[4];
 		
-		distibutionRand = new Random((myID+1)*100);
+		boolean enableSearch 	= Boolean.parseBoolean(args[5]);
+		boolean enableUpdate    = Boolean.parseBoolean(args[6]);
 		
-		guidFilePath = args[4];
-		
-		// compute distributions
-		DistributionLearningFromTraces.main(null);
 		
 		csClient  	= new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
 		
-		//guidPrefix 	= guidPrefix+myID;
-		//userInfoMap = new HashMap<String, UserRecordInfo>();
-		//countyProbList = new LinkedList<CountyNode>();
-		
-		filenameList   = new LinkedList<String>();
-		
-		Iterator<String> filenameIter 
-					   = DistributionLearningFromTraces.distributionsMap.keySet().iterator();
-		
-		while( filenameIter.hasNext() )
-		{
-			String filename = filenameIter.next();
-			filenameList.add(filename);
-		}
-		
-		//long totalPop  = computeSumPopulation();
-		//computeCountyPopDistribution(totalPop);
-		//computeGlobalLatLongBounds();
-		
-//		if(performInit)
-//		{
-//			UserInitializationClass userInitObj = new UserInitializationClass();
-//			userInitObj.initializaRateControlledRequestSender();
-//		}
-//		else
-//		{
-//			UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
-//			userInfoFileWrit.initializaRateControlledRequestSender();
-//		}
-		
 		UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
 		userInfoFileWrit.initializeFileWriting();
 		
+		WeatherBasedSearchQueryIssue searchIssue = null;
+		
+		if(enableSearch)
+		{
+			
+			searchIssue = new WeatherBasedSearchQueryIssue(0.5);
+		}
 		
 		TimerThread timerThread = new TimerThread();
 		new Thread(timerThread).start();
+		
+		if(enableUpdate)
+		{
+			distibutionRand = new Random((myID+1)*100);
 			
-		try
-		{
-			TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
-			traceBasedUpdate.rateControlledRequestSender();
+			// compute distributions
+			DistributionLearningFromTraces.main(null);
+			
+			filenameList   = new LinkedList<String>();
+			
+			Iterator<String> filenameIter 
+						   = DistributionLearningFromTraces.distributionsMap.keySet().iterator();
+			
+			while( filenameIter.hasNext() )
+			{
+				String filename = filenameIter.next();
+				filenameList.add(filename);
+			}
+			
+			try
+			{
+				TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
+				traceBasedUpdate.rateControlledRequestSender();
+			}
+			catch(Exception | Error ex)
+			{
+				ex.printStackTrace();
+			}
 		}
-		catch(Exception | Error ex)
+		
+		if(enableSearch)
 		{
-			ex.printStackTrace();
-		}	
+			new Thread(searchIssue).start();
+		}
+		
 		System.exit(0);
 	}
+	
 }

@@ -335,6 +335,7 @@ public class IssueSearches extends AbstractSearchRequestSendingClass
 		}
 	}
 	
+	
 	public static void main( String[] args ) throws NoSuchAlgorithmException, IOException, InterruptedException
 	{
 		//csHost = args[0];

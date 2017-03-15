@@ -423,7 +423,6 @@ public class ComputeUpdateUserRatesPerDayMethod
 				}
 			}
 		}
-		
 	}
 	
 	
@@ -437,6 +436,7 @@ public class ComputeUpdateUserRatesPerDayMethod
 		System.out.println("Number of useful users "+updateStorageList.size());
 		
 		double perc = 0.0;
+		double sumAvgRate = 0.0;
 		for(int i=0; i<updateStorageList.size(); i++)
 		{
 			perc = ((i+1)*1.0)/updateStorageList.size();
@@ -463,7 +463,11 @@ public class ComputeUpdateUserRatesPerDayMethod
 					+" , "+upd.maxTotalDistance
 					+" , "+shour
 					+" , "+ehour);
+			
+			sumAvgRate = sumAvgRate + upd.avgUpdateRate;
 		}
+		
+		System.out.println("Average update rate="+(sumAvgRate/updateStorageList.size()));
 		
 		System.out.println("username size "+usernameMap.size());
 		Iterator<String> userNameIter = usernameMap.keySet().iterator();

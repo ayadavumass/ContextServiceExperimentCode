@@ -1,10 +1,11 @@
-package edu.umass.cs.nationwideweathercs;
+package edu.umass.cs.largescalecasestudy;
 
+import java.util.Comparator;
 import java.util.List;
 
 import edu.umass.cs.acs.geodesy.GlobalCoordinate;
 
-public class WeatherEventStorage
+public class WeatherEventStorage implements Comparator<WeatherEventStorage>
 {
 	//"WFO" field in the data.
 	private final String issuingRadarId;
@@ -35,6 +36,7 @@ public class WeatherEventStorage
 		this.listOfPolygons = listOfPolygons;
 		this.areaKm2 = areaKm2;
 	}
+	
 	
 	public String getIssuingRadarId()
 	{
@@ -80,5 +82,19 @@ public class WeatherEventStorage
 	{
 		double dur = expireUnixTimeStamp - issueUnixTimeStamp;
 		return dur;
+	}
+	
+	
+	@Override
+	public int compare(WeatherEventStorage o1, WeatherEventStorage o2) 
+	{
+		if(o1.issueUnixTimeStamp < o2.issueUnixTimeStamp)
+		{
+			return -1;
+		}
+		else
+		{
+			return 1;
+		}
 	}
 }

@@ -62,9 +62,8 @@ public class ComputeUpdateUserRatesPerDayMethodGNSLogs
 			{
 				try
 				{
-					
 					JSONObject jsonObject = new JSONObject(sCurrentLine);
-						
+					
 					if( jsonObject.has(USERNAME_KEY) )
 					{
 						String username = jsonObject.getString(USERNAME_KEY);
@@ -140,7 +139,7 @@ public class ComputeUpdateUserRatesPerDayMethodGNSLogs
 						userPerDayObj.totalDistance = userPerDayObj.totalDistance + dist;
 						
 						userPerDayObj.lastCoord = currCoord;
-					}					
+					}
 					
 					totalEvents++;
 				}
@@ -253,7 +252,6 @@ public class ComputeUpdateUserRatesPerDayMethodGNSLogs
 		return distance;
 	}
 	
-	
 	private static void computeAverageUpdateRates() throws ParseException
 	{
 		File folder = new File(USER_TRACE_DIRECTORY);
@@ -298,6 +296,7 @@ public class ComputeUpdateUserRatesPerDayMethodGNSLogs
 			totalDistance	= 0.0;
 		}
 	}
+	
 	
 	public static class UpdateRateStorage implements Comparator<UpdateRateStorage>
 	{
@@ -434,6 +433,8 @@ public class ComputeUpdateUserRatesPerDayMethodGNSLogs
 		System.out.println("Number of useful users "+updateStorageList.size());
 		
 		double perc = 0.0;
+		double sumUpdateRate = 0.0;
+		
 		for(int i=0; i<updateStorageList.size(); i++)
 		{
 			perc = ((i+1)*1.0)/updateStorageList.size();
@@ -460,7 +461,12 @@ public class ComputeUpdateUserRatesPerDayMethodGNSLogs
 					+" , "+upd.maxTotalDistance
 					+" , "+shour
 					+" , "+ehour);
+			
+			sumUpdateRate = sumUpdateRate + upd.avgUpdateRate;
 		}
+		
+		System.out.println("sumUpdateRate="+(sumUpdateRate/updateStorageList.size()));
+		
 		System.out.println("username size "+usernameMap.size());
 		Iterator<String> userNameIter = usernameMap.keySet().iterator();
 		while(userNameIter.hasNext())

@@ -1,4 +1,4 @@
-package edu.umass.cs.nationwideweathercs;
+package edu.umass.cs.nwsdataprocessing;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
