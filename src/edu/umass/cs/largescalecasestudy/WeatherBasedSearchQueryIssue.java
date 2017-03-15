@@ -52,6 +52,7 @@ public class WeatherBasedSearchQueryIssue extends
 		super(lossTolerance);
 		sortedWeatherEventList = new LinkedList<WeatherEventStorage>();
 		readTheWeatherFile();
+
 	}
 	
 	@Override
@@ -93,7 +94,6 @@ public class WeatherBasedSearchQueryIssue extends
 			Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
 		}
 		System.out.println("Weather search query sending ends");
-		
 	}
 	
 	
@@ -233,6 +233,9 @@ public class WeatherBasedSearchQueryIssue extends
 		}
 		sortedWeatherEventList.sort(new WeatherEventStorage( "", "", "", 
 				"", -1, -1, null, -1));
+		
+		System.out.println("Number of weather events in the timeslot "
+												+sortedWeatherEventList.size());
 	}
 	
 	private List<List<GlobalCoordinate>> convertToListOfPolygons(JSONArray polygonsArr, 
