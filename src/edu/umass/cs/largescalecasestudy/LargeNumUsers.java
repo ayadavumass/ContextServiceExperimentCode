@@ -302,7 +302,7 @@ public class LargeNumUsers
 		
 		if(enableSearch)
 		{
-			new Thread(searchIssue).start();
+			searchIssue.rateControlledRequestSender();
 		}
 		
 		System.exit(0);
