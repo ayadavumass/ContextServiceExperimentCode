@@ -122,20 +122,30 @@ public class WeatherBasedSearchQueryIssue extends
 			double minLong = boundingRect.getMinY();
 			double maxLong = boundingRect.getMaxY();
 			
+			if( (minLat >= LargeNumUsers.MIN_US_LAT) 
+					&& (maxLat <= LargeNumUsers.MAX_US_LAT) 
+					&& (minLong >= LargeNumUsers.MIN_US_LONG) 
+					&& (maxLong <= LargeNumUsers.MAX_US_LONG) )
+			{
+				String searchQuery = LargeNumUsers.LATITUDE_KEY+" >= "+minLat+
+						" AND "+LargeNumUsers.LATITUDE_KEY+" <= "+maxLat
+						+" AND "+LargeNumUsers.LONGITUDE_KEY+" >= "+
+						minLong+" AND "+LargeNumUsers.LONGITUDE_KEY+" <= "+maxLong;
 			
-			String searchQuery = LargeNumUsers.LATITUDE_KEY+" >= "+minLat+
-				" AND "+LargeNumUsers.LATITUDE_KEY+" <= "+maxLat
-				+" AND "+LargeNumUsers.LONGITUDE_KEY+" >= "+
-				minLong+" AND "+LargeNumUsers.LONGITUDE_KEY+" <= "+maxLong;
-			
-			long requestId = numSent++;
-			ExperimentSearchReply searchRep 
+				long requestId = numSent++;
+				ExperimentSearchReply searchRep 
 							= new ExperimentSearchReply( requestId );
 			
-			// not used without triggers.
-			long queryExpiry = 900000;
-			LargeNumUsers.csClient.sendSearchQueryWithCallBack
-				( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+				// not used without triggers.
+				long queryExpiry = 900000;
+				LargeNumUsers.csClient.sendSearchQueryWithCallBack
+					( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+			}
+			else
+			{
+				System.out.println("Weather alert outside the area "+minLat
+							+" , "+maxLat+" , "+minLong+" , "+maxLong);
+			}
 		}
 	}
 	
