@@ -254,6 +254,22 @@ public class LargeNumUsers
 		
 		if(enableUpdate)
 		{
+			distibutionRand = new Random((myID+1)*100);
+			
+			// compute distributions
+			DistributionLearningFromTraces.main(null);
+						
+			filenameList   = new LinkedList<String>();
+						
+			Iterator<String> filenameIter 
+									   = DistributionLearningFromTraces.distributionsMap.keySet().iterator();
+						
+			while( filenameIter.hasNext() )
+			{
+				String filename = filenameIter.next();
+				filenameList.add(filename);
+			}
+			
 			UserInfoFileWriting userInfoFileWrit = new UserInfoFileWriting();
 			userInfoFileWrit.initializeFileWriting();
 		}
@@ -262,35 +278,25 @@ public class LargeNumUsers
 		
 		if(enableSearch)
 		{
-			
-			searchIssue = new WeatherBasedSearchQueryIssue(0.5);
+			if(myID == 0)
+			{
+				searchIssue = new WeatherBasedSearchQueryIssue(0.5);
+			}
 		}
 		
 		TimerThread timerThread = new TimerThread();
 		new Thread(timerThread).start();
+		Thread updThread 	= null;
+		Thread searchThread = null;
 		
 		if(enableUpdate)
 		{
-			distibutionRand = new Random((myID+1)*100);
-			
-			// compute distributions
-			DistributionLearningFromTraces.main(null);
-			
-			filenameList   = new LinkedList<String>();
-			
-			Iterator<String> filenameIter 
-						   = DistributionLearningFromTraces.distributionsMap.keySet().iterator();
-			
-			while( filenameIter.hasNext() )
-			{
-				String filename = filenameIter.next();
-				filenameList.add(filename);
-			}
-			
 			try
 			{
 				TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
-				traceBasedUpdate.rateControlledRequestSender();
+				updThread = new Thread(traceBasedUpdate);
+				updThread.start();
+				//traceBasedUpdate.rateControlledRequestSender();
 			}
 			catch(Exception | Error ex)
 			{
@@ -300,10 +306,26 @@ public class LargeNumUsers
 		
 		if(enableSearch)
 		{
-			searchIssue.rateControlledRequestSender();
+			if(myID == 0)
+			{
+				searchThread = new Thread(searchIssue);
+				searchThread.start();
+			}
+		}
+		
+		if(updThread != null)
+		{
+			updThread.join();
+		}
+		
+		if(searchThread != null)
+		{
+			searchThread.join();
 		}
 		
 		System.exit(0);
 	}
+	
+	
 	
 }

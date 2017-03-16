@@ -169,9 +169,9 @@ public class WeatherBasedSearchQueryIssue extends
 		return -1;
 	}
 	
+	
 	public void readTheWeatherFile()
 	{
-		
 		boolean featuresFound = false;
 		BufferedReader br = null;
 		
@@ -251,6 +251,7 @@ public class WeatherBasedSearchQueryIssue extends
 		System.out.println("Number of weather events in the timeslot "
 												+sortedWeatherEventList.size());
 	}
+	
 	
 	private List<List<GlobalCoordinate>> convertToListOfPolygons(JSONArray polygonsArr, 
 			String polygonType)
