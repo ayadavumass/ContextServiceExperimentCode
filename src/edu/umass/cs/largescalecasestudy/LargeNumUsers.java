@@ -1,6 +1,5 @@
 package edu.umass.cs.largescalecasestudy;
 
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -11,10 +10,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
-
+import edu.umass.cs.mysqlBenchmarking.DataSource;
 
 public class LargeNumUsers
 {
@@ -22,6 +23,7 @@ public class LargeNumUsers
 	public static final double MAX_US_LAT						= 48.0;
 	public static final double MIN_US_LONG						= -125.0;
 	public static final double MAX_US_LONG						= -66.0;
+	
 	
 	public static final String TEXAS_TIMEZONE					= "GMT-6";
 	public static final int NUM_EVENT_THRESHOLD					= 10;
@@ -45,17 +47,13 @@ public class LargeNumUsers
 	
 	public static final long  TIME_UPDATE_SLEEP_TIME			= 60*1000;  // every minute
 	
-	
 	public static final long TIME_DIST_INTERVAL					= 60*10; // 10 minutes on either side.
-	
 	
 	// 900 s timeslots with highest alert rate
 	// 1. 1485135000
 	// 2. 1483795800
 	// 3. 1485125100
 	// 4. 1488249900
-	
-	
 
 	public static final long START_UNIX_TIME					= 1485117000;
 		
@@ -91,12 +89,20 @@ public class LargeNumUsers
 	// and when 2 is read to perform updates then UserInfo1 is written for next updates.
 	public static int userinfoFileNum							= 0;
 	
-	
 	public static List<String> filenameList;
 	public static ContextServiceClient csClient;
 	
 	public static Random distibutionRand;
 	public static String guidFilePath;
+	
+	// when this flag is set true then search and update
+	// requests are executed on mysql locally rather than being sent to cns
+	public static boolean localMySQLOper;
+	public static int mysqlpoolsize;
+	
+	public static ExecutorService	 taskES						= null;
+	
+	public static DataSource dsInst								= null;
 	
 	
 	public static boolean checkIfRelativeTimeInTimeSlot
@@ -129,7 +135,6 @@ public class LargeNumUsers
 			return false;
 		}
 	}
-	
 	
 	public static String getSHA1(String stringToHash)
 	{
@@ -247,10 +252,21 @@ public class LargeNumUsers
 		
 		boolean enableSearch 	= Boolean.parseBoolean(args[5]);
 		boolean enableUpdate    = Boolean.parseBoolean(args[6]);
+		localMySQLOper          = Boolean.parseBoolean(args[7]);
 		
 		
-		csClient  	= new ContextServiceClient(csHost, csPort, false, 
+		if(localMySQLOper)
+		{
+			mysqlpoolsize = Integer.parseInt(args[8]);
+			taskES = Executors.newFixedThreadPool(mysqlpoolsize);
+		}
+		
+		
+		if(!localMySQLOper)
+		{
+			csClient  	= new ContextServiceClient(csHost, csPort, false, 
 				PrivacySchemes.NO_PRIVACY);
+		}
 		
 		if(enableUpdate)
 		{
@@ -325,7 +341,4 @@ public class LargeNumUsers
 		
 		System.exit(0);
 	}
-	
-	
-	
 }

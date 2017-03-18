@@ -74,7 +74,7 @@ public class MySQLThroughputBenchmarking
 	
 	public static long numOfSearchQueries;
 	
-	public static boolean disableCircularQueryTrigger = true;
+	public static boolean disableCircularQueryTrigger 			= true;
 	
 	public static ExecutorService	 taskES						= null;
 	

@@ -166,6 +166,7 @@ public class SearchClass extends AbstractRequestSendingClass
 		MySQLThroughputBenchmarking.taskES.execute(searchTask);
 	}
 	
+	
 	private void sendQueryMessageWithSmallRanges()
 	{
 		String searchQuery

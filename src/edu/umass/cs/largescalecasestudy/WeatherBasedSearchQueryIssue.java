@@ -38,7 +38,6 @@ public class WeatherBasedSearchQueryIssue extends
 	public static final String POLYGON_TYPE						= "Polygon";
 	public static final String MULTIPOLYGON_TYPE				= "MultiPolygon";
 	
-	
 	//private final DateFormat dfm 								= new SimpleDateFormat("yyyyMMddHHmm");
 	
 	
@@ -53,8 +52,8 @@ public class WeatherBasedSearchQueryIssue extends
 		super(lossTolerance);
 		sortedWeatherEventList = new LinkedList<WeatherEventStorage>();
 		readTheWeatherFile();
-
 	}
+	
 	
 	@Override
 	public void run()
@@ -134,13 +133,23 @@ public class WeatherBasedSearchQueryIssue extends
 						minLong+" AND "+LargeNumUsers.LONGITUDE_KEY+" <= "+maxLong;
 			
 				long requestId = numSent++;
-				ExperimentSearchReply searchRep 
-							= new ExperimentSearchReply( requestId );
-			
-				// not used without triggers.
-				long queryExpiry = 900000;
-				LargeNumUsers.csClient.sendSearchQueryWithCallBack
-					( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+				
+				
+				if(!LargeNumUsers.localMySQLOper)
+				{
+					ExperimentSearchReply searchRep 
+									= new ExperimentSearchReply( requestId );
+					
+					// not used without triggers.
+					long queryExpiry = 900000;
+					LargeNumUsers.csClient.sendSearchQueryWithCallBack
+							( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+				}
+				else
+				{
+					SearchTask stask = new SearchTask( searchQuery, this );
+					LargeNumUsers.taskES.execute(stask);
+				}
 			}
 			else
 			{
@@ -168,7 +177,6 @@ public class WeatherBasedSearchQueryIssue extends
 		}
 		return -1;
 	}
-	
 	
 	public void readTheWeatherFile()
 	{
@@ -251,7 +259,6 @@ public class WeatherBasedSearchQueryIssue extends
 		System.out.println("Number of weather events in the timeslot "
 												+sortedWeatherEventList.size());
 	}
-	
 	
 	private List<List<GlobalCoordinate>> convertToListOfPolygons(JSONArray polygonsArr, 
 			String polygonType)
@@ -340,8 +347,7 @@ public class WeatherBasedSearchQueryIssue extends
 
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken) 
-	{
-		
+	{	
 	}
 
 	@Override
@@ -355,8 +361,8 @@ public class WeatherBasedSearchQueryIssue extends
 			
 			sumSearchLatency = sumSearchLatency + timeTaken;
 
-			System.out.println(" Search rep recvd, avg search reply="+(sumSearchReply/numSearch)
-					+ " sumSearchLatency="+(sumSearchLatency/numSearch));
+			System.out.println(" Search rep recvd avg search reply "+(sumSearchReply/numSearch)
+					+ " sumSearchLatency "+(sumSearchLatency/numSearch));
 			
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{

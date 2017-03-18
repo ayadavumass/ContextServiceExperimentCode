@@ -1,13 +1,12 @@
-package edu.umass.cs.mysqlBenchmarking;
+package edu.umass.cs.largescalecasestudy;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.Connection;
-
 import java.sql.SQLException;
 
-
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 
 public class DataSource
 {
@@ -20,7 +19,7 @@ public class DataSource
     
     private final String dbName;
     
-    public DataSource(int nodeId) throws IOException, SQLException, PropertyVetoException
+    public DataSource() throws IOException, SQLException, PropertyVetoException
     {
     	portNum = 6000;
     	
@@ -39,7 +38,7 @@ public class DataSource
         //cpds.setMinPoolSize(5);
         //cpds.setAcquireIncrement(5);
         // 151 is default but on d710 machines it is set to 214
-        cpds.setMaxPoolSize(MySQLThroughputBenchmarking.poolSize);
+        cpds.setMaxPoolSize(LargeNumUsers.mysqlpoolsize);
         cpds.setAutoCommitOnClose(false);
         //cpds.setMaxStatements(180);
     }
@@ -55,7 +54,7 @@ public class DataSource
 //        	return datasource;
 //        }
 //    }
-
+    
     public Connection getConnection() throws SQLException 
     {
     	return this.cpds.getConnection();
