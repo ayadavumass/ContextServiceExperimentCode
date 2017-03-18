@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 
 import edu.umass.cs.contextservice.client.ContextServiceClient;
 import edu.umass.cs.contextservice.config.ContextServiceConfig.PrivacySchemes;
-import edu.umass.cs.mysqlBenchmarking.DataSource;
 
 public class LargeNumUsers
 {
