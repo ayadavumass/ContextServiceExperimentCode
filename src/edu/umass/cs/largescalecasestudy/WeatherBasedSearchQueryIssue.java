@@ -127,16 +127,16 @@ public class WeatherBasedSearchQueryIssue extends
 					&& (minLong >= LargeNumUsers.MIN_US_LONG) 
 					&& (maxLong <= LargeNumUsers.MAX_US_LONG) )
 			{
-				String searchQuery = LargeNumUsers.LATITUDE_KEY+" >= "+minLat+
-						" AND "+LargeNumUsers.LATITUDE_KEY+" <= "+maxLat
-						+" AND "+LargeNumUsers.LONGITUDE_KEY+" >= "+
-						minLong+" AND "+LargeNumUsers.LONGITUDE_KEY+" <= "+maxLong;
-			
 				long requestId = numSent++;
 				
 				
 				if(!LargeNumUsers.localMySQLOper)
 				{
+					String searchQuery = LargeNumUsers.LATITUDE_KEY+" >= "+minLat+
+							" AND "+LargeNumUsers.LATITUDE_KEY+" <= "+maxLat
+							+" AND "+LargeNumUsers.LONGITUDE_KEY+" >= "+
+							minLong+" AND "+LargeNumUsers.LONGITUDE_KEY+" <= "+maxLong;
+					
 					ExperimentSearchReply searchRep 
 									= new ExperimentSearchReply( requestId );
 					
@@ -147,7 +147,12 @@ public class WeatherBasedSearchQueryIssue extends
 				}
 				else
 				{
-					SearchTask stask = new SearchTask( searchQuery, this );
+					String mysqlQuery = "SELECT nodeGUID from attrIndexDataStorage WHERE "
+							+ "(  ( latitude >= "+minLat+" AND latitude <= "+maxLat+" ) "
+							+ "AND  ( longitude >= "+minLong+" AND longitude <= "+
+								maxLong+" ) )";
+					
+					SearchTask stask = new SearchTask( mysqlQuery, this );
 					LargeNumUsers.taskES.execute(stask);
 				}
 			}
