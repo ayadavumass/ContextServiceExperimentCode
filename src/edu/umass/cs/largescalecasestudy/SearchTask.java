@@ -49,10 +49,12 @@ public class SearchTask implements Runnable
 		Statement stmt = null;
 		
 		try
-		{	
+		{
+			System.out.println("getValueInfoObjectRecord ");
 			myConn = LargeNumUsers.dsInst.getConnection();
 			stmt = myConn.createStatement();
 			
+			System.out.println("Executing the search query");
 			ResultSet rs = stmt.executeQuery(searchQuery);
 			
 			while( rs.next() )
@@ -66,6 +68,7 @@ public class SearchTask implements Runnable
 			}
 			
 			rs.close();
+			System.out.println("Query execution complete");
 		} catch(SQLException sqlex)
 		{
 			sqlex.printStackTrace();
