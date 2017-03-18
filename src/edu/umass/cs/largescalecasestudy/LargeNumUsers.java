@@ -258,6 +258,7 @@ public class LargeNumUsers
 		if(localMySQLOper)
 		{
 			mysqlpoolsize = Integer.parseInt(args[8]);
+			dsInst = new DataSource();
 			taskES = Executors.newFixedThreadPool(mysqlpoolsize);
 		}
 		

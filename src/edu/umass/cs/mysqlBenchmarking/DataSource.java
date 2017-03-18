@@ -20,7 +20,7 @@ public class DataSource
     
     private final String dbName;
     
-    public DataSource(int nodeId) throws IOException, SQLException, PropertyVetoException
+    public DataSource() throws IOException, SQLException, PropertyVetoException
     {
     	portNum = 6000;
     	

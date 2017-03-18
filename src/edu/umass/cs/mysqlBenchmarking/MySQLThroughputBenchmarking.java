@@ -89,7 +89,7 @@ public class MySQLThroughputBenchmarking
 		{
 			taskES = Executors.newFixedThreadPool(poolSize);
 			
-			dsInst = new DataSource(nodeId);
+			dsInst = new DataSource();
 			createTable();
 			
 //			myConn = dsInst.getConnection();
