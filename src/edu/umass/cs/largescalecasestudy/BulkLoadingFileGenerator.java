@@ -5,11 +5,12 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import edu.umass.cs.contextservice.utils.Utils;
 
 public class BulkLoadingFileGenerator
 {
@@ -228,7 +229,7 @@ public class BulkLoadingFileGenerator
 	}
 	
 	
-	public static String getSHA1(String stringToHash)
+	/*public static String getSHA1(String stringToHash)
 	{
 		MessageDigest md = null;
 		try
@@ -243,8 +244,7 @@ public class BulkLoadingFileGenerator
 		
 		byte byteData[] = md.digest();
 		
-		//convert the byte to hex format method 1
-		
+		//convert the byte to hex format method 1	
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < byteData.length; i++) 
 		{
@@ -253,7 +253,21 @@ public class BulkLoadingFileGenerator
 		}
 		String returnGUID = sb.toString();
 		return returnGUID.substring(0, 40);
+	}*/
+	
+	public static String getOrderedHash(long guidNum)
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+	    buffer.putLong(guidNum);
+	    String hexArray = Utils.byteArrayToHex(buffer.array());
+	    
+	    for(int i=0; i<(40-hexArray.length()); i++)
+	    {
+	    	hexArray = "0"+hexArray ;
+	    }
+		return hexArray;
 	}
+	
 	
 	private static void generateGuidEntry(long guidNum, BufferedWriter bw, Random rand) throws Exception
 	{
@@ -267,7 +281,7 @@ public class BulkLoadingFileGenerator
 		double homeLong = countynode.minLong + 
 					(countynode.maxLong - countynode.minLong) * rand.nextDouble();
 		
-		String userGUID = getSHA1(GUID_PREFIX+guidNum);
+		String userGUID = getOrderedHash(guidNum);
 		
 		
 		String str = userGUID+","+homeLat+","+homeLong+"\n";
