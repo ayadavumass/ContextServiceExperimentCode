@@ -261,7 +261,7 @@ public class BulkLoadingFileGenerator
 	    buffer.putLong(guidNum);
 	    String hexArray = Utils.byteArrayToHex(buffer.array());
 	    
-	    for(int i=0; i<(40-hexArray.length()); i++)
+	    while(hexArray.length() < 40)
 	    {
 	    	hexArray = "0"+hexArray ;
 	    }
