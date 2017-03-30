@@ -318,11 +318,12 @@ public class BulkLoadingFileGenerator
 			bw.write(str);
 			
 			long currnum = startNum;
-			
-			while(currnum < numusers)
+			long count = 0;
+			while(count < numusers)
 			{
 				generateGuidEntry(currnum, bw, rand);
 				currnum++;
+				count++;
 			}
 		}
 		catch(IOException ioex)
