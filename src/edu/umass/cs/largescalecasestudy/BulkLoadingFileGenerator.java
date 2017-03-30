@@ -291,7 +291,11 @@ public class BulkLoadingFileGenerator
 	
 	public static void main(String[] args) throws Exception
 	{
-		long numusers 	= Long.parseLong(args[0]);
+		long startNum = Long.parseLong(args[0]);
+		long endNum = Long.parseLong(args[1]);		
+		
+		long numusers 	= endNum-startNum;
+		
 		
 		Random rand = new Random(100);
 		
@@ -313,7 +317,7 @@ public class BulkLoadingFileGenerator
 			String str = "# guid, latitude, longitude\n";
 			bw.write(str);
 			
-			long currnum = 0;
+			long currnum = startNum;
 			
 			while(currnum < numusers)
 			{
