@@ -165,7 +165,6 @@ public class TraceBasedUpdate extends
 										userRecInfo.getHomeLat(), userRecInfo.getHomeLong() );
 								}
 								bw.write(nextuserRecInfo.toString()+"\n");
-								bw.flush();
 							}	
 						}
 						
@@ -173,12 +172,9 @@ public class TraceBasedUpdate extends
 					else
 					{
 						// write entry as it is in the file, so that it can eb executed at later time
-						
 						bw.write(userRecInfo.toString()+"\n");
-						bw.flush();
 					}
 				}
-				//FIXME: fix the date change also.
 			}
 			catch(IOException ioex)
 			{

@@ -20,18 +20,7 @@ public class UserInfoFileWriting
 	
 	private void assingTraceAndWriteToFile(String guid, double homeLat, double homeLong, 
 												BufferedWriter bw) throws Exception
-	{
-//		double randnum = initRand.nextDouble();
-//		CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
-//		
-//		double homeLat =  countynode.minLat + 
-//					(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
-//		
-//		double homeLong = countynode.minLong + 
-//					(countynode.maxLong - countynode.minLong) * initRand.nextDouble();
-//		
-//		String userGUID = LargeNumUsers.getSHA1(LargeNumUsers.guidPrefix+guidNum);
-		
+	{	
 		int arrayIndex = Hashing.consistentHash(guid.hashCode(), 
 				LargeNumUsers.filenameList.size());
 		
@@ -120,46 +109,5 @@ public class UserInfoFileWriting
 			}
 		}	
 		System.out.println("FileBasedUserInit complete eventual sending rate ");
-	}
-	
-	
-	public void writeTraceToFile(int numEntries)
-	{
-		/*BufferedWriter bw = null;	
-		try 
-		{
-			bw = new BufferedWriter(new FileWriter("nationwidePopTrace.txt"));
-			
-			for(int i=0; i<numEntries; i++)
-			{	
-				double randnum = initRand.nextDouble();
-				
-				CountyNode countynode = LargeNumUsers.binarySearchOfCounty(randnum);
-				
-				
-				double latitude =  countynode.minLat + 
-							(countynode.maxLat - countynode.minLat) * initRand.nextDouble();
-				
-				double longitude = countynode.minLong + 
-							(countynode.maxLong - countynode.minLong) * initRand.nextDouble();
-				
-				bw.write("latitude,"+latitude+",longitude,"+longitude+"\n");
-			}
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} finally 
-		{
-			try 
-			{
-				if (bw != null)
-					bw.close();
-			}
-			catch (IOException ex) 
-			{
-				ex.printStackTrace();
-			}
-		}*/
 	}
 }
