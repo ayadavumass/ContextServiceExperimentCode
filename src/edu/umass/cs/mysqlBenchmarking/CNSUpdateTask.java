@@ -31,21 +31,21 @@ public class CNSUpdateTask implements Runnable
 	@Override
 	public void run()
 	{
-		
 		try 
 		{
 			long start = System.currentTimeMillis();
-			putValueObjectRecord();
+			putValueObjectRecord(MySQLThroughputBenchmarking.CNS_HASH_INDEX_TABLE);
+			putValueObjectRecord(MySQLThroughputBenchmarking.CNS_ATTR_INDEX_TABLE);
 			long end = System.currentTimeMillis();
 			requestSendingTask.incrementUpdateNumRecvd(guid, end-start);
-		} catch (SQLException e) 
+		} 
+		catch (SQLException e) 
 		{
 			e.printStackTrace();
 		}
-		
 	}
 	
-	public void putValueObjectRecord() throws SQLException
+	public void putValueObjectRecord(String tableName) throws SQLException
 	{
 		Connection myConn = null;
 		Statement statement = null;
@@ -59,7 +59,7 @@ public class CNSUpdateTask implements Runnable
 		{
 			Iterator<String> attrIter = updateJSON.keys();
 			
-			String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.CNS_TABLE_NAME+
+			String updateTableSQL = "UPDATE "+ tableName+
 					" SET ";
 					//+ "value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
 			boolean first = true;
@@ -103,6 +103,7 @@ public class CNSUpdateTask implements Runnable
 			try 
 			{
 				if(statement != null)
+					
 					statement.close();
 				
 				if(myConn != null)

@@ -28,8 +28,6 @@ public class MySQLThroughputBenchmarking
 	// performs updates directly on CNS tables.
 	public static final int RUN_CNS_UPDATE						= 13;
 	
-	
-	
 	// 100 seconds, experiment runs for 100 seconds
 	public static final int EXPERIMENT_TIME						= 100000;
 	
@@ -53,7 +51,9 @@ public class MySQLThroughputBenchmarking
 	
 	public static final String triggerTableName 				= "triggerTable";
 	
-	public static final String CNS_TABLE_NAME					= "attrIndexDataStorage";
+	public static final String CNS_ATTR_INDEX_TABLE				= "attrIndexDataStorage";
+	
+	public static final String CNS_HASH_INDEX_TABLE				= "guidHashDataStorage";
 	
 	
 	public static final int ATTR_MAX							= 1500;
