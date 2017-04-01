@@ -36,7 +36,7 @@ public class GetClassBackToBack extends AbstractRequestSendingClass
 		long start = System.currentTimeMillis();
 		while( numReqsSent < numOfBackToBackReqToSend )
 		{
-			currUserGuidNum = getRand.nextInt(MySQLThroughputBenchmarking.numGuids);
+			currUserGuidNum = getRand.nextInt((int)MySQLThroughputBenchmarking.numGuids);
 			doGet(currUserGuidNum);
 			numReqsSent++;
 		}

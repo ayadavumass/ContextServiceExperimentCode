@@ -34,7 +34,6 @@ public class BulkLoadingFileGenerator
 	
 	
 	public static List<CountyNode> countyProbList;
-
 	
 	
 	public static long computeSumPopulation()
@@ -190,7 +189,6 @@ public class BulkLoadingFileGenerator
 		return retNode;
 	}
 	
-	
 	private static void computeGlobalLatLongBounds()
 	{
 		double minLat    = 1000;
@@ -227,7 +225,6 @@ public class BulkLoadingFileGenerator
 		System.out.println("minLat="+minLat+", minLong="+minLong
 					+", maxLat="+maxLat+", maxLong="+maxLong);
 	}
-	
 	
 	/*public static String getSHA1(String stringToHash)
 	{
@@ -268,7 +265,6 @@ public class BulkLoadingFileGenerator
 		return hexArray;
 	}
 	
-	
 	private static void generateGuidEntry(long guidNum, BufferedWriter bw, Random rand) throws Exception
 	{
 		double randnum = rand.nextDouble();
@@ -292,8 +288,7 @@ public class BulkLoadingFileGenerator
 	public static void main(String[] args) throws Exception
 	{
 		long startNum = Long.parseLong(args[0]);
-		long endNum = Long.parseLong(args[1]);		
-		
+		long endNum = Long.parseLong(args[1]);
 		long numusers 	= endNum-startNum;
 		
 		

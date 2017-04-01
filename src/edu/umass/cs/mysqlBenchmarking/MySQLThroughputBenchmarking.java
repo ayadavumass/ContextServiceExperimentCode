@@ -25,6 +25,11 @@ public class MySQLThroughputBenchmarking
 	public static final int RUN_TRIGGER_UPDATE					= 11;
 	public static final int RUN_BULK_INSERT						= 12;
 	
+	// performs updates directly on CNS tables.
+	public static final int RUN_CNS_UPDATE						= 13;
+	
+	
+	
 	// 100 seconds, experiment runs for 100 seconds
 	public static final int EXPERIMENT_TIME						= 100000;
 	
@@ -48,6 +53,8 @@ public class MySQLThroughputBenchmarking
 	
 	public static final String triggerTableName 				= "triggerTable";
 	
+	public static final String CNS_TABLE_NAME					= "attrIndexDataStorage";
+	
 	
 	public static final int ATTR_MAX							= 1500;
 	public static final int ATTR_MIN							= 1;
@@ -56,11 +63,11 @@ public class MySQLThroughputBenchmarking
 	public static final int numAttrsInQuery						= 4;
 	
 	public static DataSource dsInst;
-	//private Random valueRand;
+	
 	
 	public static int nodeId;
 	
-	public static int numGuids;
+	public static long numGuids;
 	public static int numAttrs;
 	
 	public static int requestType;
@@ -82,6 +89,7 @@ public class MySQLThroughputBenchmarking
 	public static boolean inMemory;
 	
 	public static HashMap<String, Boolean> attrMap;
+	
 	
 	public MySQLThroughputBenchmarking()
 	{
@@ -253,6 +261,7 @@ public class MySQLThroughputBenchmarking
 		stmt.executeUpdate(newTableCommand);
 	}
 	
+	
 	private static String getPartitionInfoStorageString(String newTableCommand)
 	{
 		// query and default value mechanics
@@ -300,11 +309,12 @@ public class MySQLThroughputBenchmarking
 			else
 			{
 				newTableCommand = newTableCommand+ " , "+lowerAttrName+" , "+upperAttrName;
-			}	
+			}
 		}
 		newTableCommand = newTableCommand+ " ) ";*/	
 		return newTableCommand;
 	}
+	
 	
 	public static void main( String[] args )
 	{
@@ -317,45 +327,49 @@ public class MySQLThroughputBenchmarking
 		poolSize  		   = Integer.parseInt(args[5]);
 		inMemory           = Boolean.parseBoolean(args[6]);
 		
-		attrMap 		   = new HashMap<String, Boolean>();
-		
-		for(int i=0; i<numAttrs; i++)
-		{
-			String attrName = "attr"+i;
-			attrMap.put(attrName, true);
-		}
-		
-		
 		MySQLThroughputBenchmarking mysqlBech 
-								= new MySQLThroughputBenchmarking();
+						   = new MySQLThroughputBenchmarking();
 		
-		long start = System.currentTimeMillis();
 		
-		if( requestType == RUN_BULK_INSERT )
+		if(requestType != RUN_CNS_UPDATE)
 		{
-			batchSize = Integer.parseInt(args[7]);
-			BulkInitializeClass bulkInit = new BulkInitializeClass();
-			new Thread(bulkInit).start();
-			bulkInit.waitForThreadFinish();
-		}
-		else
-		{
-			InitializeClass initClass = new InitializeClass();
-			new Thread(initClass).start();
-			initClass.waitForThreadFinish();
-		}
+			attrMap 		   = new HashMap<String, Boolean>();
+			
+			for(int i=0; i<numAttrs; i++)
+			{
+				String attrName = "attr"+i;
+				attrMap.put(attrName, true);
+			}
+			
+			long start = System.currentTimeMillis();
 		
-		System.out.println(numGuids+" records inserted in "
+			if( requestType == RUN_BULK_INSERT )
+			{
+				batchSize = Integer.parseInt(args[7]);
+				BulkInitializeClass bulkInit = new BulkInitializeClass();
+				new Thread(bulkInit).start();
+				bulkInit.waitForThreadFinish();
+			}
+			else
+			{
+				InitializeClass initClass = new InitializeClass();
+				new Thread(initClass).start();
+				initClass.waitForThreadFinish();
+			}
+			
+			System.out.println(numGuids+" records inserted in "
 									+(System.currentTimeMillis()-start));
 		
-		try
-		{
-			Thread.sleep(10000);
+			try
+			{
+				Thread.sleep(10000);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
+		
 		
 		AbstractRequestSendingClass requestTypeObj = null;
 		switch( requestType )
@@ -449,6 +463,15 @@ public class MySQLThroughputBenchmarking
 						 + (((TriggerUpdateClass)requestTypeObj).getAvgRemoved())
 						 + " avg added "
 						 + (((TriggerUpdateClass)requestTypeObj).getAvgAdded()) );
+				break;
+			}
+			case RUN_CNS_UPDATE:
+			{
+				requestTypeObj = new CNSUpdateClass();
+				new Thread(requestTypeObj).start();
+				requestTypeObj.waitForThreadFinish();
+				double avgUpdTime = ((CNSUpdateClass)requestTypeObj).getAvgUpdateTime();
+				System.out.println("Avg update time "+avgUpdTime);
 				break;
 			}
 			default:

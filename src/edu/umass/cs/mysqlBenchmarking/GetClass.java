@@ -43,7 +43,7 @@ public class GetClass extends AbstractRequestSendingClass
 		{
 			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
-				currUserGuidNum = getRand.nextInt(MySQLThroughputBenchmarking.numGuids);
+				currUserGuidNum = getRand.nextInt((int)MySQLThroughputBenchmarking.numGuids);
 				doGet(currUserGuidNum);
 			}
 			currTime = System.currentTimeMillis();
@@ -58,7 +58,7 @@ public class GetClass extends AbstractRequestSendingClass
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
 			{
-				currUserGuidNum = getRand.nextInt(MySQLThroughputBenchmarking.numGuids);
+				currUserGuidNum = getRand.nextInt((int)MySQLThroughputBenchmarking.numGuids);
 				doGet(currUserGuidNum);
 			}
 			Thread.sleep(100);

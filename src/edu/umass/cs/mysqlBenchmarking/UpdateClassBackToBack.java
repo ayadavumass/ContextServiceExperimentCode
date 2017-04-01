@@ -43,7 +43,7 @@ public class UpdateClassBackToBack extends AbstractRequestSendingClass
 		long start = System.currentTimeMillis();
 		while( numReqsSent < numOfBackToBackReqToSend )
 		{
-			currUserGuidNum = updateRand.nextInt(MySQLThroughputBenchmarking.numGuids);
+			currUserGuidNum = updateRand.nextInt((int)MySQLThroughputBenchmarking.numGuids);
 			doUpdate((int)currUserGuidNum);
 			numReqsSent++;
 		}
