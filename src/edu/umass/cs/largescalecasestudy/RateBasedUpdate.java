@@ -124,6 +124,7 @@ public class RateBasedUpdate extends
 		
 		updateJSON.put(attrName, value);
 		
+		System.out.println("updateJSON="+updateJSON);
 		
 		ExperimentUpdateReply updateRep 
 			= new ExperimentUpdateReply(numSent, guid);
