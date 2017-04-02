@@ -46,7 +46,7 @@ public class LargeNumUsers
 	
 	public static final long  TIME_UPDATE_SLEEP_TIME			= 10*1000;  // every minute
 	
-	public static final long TIME_DIST_INTERVAL					= 60*10; // 10 minutes on either side.
+	public static final long TIME_DIST_INTERVAL					= 60; // 10 minutes on either side.
 	
 	// 900 s timeslots with highest alert rate
 	// 1. 1485135000
