@@ -111,13 +111,16 @@ public class RateBasedUpdate extends
 		JSONObject updateJSON = new JSONObject();
 		
 		String attrName = LargeNumUsers.LATITUDE_KEY;
-		double value = uniformRand.nextDouble()*(LargeNumUsers.MAX_US_LAT-LargeNumUsers.MIN_US_LAT);
+		double value = LargeNumUsers.MIN_US_LAT 
+				+ uniformRand.nextDouble()*(LargeNumUsers.MAX_US_LAT-LargeNumUsers.MIN_US_LAT);
 		
 		updateJSON.put(attrName, value);
 		
 		
 		attrName = LargeNumUsers.LONGITUDE_KEY;
-		value = uniformRand.nextDouble()*(LargeNumUsers.MAX_US_LONG-LargeNumUsers.MIN_US_LONG);
+		
+		value = LargeNumUsers.MIN_US_LONG 
+				+ uniformRand.nextDouble()*(LargeNumUsers.MAX_US_LONG-LargeNumUsers.MIN_US_LONG);
 		
 		updateJSON.put(attrName, value);
 		
