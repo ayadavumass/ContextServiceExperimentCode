@@ -102,6 +102,8 @@ public class LargeNumUsers
 	
 	public static DataSource dsInst								= null;
 	
+	public static boolean uniformWorkload;
+	public static double requestsps;
 	
 	public static boolean checkIfRelativeTimeInTimeSlot
 								(long relativeTimeFromMidnight) throws ParseException
@@ -251,13 +253,18 @@ public class LargeNumUsers
 		boolean enableSearch 	= Boolean.parseBoolean(args[5]);
 		boolean enableUpdate    = Boolean.parseBoolean(args[6]);
 		localMySQLOper          = Boolean.parseBoolean(args[7]);
-		
+		uniformWorkload         = Boolean.parseBoolean(args[8]);
 		
 		if(localMySQLOper)
 		{
-			mysqlpoolsize = Integer.parseInt(args[8]);
+			mysqlpoolsize = Integer.parseInt(args[9]);
 			dsInst = new DataSource();
 			taskES = Executors.newFixedThreadPool(mysqlpoolsize);
+		}
+		
+		if(uniformWorkload)
+		{
+			requestsps = Double.parseDouble(args[9]);
 		}
 		
 		
