@@ -1,9 +1,12 @@
 package edu.umass.cs.mysqlBenchmarking;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,8 +37,9 @@ public class CNSUpdateTask implements Runnable
 		try 
 		{
 			long start = System.currentTimeMillis();
-			putValueObjectRecord(MySQLThroughputBenchmarking.CNS_HASH_INDEX_TABLE);
-			putValueObjectRecord(MySQLThroughputBenchmarking.CNS_ATTR_INDEX_TABLE);
+			JSONObject json = getGUIDStoredUsingHashIndex( guid );
+			updateObject(MySQLThroughputBenchmarking.CNS_HASH_INDEX_TABLE);
+			updateObject(MySQLThroughputBenchmarking.CNS_ATTR_INDEX_TABLE);
 			long end = System.currentTimeMillis();
 			requestSendingTask.incrementUpdateNumRecvd(guid, end-start);
 		} 
@@ -45,15 +49,71 @@ public class CNSUpdateTask implements Runnable
 		}
 	}
 	
-	public void putValueObjectRecord(String tableName) throws SQLException
+	
+	public JSONObject getGUIDStoredUsingHashIndex( String guid )
+	{
+		Connection myConn 		= null;
+		Statement stmt 			= null;
+		
+		String selectQuery 		= "SELECT * ";
+		String tableName 		= MySQLThroughputBenchmarking.CNS_HASH_INDEX_TABLE;
+		
+		JSONObject oldValueJSON = new JSONObject();
+		
+		selectQuery = selectQuery + " FROM "+tableName+" WHERE nodeGUID = X'"+guid+"'";
+		
+		try
+		{
+			myConn = MySQLThroughputBenchmarking.dsInst.getConnection();
+			stmt = myConn.createStatement();
+			ResultSet rs = stmt.executeQuery(selectQuery);
+			
+			while( rs.next() )
+			{
+				ResultSetMetaData rsmd = rs.getMetaData();
+				
+				int columnCount = rsmd.getColumnCount();
+				
+				// The column count starts from 1
+				for (int i = 1; i <= columnCount; i++ ) 
+				{
+					String colName = rsmd.getColumnName(i);
+					String colVal = rs.getString(colName);
+					try {
+						oldValueJSON.put(colName, colVal);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			rs.close();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			try
+			{
+				if (stmt != null)
+					stmt.close();
+				if (myConn != null)
+					myConn.close();
+			}
+			catch(SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return oldValueJSON;
+	}
+	
+	
+	private void updateObject(String tableName) throws SQLException
 	{
 		Connection myConn = null;
 		Statement statement = null;
-		
-		
-
-//		String updateTableSQL = "UPDATE "+ MySQLThroughputBenchmarking.tableName+
-//				" SET value1="+value1+", value2="+value2+" where nodeGUID='"+guid+"'";
 
 		try 
 		{
