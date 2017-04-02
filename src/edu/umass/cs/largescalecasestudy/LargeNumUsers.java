@@ -44,7 +44,7 @@ public class LargeNumUsers
 	public static final String LATITUDE_KEY						= "latitude";
 	public static final String LONGITUDE_KEY					= "longitude";
 	
-	public static final long  TIME_UPDATE_SLEEP_TIME			= 10*1000;  // every minute
+	public static final long  TIME_UPDATE_SLEEP_TIME			= 1*1000;  // every minute
 	
 	public static final long TIME_DIST_INTERVAL					= 60; // 10 minutes on either side.
 	
