@@ -313,16 +313,24 @@ public class LargeNumUsers
 		
 		if(enableUpdate)
 		{
-			try
+			if(!uniformWorkload)
 			{
-				TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
-				updThread = new Thread(traceBasedUpdate);
-				updThread.start();
-				//traceBasedUpdate.rateControlledRequestSender();
+				try
+				{
+					TraceBasedUpdate traceBasedUpdate = new TraceBasedUpdate();
+					updThread = new Thread(traceBasedUpdate);
+					updThread.start();
+				}
+				catch(Exception | Error ex)
+				{
+					ex.printStackTrace();
+				}
 			}
-			catch(Exception | Error ex)
+			else
 			{
-				ex.printStackTrace();
+				RateBasedUpdate rateBased = new RateBasedUpdate();
+				updThread = new Thread(rateBased);
+				updThread.start();
 			}
 		}
 		
