@@ -43,7 +43,8 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 		try 
 		{
 			this.startExpTime();
-			updRateControlledRequestSender();
+			//updRateControlledRequestSender();
+			backToBackRequestSender();
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -66,7 +67,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 		while( ( (System.currentTimeMillis() - expStartTime) 
 						< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
 		{
-			for(int i=0; i<Math.floor(numberShouldBeSentPerSleep); i++ )
+			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
 			{
 				currGuidNum = (long)Math.floor
 						(updateRand.nextDouble()*MySQLThroughputBenchmarking.numGuids);
@@ -80,7 +81,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
 			if(needsToBeSentBeforeSleep > 0)
 			{
-				needsToBeSentBeforeSleep = Math.floor(needsToBeSentBeforeSleep);
+				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
 			}
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
@@ -91,6 +92,34 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 				doUpdate(currGuidNum);
 			}
 			Thread.sleep(100);
+		}
+		
+		long endTime = System.currentTimeMillis();
+		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
+		double sendingRate = (numSent * 1.0)/(timeInSec);
+		System.out.println("Update eventual sending rate "+sendingRate);
+		
+		waitForFinish();
+		double endTimeReplyRecvd = System.currentTimeMillis();
+		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+		
+		System.out.println("Update result:Goodput "+sysThrput);
+	}
+	
+	
+	private void backToBackRequestSender() throws Exception
+	{	
+		long currGuidNum;
+		
+		while( ( (System.currentTimeMillis() - expStartTime) 
+						< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
+		{
+			currGuidNum = (long)Math.floor
+					(updateRand.nextDouble()*MySQLThroughputBenchmarking.numGuids);
+			
+			doUpdate(currGuidNum);
+			
+			Thread.sleep(1000);
 		}
 		
 		long endTime = System.currentTimeMillis();
