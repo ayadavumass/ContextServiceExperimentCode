@@ -82,7 +82,6 @@ public class CNSUpdateTask implements Runnable
 					try {
 						oldValueJSON.put(colName, colVal);
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

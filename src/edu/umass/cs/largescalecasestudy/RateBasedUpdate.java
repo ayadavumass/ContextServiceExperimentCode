@@ -30,7 +30,7 @@ public class RateBasedUpdate extends
 	public RateBasedUpdate()
 	{
 		super( LargeNumUsers.UPD_LOSS_TOLERANCE );
-		uniformRand = new Random((LargeNumUsers.myID+1)*100);
+		uniformRand = new Random((LargeNumUsers.myID+1)*100+System.currentTimeMillis());
 	}
 	
 	@Override

@@ -33,7 +33,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 	public CNSUpdateClass()
 	{
 		super(MySQLThroughputBenchmarking.UPD_LOSS_TOLERANCE);
-		updateRand = new Random();
+		updateRand = new Random(System.currentTimeMillis());
 	}
 	
 	
@@ -66,7 +66,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 		while( ( (System.currentTimeMillis() - expStartTime) 
 						< MySQLThroughputBenchmarking.EXPERIMENT_TIME ) )
 		{
-			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+			for(int i=0; i<Math.floor(numberShouldBeSentPerSleep); i++ )
 			{
 				currGuidNum = (long)Math.floor
 						(updateRand.nextDouble()*MySQLThroughputBenchmarking.numGuids);
@@ -80,7 +80,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
 			if(needsToBeSentBeforeSleep > 0)
 			{
-				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
+				needsToBeSentBeforeSleep = Math.floor(needsToBeSentBeforeSleep);
 			}
 			
 			for(int i=0;i<needsToBeSentBeforeSleep;i++)
