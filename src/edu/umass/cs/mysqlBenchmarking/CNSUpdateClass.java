@@ -114,13 +114,13 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 		JSONObject updateJSON = new JSONObject();
 		
 		String attrName = LATITUDE_KEY;
-		double value = updateRand.nextDouble()*(MAX_US_LAT-MIN_US_LAT);
+		double value = MIN_US_LAT + updateRand.nextDouble()*(MAX_US_LAT-MIN_US_LAT);
 		
 		updateJSON.put(attrName, value);
 		
 		
 		attrName = LONGITUDE_KEY;
-		value = updateRand.nextDouble()*(MAX_US_LONG-MIN_US_LONG);
+		value = MIN_US_LONG + updateRand.nextDouble()*(MAX_US_LONG-MIN_US_LONG);
 		
 		updateJSON.put(attrName, value);
 		
