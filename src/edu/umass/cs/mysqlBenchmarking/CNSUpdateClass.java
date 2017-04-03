@@ -43,8 +43,8 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 		try 
 		{
 			this.startExpTime();
-			//updRateControlledRequestSender();
-			backToBackRequestSender();
+			updRateControlledRequestSender();
+			//backToBackRequestSender();
 		} catch (Exception e)
 		{
 			e.printStackTrace();
