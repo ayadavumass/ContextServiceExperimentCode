@@ -90,26 +90,36 @@ public class TraceBasedUpdate extends
 						if( userRecInfo.getNextUpdateUnixTime() >= 
 								(currRelativeTime-(LargeNumUsers.TIME_UPDATE_SLEEP_TIME/1000) ) )
 						{
-							long reqNum = -1;
-							synchronized(waitLock)
+							if( (userRecInfo.getNextUpdateLat() >= LargeNumUsers.MIN_US_LAT) 
+									&& (userRecInfo.getNextUpdateLat() <= LargeNumUsers.MAX_US_LAT) 
+									&& (userRecInfo.getNextUpdateLong() >= LargeNumUsers.MIN_US_LONG) 
+									&& (userRecInfo.getNextUpdateLong() <= LargeNumUsers.MAX_US_LONG) )
 							{
-								numSent++;
-								reqNum = numSent;
+								long reqNum = -1;
+								synchronized(waitLock)
+								{
+									numSent++;
+									reqNum = numSent;
+								}
+							
+								JSONObject attrValJSON = new JSONObject();
+								attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
+													userRecInfo.getNextUpdateLat());
+								
+								attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
+													userRecInfo.getNextUpdateLong());
+								
+								ExperimentUpdateReply updateRep 
+										= new ExperimentUpdateReply(reqNum, userRecInfo.getGUID());
+								
+								LargeNumUsers.csClient.sendUpdateWithCallBack
+													(userRecInfo.getGUID(), null, attrValJSON, -1, 
+															updateRep, this.getCallBack());
 							}
-							
-							JSONObject attrValJSON = new JSONObject();
-							attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
-												userRecInfo.getNextUpdateLat());
-							
-							attrValJSON.put(LargeNumUsers.LONGITUDE_KEY, 
-												userRecInfo.getNextUpdateLong());
-							
-							ExperimentUpdateReply updateRep 
-									= new ExperimentUpdateReply(reqNum, userRecInfo.getGUID());
-							
-							LargeNumUsers.csClient.sendUpdateWithCallBack
-												(userRecInfo.getGUID(), null, attrValJSON, -1, 
-														updateRep, this.getCallBack());
+							else
+							{
+								System.out.println("Update outside area");
+							}
 						}
 						
 						// write a next update entry
