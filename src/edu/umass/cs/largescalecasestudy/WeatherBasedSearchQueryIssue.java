@@ -61,7 +61,8 @@ public class WeatherBasedSearchQueryIssue extends
 		try
 		{
 			this.startExpTime();
-			rateControlledRequestSender();
+			backtoBackRequestSender();
+			//timestampBasedRequestSender();
 		} 
 		catch (Exception e)
 		{
@@ -69,7 +70,7 @@ public class WeatherBasedSearchQueryIssue extends
 		}
 	}
 	
-	public void rateControlledRequestSender() throws Exception
+	public void timestampBasedRequestSender() throws Exception
 	{
 		int nextIndexNum = 0;
 		WeatherEventStorage currEvent = null;
@@ -95,6 +96,215 @@ public class WeatherBasedSearchQueryIssue extends
 		}
 		System.out.println("Weather search query sending ends");
 	}
+	
+	
+	public void backtoBackRequestSender() throws Exception
+	{
+		for(int k=0; k<sortedWeatherEventList.size(); k++)
+		{
+			WeatherEventStorage currEvent = sortedWeatherEventList.get(k);
+			
+			List<List<GlobalCoordinate>> polygonsList = currEvent.getListOfPolygons();
+			
+			for( int i=0; i<polygonsList.size(); i++ )
+			{
+				List<GlobalCoordinate> polygon =  polygonsList.get(i);
+				
+				Path2D geoJSONPolygon = new Path2D.Double();
+				GlobalCoordinate gCoord = polygon.get(0);
+				geoJSONPolygon.moveTo( gCoord.getLatitude(), gCoord.getLongitude() );
+				for( int j = 1; j<polygon.size(); ++j )
+				{
+					gCoord = polygon.get(j);
+					geoJSONPolygon.lineTo( gCoord.getLatitude(), 
+							gCoord.getLongitude() );
+				}
+				geoJSONPolygon.closePath();
+				Rectangle2D boundingRect = geoJSONPolygon.getBounds2D();
+				
+				double minLat  = boundingRect.getMinX();
+				double maxLat  = boundingRect.getMaxX();
+				double minLong = boundingRect.getMinY();
+				double maxLong = boundingRect.getMaxY();
+				
+				if( (minLat >= LargeNumUsers.MIN_US_LAT) 
+						&& (maxLat <= LargeNumUsers.MAX_US_LAT) 
+						&& (minLong >= LargeNumUsers.MIN_US_LONG) 
+						&& (maxLong <= LargeNumUsers.MAX_US_LONG) )
+				{
+					numSent++;
+					
+					String searchQuery = LargeNumUsers.LATITUDE_KEY+" >= "+minLat+
+								" AND "+LargeNumUsers.LATITUDE_KEY+" <= "+maxLat
+								+" AND "+LargeNumUsers.LONGITUDE_KEY+" >= "+
+								minLong+" AND "+LargeNumUsers.LONGITUDE_KEY+" <= "+maxLong;
+						
+					//ExperimentSearchReply searchRep 
+					//					= new ExperimentSearchReply( requestId );
+					
+					long start = System.currentTimeMillis();
+					// not used without triggers.
+					long queryExpiry = 900000;
+					int repSize = LargeNumUsers.csClient.sendSearchQuery(searchQuery, 
+												new JSONArray(), queryExpiry);
+					
+					long end = System.currentTimeMillis();
+					sumSearchLatency = sumSearchLatency + (end-start);
+					sumSearchReply = sumSearchReply + repSize;
+					//LargeNumUsers.csClient.sendSearchQueryWithCallBack
+					//			( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+					
+					if(numSent%10 == 0)
+					{
+						System.out.println("Search stats avg latency "
+								+(sumSearchLatency/numSent)+" avg rep size "+(sumSearchReply/numSent));
+					}
+				}
+				else
+				{
+					System.out.println("Weather alert outside the area "+minLat
+								+" , "+maxLat+" , "+minLong+" , "+maxLong);
+				}
+			}
+		}
+		
+		System.out.println("Back to back Weather search query sending ends avg latency "
+					+(sumSearchLatency/numSent)+" avg rep size "+(sumSearchReply/numSent));
+	}
+	
+	
+	private void rateBasedSender() throws Exception
+	{
+		List<List<GlobalCoordinate>> totalPolygonList 
+							= new LinkedList<List<GlobalCoordinate>>();
+		
+		for(int k=0; k<sortedWeatherEventList.size(); k++)
+		{
+			WeatherEventStorage currEvent = sortedWeatherEventList.get(k);
+			
+			List<List<GlobalCoordinate>> polygonsList = currEvent.getListOfPolygons();
+			
+			for( int i=0; i<polygonsList.size(); i++ )
+			{
+				List<GlobalCoordinate> polygon =  polygonsList.get(i);
+				totalPolygonList.add(polygon);
+			}
+		}
+		
+		
+		int currPoly = 0;
+		
+		
+		long currTime  = 0;
+		
+		// sleep for 100ms
+		double numberShouldBeSentPerSleep = LargeNumUsers.requestsps;
+		
+		
+		while( ( (System.currentTimeMillis() - expStartTime) 
+						< 100000 ) )
+		{
+			for(int i=0; i<numberShouldBeSentPerSleep; i++ )
+			{
+				List<GlobalCoordinate> polygon = totalPolygonList.get(currPoly);
+				currPoly++;
+				currPoly = currPoly % totalPolygonList.size();
+				
+				doSearch(polygon);
+			}
+			currTime = System.currentTimeMillis();
+			
+			double timeElapsed = ((currTime- expStartTime)*1.0)/1000.0;
+			double numberShouldBeSentByNow = timeElapsed*LargeNumUsers.requestsps;
+			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
+			if(needsToBeSentBeforeSleep > 0)
+			{
+				needsToBeSentBeforeSleep = Math.ceil(needsToBeSentBeforeSleep);
+			}
+			
+			for(int i=0;i<needsToBeSentBeforeSleep;i++)
+			{
+				List<GlobalCoordinate> polygon = totalPolygonList.get(currPoly);
+				currPoly++;
+				currPoly = currPoly % totalPolygonList.size();
+				
+				doSearch(polygon);
+			}
+			Thread.sleep(1000);
+		}
+		
+		long endTime = System.currentTimeMillis();
+		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
+		double sendingRate = (numSent * 1.0)/(timeInSec);
+		System.out.println("WeatherSearch eventual sending rate "+sendingRate);
+		
+		waitForFinish();
+		double endTimeReplyRecvd = System.currentTimeMillis();
+		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+		
+		System.out.println("WeatherSearch result:Goodput "+sysThrput);
+	}
+	
+	private void doSearch(List<GlobalCoordinate> polygon) throws JSONException
+	{	
+		Path2D geoJSONPolygon = new Path2D.Double();
+		GlobalCoordinate gCoord = polygon.get(0);
+		geoJSONPolygon.moveTo( gCoord.getLatitude(), gCoord.getLongitude() );
+		for( int j = 1; j<polygon.size(); ++j )
+		{
+			gCoord = polygon.get(j);
+			geoJSONPolygon.lineTo( gCoord.getLatitude(), 
+					gCoord.getLongitude() );
+		}
+		geoJSONPolygon.closePath();
+		Rectangle2D boundingRect = geoJSONPolygon.getBounds2D();
+		
+		double minLat  = boundingRect.getMinX();
+		double maxLat  = boundingRect.getMaxX();
+		double minLong = boundingRect.getMinY();
+		double maxLong = boundingRect.getMaxY();
+		
+		if( (minLat >= LargeNumUsers.MIN_US_LAT) 
+				&& (maxLat <= LargeNumUsers.MAX_US_LAT) 
+				&& (minLong >= LargeNumUsers.MIN_US_LONG) 
+				&& (maxLong <= LargeNumUsers.MAX_US_LONG) )
+		{
+			long requestId = numSent++;
+			
+			
+			if(!LargeNumUsers.localMySQLOper)
+			{
+				String searchQuery = LargeNumUsers.LATITUDE_KEY+" >= "+minLat+
+						" AND "+LargeNumUsers.LATITUDE_KEY+" <= "+maxLat
+						+" AND "+LargeNumUsers.LONGITUDE_KEY+" >= "+
+						minLong+" AND "+LargeNumUsers.LONGITUDE_KEY+" <= "+maxLong;
+				
+				ExperimentSearchReply searchRep 
+								= new ExperimentSearchReply( requestId );
+				
+				// not used without triggers.
+				long queryExpiry = 900000;
+				LargeNumUsers.csClient.sendSearchQueryWithCallBack
+						( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+			}
+			else
+			{
+				String mysqlQuery = "SELECT nodeGUID from attrIndexDataStorage WHERE "
+						+ "(  ( latitude >= "+minLat+" AND latitude <= "+maxLat+" ) "
+						+ "AND  ( longitude >= "+minLong+" AND longitude <= "+
+							maxLong+" ) )";
+				
+				SearchTask stask = new SearchTask( mysqlQuery, this );
+				LargeNumUsers.taskES.execute(stask);
+			}
+		}
+		else
+		{
+			System.out.println("Weather alert outside the area "+minLat
+						+" , "+maxLat+" , "+minLong+" , "+maxLong);
+		}
+	}
+	
 	
 	
 	private void processAndIssueWeatherQuery(WeatherEventStorage weatherEvent)

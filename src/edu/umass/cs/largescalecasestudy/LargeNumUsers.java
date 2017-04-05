@@ -102,7 +102,7 @@ public class LargeNumUsers
 	
 	public static DataSource dsInst								= null;
 	
-	public static boolean uniformWorkload;
+	public static boolean rateWorkload;
 	public static double requestsps;
 	
 	public static boolean checkIfRelativeTimeInTimeSlot
@@ -253,7 +253,7 @@ public class LargeNumUsers
 		boolean enableSearch 	= Boolean.parseBoolean(args[5]);
 		boolean enableUpdate    = Boolean.parseBoolean(args[6]);
 		localMySQLOper          = Boolean.parseBoolean(args[7]);
-		uniformWorkload         = Boolean.parseBoolean(args[8]);
+		rateWorkload         = Boolean.parseBoolean(args[8]);
 		
 		if(localMySQLOper)
 		{
@@ -262,7 +262,7 @@ public class LargeNumUsers
 			taskES = Executors.newFixedThreadPool(mysqlpoolsize);
 		}
 		
-		if(uniformWorkload)
+		if(rateWorkload)
 		{
 			requestsps = Double.parseDouble(args[9]);
 		}
@@ -302,7 +302,7 @@ public class LargeNumUsers
 		{
 			if(myID == 0)
 			{
-				searchIssue = new WeatherBasedSearchQueryIssue(0.5);
+				searchIssue = new WeatherBasedSearchQueryIssue(0.0);
 			}
 		}
 		
@@ -313,7 +313,7 @@ public class LargeNumUsers
 		
 		if(enableUpdate)
 		{
-			if(!uniformWorkload)
+			if(!rateWorkload)
 			{
 				try
 				{
