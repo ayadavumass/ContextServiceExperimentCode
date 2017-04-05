@@ -106,7 +106,10 @@ public class WeatherBasedSearchQueryIssue extends
 			}
 			Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
 		}
-		System.out.println("Weather search query sending ends");
+		System.out.println("Weather search query sending ends "
+				+ "avg search reply "+(sumSearchReply/numSearch)
+				+ " sumSearchLatency "+(sumSearchLatency/numSearch)
+				+ " numSearch "+numSearch);
 	}
 	
 	
