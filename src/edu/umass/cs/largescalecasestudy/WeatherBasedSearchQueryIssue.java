@@ -62,8 +62,10 @@ public class WeatherBasedSearchQueryIssue extends
 		{
 			this.startExpTime();
 			//backtoBackRequestSender();
-			rateBasedSender();
-			//timestampBasedRequestSender();
+			if(LargeNumUsers.rateWorkload)
+				rateBasedSender();
+			else
+				timestampBasedRequestSender();
 		} 
 		catch (Exception e)
 		{
@@ -355,6 +357,16 @@ public class WeatherBasedSearchQueryIssue extends
 					long queryExpiry = 900000;
 					LargeNumUsers.csClient.sendSearchQueryWithCallBack
 							( searchQuery, queryExpiry, searchRep, this.getCallBack() );
+					
+					// to prevent busting or testing its effect
+					try 
+					{
+						Thread.sleep(100);
+					} catch (InterruptedException e) 
+					{
+						e.printStackTrace();
+					}
+					
 				}
 				else
 				{
@@ -576,9 +588,9 @@ public class WeatherBasedSearchQueryIssue extends
 			sumSearchReply = sumSearchReply + resultSize;
 			
 			sumSearchLatency = sumSearchLatency + timeTaken;
-
-			System.out.println(" Search rep recvd avg search reply "+(sumSearchReply/numSearch)
-					+ " sumSearchLatency "+(sumSearchLatency/numSearch));
+			if(numSearch % 10 == 0)
+				System.out.println(" Search rep recvd avg search reply "+(sumSearchReply/numSearch)
+					+ " sumSearchLatency "+(sumSearchLatency/numSearch)+" numSearch "+numSearch);
 			
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
