@@ -25,6 +25,8 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 	public static final String LATITUDE_KEY						= "latitude";
 	public static final String LONGITUDE_KEY					= "longitude";
 	
+	public static final double UPDATE_THRESH					= 0.0000001;
+	
 	
 	private Random updateRand;
 	
@@ -40,7 +42,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 	@Override
 	public void run()
 	{
-		try 
+		try
 		{
 			this.startExpTime();
 			updRateControlledRequestSender();
@@ -153,7 +155,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 		
 		updateJSON.put(attrName, value);
 		
-		CNSUpdateTask updTask = new CNSUpdateTask( guid, updateJSON, this);
+		CNSUpdateTask updTask = new CNSUpdateTask( guid, this);
 		MySQLThroughputBenchmarking.taskES.execute(updTask);
 	}
 	
@@ -193,6 +195,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 	{
 		return sumUpdTime/numRecvd;
 	}
+	
 	
 	@Override
 	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 

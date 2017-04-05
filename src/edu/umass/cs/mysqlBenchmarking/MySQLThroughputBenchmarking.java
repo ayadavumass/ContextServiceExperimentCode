@@ -327,8 +327,10 @@ public class MySQLThroughputBenchmarking
 		poolSize  		   = Integer.parseInt(args[5]);
 		inMemory           = Boolean.parseBoolean(args[6]);
 		
+		
 		MySQLThroughputBenchmarking mysqlBech 
 						   = new MySQLThroughputBenchmarking();
+		
 		
 		
 		if(requestType != RUN_CNS_UPDATE)

@@ -20,14 +20,12 @@ import org.json.JSONObject;
 public class CNSUpdateTask implements Runnable
 {
 	private final String guid;
-	private final JSONObject updateJSON;
 	private final AbstractRequestSendingClass requestSendingTask;
 	
-	public CNSUpdateTask(String guid, JSONObject updateJSON,
+	public CNSUpdateTask(String guid,
 			AbstractRequestSendingClass requestSendingTask)
 	{
 		this.guid = guid;
-		this.updateJSON = updateJSON;
 		this.requestSendingTask = requestSendingTask;
 	}
 	
@@ -38,12 +36,29 @@ public class CNSUpdateTask implements Runnable
 		{
 			long start = System.currentTimeMillis();
 			JSONObject json = getGUIDStoredUsingHashIndex( guid );
-			updateObject(MySQLThroughputBenchmarking.CNS_HASH_INDEX_TABLE);
-			updateObject(MySQLThroughputBenchmarking.CNS_ATTR_INDEX_TABLE);
+			
+			double newLat = json.getDouble(CNSUpdateClass.LATITUDE_KEY)+CNSUpdateClass.UPDATE_THRESH;
+			double newLong = json.getDouble(CNSUpdateClass.LONGITUDE_KEY)+CNSUpdateClass.UPDATE_THRESH;
+			
+			if(newLat >= CNSUpdateClass.MIN_US_LAT && newLat < CNSUpdateClass.MAX_US_LAT 
+					&& newLong >= CNSUpdateClass.MIN_US_LONG && newLong < CNSUpdateClass.MAX_US_LONG )
+			{
+				JSONObject updatejson = new JSONObject();
+				updatejson.put(CNSUpdateClass.LATITUDE_KEY, newLat);
+					
+					updatejson.put(CNSUpdateClass.LONGITUDE_KEY, newLong);
+					
+					updateObject(MySQLThroughputBenchmarking.CNS_HASH_INDEX_TABLE, updatejson);
+					updateObject(MySQLThroughputBenchmarking.CNS_ATTR_INDEX_TABLE, updatejson);
+			}
+			else
+			{
+				System.out.println("Update value not in range");
+			}
 			long end = System.currentTimeMillis();
 			requestSendingTask.incrementUpdateNumRecvd(guid, end-start);
 		} 
-		catch (SQLException e) 
+		catch (SQLException | JSONException e) 
 		{
 			e.printStackTrace();
 		}
@@ -109,7 +124,7 @@ public class CNSUpdateTask implements Runnable
 	}
 	
 	
-	private void updateObject(String tableName) throws SQLException
+	private void updateObject(String tableName, JSONObject updateJSON) throws SQLException
 	{
 		Connection myConn = null;
 		Statement statement = null;
