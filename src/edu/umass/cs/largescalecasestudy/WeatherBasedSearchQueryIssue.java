@@ -61,9 +61,18 @@ public class WeatherBasedSearchQueryIssue extends
 		try
 		{
 			this.startExpTime();
-			//backtoBackRequestSender();
+			//
 			if(LargeNumUsers.rateWorkload)
-				rateBasedSender();
+			{
+				if(LargeNumUsers.backTobackReq)
+				{
+					backtoBackRequestSender();
+				}
+				else
+				{
+					rateBasedSender();
+				}
+			}
 			else
 				timestampBasedRequestSender();
 		} 

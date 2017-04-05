@@ -104,6 +104,7 @@ public class LargeNumUsers
 	
 	public static boolean rateWorkload;
 	public static double requestsps;
+	public static boolean backTobackReq							= false; 
 	
 	public static boolean checkIfRelativeTimeInTimeSlot
 								(long relativeTimeFromMidnight) throws ParseException
@@ -265,6 +266,7 @@ public class LargeNumUsers
 		if(rateWorkload)
 		{
 			requestsps = Double.parseDouble(args[9]);
+			backTobackReq = Boolean.parseBoolean(args[10]);
 		}
 		
 		
