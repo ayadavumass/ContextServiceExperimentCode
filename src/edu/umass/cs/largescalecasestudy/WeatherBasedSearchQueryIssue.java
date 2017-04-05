@@ -61,7 +61,8 @@ public class WeatherBasedSearchQueryIssue extends
 		try
 		{
 			this.startExpTime();
-			backtoBackRequestSender();
+			//backtoBackRequestSender();
+			rateBasedSender();
 			//timestampBasedRequestSender();
 		} 
 		catch (Exception e)
