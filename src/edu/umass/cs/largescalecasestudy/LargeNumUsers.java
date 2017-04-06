@@ -330,9 +330,12 @@ public class LargeNumUsers
 			}
 			else
 			{
-				RateBasedUpdate rateBased = new RateBasedUpdate();
-				updThread = new Thread(rateBased);
-				updThread.start();
+				if(myID == 0)
+				{
+					RateBasedUpdate rateBased = new RateBasedUpdate();
+					updThread = new Thread(rateBased);
+					updThread.start();
+				}
 			}
 		}
 		

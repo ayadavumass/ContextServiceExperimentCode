@@ -40,7 +40,14 @@ public class RateBasedUpdate extends
 		try
 		{
 			this.startExpTime();
-			uniformRequestSender();
+			if(LargeNumUsers.backTobackReq)
+			{
+				backTobackReqSender();
+			}
+			else
+			{
+				uniformRequestSender();
+			}
 		} 
 		catch (Exception e)
 		{
@@ -57,10 +64,8 @@ public class RateBasedUpdate extends
 		// sleep for 100ms
 		double numberShouldBeSentPerSleep = reqspms*100.0;
 		
-		//double currUserGuidNum   = 0;
 		long currGuidNum;
 		
-		//while( ( totalNumUsersSent < numUsers ) )
 		while( ( (System.currentTimeMillis() - expStartTime) 
 						< 100000 ) )
 		{
@@ -101,6 +106,59 @@ public class RateBasedUpdate extends
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
 		System.out.println("Update result:Goodput "+sysThrput);
+	}
+	
+	
+	private void backTobackReqSender() throws Exception
+	{
+		long currGuidNum;
+		long sumUpdate = 0;
+		
+		while( ( (System.currentTimeMillis() - expStartTime) 
+						< 100000 ) )
+		{
+			currGuidNum = LargeNumUsers.numusers*LargeNumUsers.myID +  (long)Math.floor
+					(uniformRand.nextDouble()*LargeNumUsers.numusers);
+			
+			numSent++;
+			String guid = getOrderedHash(currGuidNum);
+			
+			JSONObject updateJSON = new JSONObject();
+			
+			String attrName = LargeNumUsers.LATITUDE_KEY;
+			double value = LargeNumUsers.MIN_US_LAT 
+					+ uniformRand.nextDouble()*(LargeNumUsers.MAX_US_LAT-LargeNumUsers.MIN_US_LAT);
+			
+			updateJSON.put(attrName, value);
+			
+			
+			attrName = LargeNumUsers.LONGITUDE_KEY;
+			
+			value = LargeNumUsers.MIN_US_LONG 
+					+ uniformRand.nextDouble()*(LargeNumUsers.MAX_US_LONG-LargeNumUsers.MIN_US_LONG);
+			
+			updateJSON.put(attrName, value);
+			
+			long s = System.currentTimeMillis();
+			LargeNumUsers.csClient.sendUpdate(guid, null, updateJSON, -1);
+			long t = System.currentTimeMillis();
+			
+			sumUpdate = sumUpdate + (t-s);
+			
+			numRecvd++;
+		}
+		
+		long endTime = System.currentTimeMillis();
+		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
+		double sendingRate = (numSent * 1.0)/(timeInSec);
+		System.out.println("Update eventual sending rate "+sendingRate);
+		
+		waitForFinish();
+		double endTimeReplyRecvd = System.currentTimeMillis();
+		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
+		
+		System.out.println("Update result:Goodput "+sysThrput 
+				+" average update latency "+(sumUpdate/numRecvd) + " numRecvd "+numRecvd);
 	}
 	
 	
