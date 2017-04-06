@@ -33,6 +33,7 @@ public class RateBasedUpdate extends
 		uniformRand = new Random((LargeNumUsers.myID+1)*100+System.currentTimeMillis());
 	}
 	
+	
 	@Override
 	public void run()
 	{

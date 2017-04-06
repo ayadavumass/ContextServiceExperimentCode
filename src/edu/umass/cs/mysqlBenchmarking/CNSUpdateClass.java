@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import edu.umass.cs.contextservice.utils.Utils;
 /**
@@ -45,8 +44,8 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 		try
 		{
 			this.startExpTime();
-			updRateControlledRequestSender();
-			//backToBackRequestSender();
+			//updRateControlledRequestSender();
+			backToBackRequestSender();
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -121,7 +120,7 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 			
 			doUpdate(currGuidNum);
 			
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		}
 		
 		long endTime = System.currentTimeMillis();
@@ -141,19 +140,6 @@ public class CNSUpdateClass extends AbstractRequestSendingClass
 	{
 		numSent++;
 		String guid = getOrderedHash(currUserGuidNum);
-		
-		JSONObject updateJSON = new JSONObject();
-		
-		String attrName = LATITUDE_KEY;
-		double value = MIN_US_LAT + updateRand.nextDouble()*(MAX_US_LAT-MIN_US_LAT);
-		
-		updateJSON.put(attrName, value);
-		
-		
-		attrName = LONGITUDE_KEY;
-		value = MIN_US_LONG + updateRand.nextDouble()*(MAX_US_LONG-MIN_US_LONG);
-		
-		updateJSON.put(attrName, value);
 		
 		CNSUpdateTask updTask = new CNSUpdateTask( guid, this);
 		MySQLThroughputBenchmarking.taskES.execute(updTask);
