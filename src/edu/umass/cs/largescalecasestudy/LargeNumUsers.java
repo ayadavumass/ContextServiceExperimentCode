@@ -72,6 +72,8 @@ public class LargeNumUsers
 	public static final String GEOLOC_TIME						= "geoLocationCurrentTimestamp";
 	
 	
+	public static final double LAT_LONG_THRESH					= Math.pow(10, 4);
+	
 	private static String csHost 								= "";
 	private static int csPort 									= -1;
 	
@@ -106,6 +108,8 @@ public class LargeNumUsers
 	public static double requestsps;
 	public static boolean backTobackReq							= false; 
 	
+	
+	
 	public static boolean checkIfRelativeTimeInTimeSlot
 								(long relativeTimeFromMidnight) throws ParseException
 	{
@@ -136,6 +140,7 @@ public class LargeNumUsers
 			return false;
 		}
 	}
+	
 	
 	public static String getSHA1(String stringToHash)
 	{
@@ -251,10 +256,11 @@ public class LargeNumUsers
 		myID        			= Integer.parseInt(args[3]);
 		guidFilePath 			= args[4];
 		
+		
 		boolean enableSearch 	= Boolean.parseBoolean(args[5]);
 		boolean enableUpdate    = Boolean.parseBoolean(args[6]);
 		localMySQLOper          = Boolean.parseBoolean(args[7]);
-		rateWorkload         = Boolean.parseBoolean(args[8]);
+		rateWorkload         	= Boolean.parseBoolean(args[8]);
 		
 		if(localMySQLOper)
 		{

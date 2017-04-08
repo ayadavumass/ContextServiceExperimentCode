@@ -36,7 +36,6 @@ public class TraceBasedUpdate extends
 	public TraceBasedUpdate()
 	{
 		super( LargeNumUsers.UPD_LOSS_TOLERANCE );
-		//currentEventFileMap = new HashMap<String, List<JSONObject>>();
 	}
 	
 	@Override
@@ -101,7 +100,7 @@ public class TraceBasedUpdate extends
 									numSent++;
 									reqNum = numSent;
 								}
-							
+								
 								JSONObject attrValJSON = new JSONObject();
 								attrValJSON.put(LargeNumUsers.LATITUDE_KEY, 
 													userRecInfo.getNextUpdateLat());

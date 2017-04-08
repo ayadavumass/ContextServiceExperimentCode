@@ -60,6 +60,7 @@ public class UserInfoFileWriting
 		}
 	}
 	
+	
 	public void initializeFileWriting() throws Exception
 	{
 		BufferedReader br = null;
@@ -84,8 +85,10 @@ public class UserInfoFileWriting
 				{
 					String[] parsed = currLine.split(",");
 					String guid = parsed[0];
-					double homeLat = Double.parseDouble(parsed[1]);
-					double homeLong = Double.parseDouble(parsed[2]);
+					
+					double homeLat = Double.parseDouble(parsed[1])+LargeNumUsers.LAT_LONG_THRESH;
+					double homeLong = Double.parseDouble(parsed[2])+LargeNumUsers.LAT_LONG_THRESH;
+					
 					
 					assingTraceAndWriteToFile(guid, homeLat, homeLong, bw);
 				}
