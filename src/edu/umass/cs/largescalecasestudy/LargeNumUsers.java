@@ -72,7 +72,7 @@ public class LargeNumUsers
 	public static final String GEOLOC_TIME						= "geoLocationCurrentTimestamp";
 	
 	
-	public static final double LAT_LONG_THRESH					= Math.pow(10, 4);
+	public static final double LAT_LONG_THRESH					= Math.pow(10, -4);
 	
 	private static String csHost 								= "";
 	private static int csPort 									= -1;
