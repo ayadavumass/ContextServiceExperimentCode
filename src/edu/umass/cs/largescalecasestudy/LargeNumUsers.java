@@ -31,8 +31,6 @@ public class LargeNumUsers
 	
 	public  static final String USER_TRACE_DIR					= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/processedIndividualTracesDupRem";
 	
-	//public static final String GEOJSON_WEATHER_DATA_DIR			= "/home/ayadav/Documents/Data/weatherDataSnapShot/geojsondata";
-	
 	public static final String WEATHER_DATA_PATH 
 			//= "/home/ayadav/Documents/Data/NWSWeatherData/wwa_201701010000_201703150000/1Jan15Mar2017Weather.json";
 			= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/1Jan15Mar2017Weather.json";

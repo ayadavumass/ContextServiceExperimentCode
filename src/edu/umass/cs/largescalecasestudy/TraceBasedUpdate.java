@@ -208,7 +208,12 @@ public class TraceBasedUpdate extends
 			Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
 		}
 		
-		System.out.println("Trace based request sending ends");
+		System.out.println("Trace based update sending finished");
+		
+		waitForFinish();
+		
+		System.out.println("Trace based update receving ends numSent "+numSent
+				+" numRecvd "+numRecvd);
 	}
 	
 	
@@ -244,13 +249,10 @@ public class TraceBasedUpdate extends
 			if(numRecvd%10 == 0)
 			{
 				System.out.println("AverageUpdateLatency "+getAverageUpdateLatency()
-				                   +" NumUpdatesRecvd "+getNumUpdatesRecvd());
+				                   +" NumUpdatesRecvd "+getNumUpdatesRecvd()+
+				                   " numSent "+numSent);
 			}
 			
-//			System.out.println("AverageUpdateLatency "+getAverageUpdateLatency()
-//            			+" NumUpdatesRecvd "+getNumUpdatesRecvd());
-			
-			//if(currNumReplyRecvd == currNumReqSent)
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{

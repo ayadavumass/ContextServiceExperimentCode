@@ -106,10 +106,15 @@ public class WeatherBasedSearchQueryIssue extends
 			}
 			Thread.sleep(LargeNumUsers.TIME_UPDATE_SLEEP_TIME);
 		}
+		
+		System.out.println("WeatherSearch sending finished");
+		
+		waitForFinish();
+		
 		System.out.println("Weather search query sending ends "
 				+ "avg search reply "+(sumSearchReply/numSearch)
 				+ " sumSearchLatency "+(sumSearchLatency/numSearch)
-				+ " numSearch "+numSearch);
+				+ " numSearchRecvd "+numSearch+" numSent "+numSent);
 	}
 	
 	
@@ -602,7 +607,8 @@ public class WeatherBasedSearchQueryIssue extends
 			sumSearchLatency = sumSearchLatency + timeTaken;
 			if(numSearch % 10 == 0)
 				System.out.println(" Search rep recvd avg search reply "+(sumSearchReply/numSearch)
-					+ " sumSearchLatency "+(sumSearchLatency/numSearch)+" numSearch "+numSearch);
+					+ " sumSearchLatency "+(sumSearchLatency/numSearch)+" numSearchRecvd "+numSearch
+					+ " numSearchSent "+numSent);
 			
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
