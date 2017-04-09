@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Random;
 
 import com.google.common.hash.Hashing;
 
@@ -13,6 +14,7 @@ public class UserInfoFileWriting
 {
 	// different random generator for each variable, as using one for all of them
 	// doesn't give uniform properties.
+	private final Random rand = new Random(System.currentTimeMillis());
 	
 	public UserInfoFileWriting()
 	{
@@ -86,8 +88,10 @@ public class UserInfoFileWriting
 					String[] parsed = currLine.split(",");
 					String guid = parsed[0];
 					
-					double homeLat = Double.parseDouble(parsed[1])+LargeNumUsers.LAT_LONG_THRESH;
-					double homeLong = Double.parseDouble(parsed[2])+LargeNumUsers.LAT_LONG_THRESH;
+					double homeLat = Double.parseDouble(parsed[1])+
+							(rand.nextDouble()*LargeNumUsers.LAT_LONG_THRESH);
+					double homeLong = Double.parseDouble(parsed[2])+
+							(rand.nextDouble()*LargeNumUsers.LAT_LONG_THRESH);
 					
 					
 					assingTraceAndWriteToFile(guid, homeLat, homeLong, bw);
