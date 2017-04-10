@@ -47,14 +47,17 @@ public class LargeNumUsers
 	public static final long TIME_DIST_INTERVAL					= 60; // 10 minutes on either side.
 	
 	// 900 s timeslots with highest alert rate
-	// 1. 1485135000
-	// 2. 1483795800
-	// 3. 1485125100
-	// 4. 1488249900
 	
-	public static final long START_UNIX_TIME					= 1485117000;
+	// perdaystore timeslot=2099 timestamp=1485117000 numevents=231 numploygons=244
+	// Currently we have results for the first timeslot.
+	// perdaystore timeslot=611 timestamp=1483777800 numevents=177 numploygons=245
+	// perdaystore timeslot=2088 timestamp=1485107100 numevents=196 numploygons=252
+    // perdaystore timeslot=5560 timestamp=1488231900 numevents=51 numploygons=258
+
 	
-	public static final long END_UNIX_TIME						= 1485117900;
+	public static final long START_UNIX_TIME					= 1483777800;
+	
+	public static final long END_UNIX_TIME						= 1483778700;
 	
 	
 	//"geoLocationCurrentTimestamp"
