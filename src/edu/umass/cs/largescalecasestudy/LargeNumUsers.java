@@ -48,16 +48,15 @@ public class LargeNumUsers
 	
 	// 900 s timeslots with highest alert rate
 	
-	// perdaystore timeslot=2099 timestamp=1485117000 numevents=231 numploygons=244
-	// Currently we have results for the first timeslot.
-	// perdaystore timeslot=611 timestamp=1483777800 numevents=177 numploygons=245
+	// perdaystore timeslot=6279 timestamp=1488879000 numevents=177 numploygons=178
+	// perdaystore timeslot=1814 timestamp=1484860500 numevents=189 numploygons=191
 	// perdaystore timeslot=2088 timestamp=1485107100 numevents=196 numploygons=252
-    // perdaystore timeslot=5560 timestamp=1488231900 numevents=51 numploygons=258
-
+	// perdaystore timeslot=2099 timestamp=1485117000 numevents=231 numploygons=244
 	
-	public static final long START_UNIX_TIME					= 1483777800;
 	
-	public static final long END_UNIX_TIME						= 1483778700;
+	public static final long START_UNIX_TIME					= 1485107100;
+	
+	public static final long END_UNIX_TIME						= 1485108000;
 	
 	
 	//"geoLocationCurrentTimestamp"
