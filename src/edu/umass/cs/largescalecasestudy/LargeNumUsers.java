@@ -54,9 +54,9 @@ public class LargeNumUsers
 	// perdaystore timeslot=2099 timestamp=1485117000 numevents=231 numploygons=244
 	
 	
-	public static final long START_UNIX_TIME					= 1485107100;
+	public static  long START_UNIX_TIME							= 1485107100;
 	
-	public static final long END_UNIX_TIME						= 1485108000;
+	public static  long END_UNIX_TIME							= 1485108000;
 	
 	
 	//"geoLocationCurrentTimestamp"
@@ -259,20 +259,23 @@ public class LargeNumUsers
 		
 		boolean enableSearch 	= Boolean.parseBoolean(args[5]);
 		boolean enableUpdate    = Boolean.parseBoolean(args[6]);
-		localMySQLOper          = Boolean.parseBoolean(args[7]);
-		rateWorkload         	= Boolean.parseBoolean(args[8]);
+		START_UNIX_TIME			= Long.parseLong(args[7]);
+		END_UNIX_TIME 			= START_UNIX_TIME + 900;
+		
+		localMySQLOper          = Boolean.parseBoolean(args[8]);
+		rateWorkload         	= Boolean.parseBoolean(args[9]);
 		
 		if(localMySQLOper)
 		{
-			mysqlpoolsize = Integer.parseInt(args[9]);
+			mysqlpoolsize = Integer.parseInt(args[10]);
 			dsInst = new DataSource();
 			taskES = Executors.newFixedThreadPool(mysqlpoolsize);
 		}
 		
 		if(rateWorkload)
 		{
-			requestsps = Double.parseDouble(args[9]);
-			backTobackReq = Boolean.parseBoolean(args[10]);
+			requestsps = Double.parseDouble(args[10]);
+			backTobackReq = Boolean.parseBoolean(args[11]);
 		}
 		
 		
