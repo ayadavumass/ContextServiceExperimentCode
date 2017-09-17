@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="edu/umass/cs/expcode/" kind="src" path="src"/>
-	<classpathentry kind="lib" path="libs/context-client.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="libs/org.hyperdex.client-1.8.1.jar"/>
 	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.15.1.jar"/>
+	<classpathentry kind="lib" path="libs/c3p0-0.9.5.1.jar"/>
+	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.36-bin.jar"/>
+	<classpathentry kind="lib" path="libs/zookeeper-3.4.10.jar"/>
+	<classpathentry kind="lib" path="libs/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="libs/CNSClient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

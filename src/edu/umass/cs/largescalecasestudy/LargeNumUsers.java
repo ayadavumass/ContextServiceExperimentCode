@@ -29,11 +29,12 @@ public class LargeNumUsers
 	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
 	public static final double UPD_LOSS_TOLERANCE				= 0.5;
 	
-	public  static final String USER_TRACE_DIR					= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/processedIndividualTracesDupRem";
+	public  static final String USER_TRACE_DIR					//= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/processedIndividualTracesDupRem";
+																= "/home/ayadav/Documents/Data/confidentialUserTraces/processedIndividualTracesDupRem";
 	
 	public static final String WEATHER_DATA_PATH 
-			//= "/home/ayadav/Documents/Data/NWSWeatherData/wwa_201701010000_201703150000/1Jan15Mar2017Weather.json";
-			= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/1Jan15Mar2017Weather.json";
+			= "/home/ayadav/Documents/Data/NWSWeatherData/wwa_201701010000_201703150000/1Jan15Mar2017Weather.json";
+			//= "/proj/MobilityFirst/ayadavDir/contextServiceScripts/1Jan15Mar2017Weather.json";
 	
 	
 	public static final String USER_INFO_FILE_PREFIX			= "UserInfo";
@@ -74,9 +75,6 @@ public class LargeNumUsers
 	
 	public static final double LAT_LONG_THRESH					= Math.pow(10, -4);
 	
-	private static String csHost 								= "";
-	private static int csPort 									= -1;
-	
 	public static long numusers;
 	
 	public static int myID										= 0;
@@ -90,7 +88,6 @@ public class LargeNumUsers
 	public static int userinfoFileNum							= 0;
 	
 	public static List<String> filenameList;
-	public static ContextServiceClient csClient;
 	
 	public static Random distibutionRand;
 	public static String guidFilePath;
@@ -108,7 +105,7 @@ public class LargeNumUsers
 	public static double requestsps;
 	public static boolean backTobackReq							= false; 
 	
-	
+	public static GNSClient gnsClient;
 	
 	public static boolean checkIfRelativeTimeInTimeSlot
 								(long relativeTimeFromMidnight) throws ParseException
@@ -237,6 +234,7 @@ public class LargeNumUsers
 		}
 	}
 	
+	
 	/**
 	 * distributes time uniformly in +10 minutes interval of the given time
 	 * @return
@@ -251,38 +249,34 @@ public class LargeNumUsers
 	public static void main(String[] args) throws Exception
 	{
 		numusers 				= Long.parseLong(args[0]);
-		csHost 					= args[1];
-		csPort 					= Integer.parseInt(args[2]);
-		myID        			= Integer.parseInt(args[3]);
-		guidFilePath 			= args[4];
+		myID        			= Integer.parseInt(args[1]);
+		guidFilePath 			= args[2];
 		
-		
-		boolean enableSearch 	= Boolean.parseBoolean(args[5]);
-		boolean enableUpdate    = Boolean.parseBoolean(args[6]);
-		START_UNIX_TIME			= Long.parseLong(args[7]);
+		boolean enableSearch 	= Boolean.parseBoolean(args[3]);
+		boolean enableUpdate    = Boolean.parseBoolean(args[4]);
+		START_UNIX_TIME			= Long.parseLong(args[5]);
 		END_UNIX_TIME 			= START_UNIX_TIME + 900;
 		
-		localMySQLOper          = Boolean.parseBoolean(args[8]);
-		rateWorkload         	= Boolean.parseBoolean(args[9]);
+		localMySQLOper          = Boolean.parseBoolean(args[6]);
+		rateWorkload         	= Boolean.parseBoolean(args[7]);
 		
 		if(localMySQLOper)
 		{
-			mysqlpoolsize = Integer.parseInt(args[10]);
+			mysqlpoolsize = Integer.parseInt(args[8]);
 			dsInst = new DataSource();
 			taskES = Executors.newFixedThreadPool(mysqlpoolsize);
 		}
 		
 		if(rateWorkload)
 		{
-			requestsps = Double.parseDouble(args[10]);
-			backTobackReq = Boolean.parseBoolean(args[11]);
+			requestsps = Double.parseDouble(args[9]);
+			backTobackReq = Boolean.parseBoolean(args[10]);
 		}
-		
 		
 		if(!localMySQLOper)
 		{
-			csClient  	= new ContextServiceClient(csHost, csPort, false, 
-				PrivacySchemes.NO_PRIVACY);
+			//csClient  	= new ContextServiceClient(csHost, csPort, false, 
+			//	PrivacySchemes.NO_PRIVACY);
 		}
 		
 		if(enableUpdate)

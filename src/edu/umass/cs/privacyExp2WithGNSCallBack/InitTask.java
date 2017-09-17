@@ -19,7 +19,8 @@ public class InitTask implements Runnable
 	public InitTask(String guidAlias) throws NoSuchAlgorithmException
 	{
 		this.guidAlias = guidAlias;
-		kpg = KeyPairGenerator.getInstance( ContextServiceConfig.AssymmetricEncAlgorithm );
+		kpg = KeyPairGenerator.getInstance( ContextServiceConfig.ASSYMETRIC_ENC_ALGORITHM
+				);
 	}
 	
 	@Override

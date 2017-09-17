@@ -35,7 +35,7 @@ public class UserInitializationRandomACL1 extends
 		aclRand  = new Random((SearchAndUpdateDriver.myID+1)*102);
 		
 		kpg = KeyPairGenerator.getInstance
-					( ContextServiceConfig.AssymmetricEncAlgorithm );
+					( ContextServiceConfig.ASSYMETRIC_ENC_ALGORITHM );
 		
 		// just generate all user entries.
 		generateUserEntries();
